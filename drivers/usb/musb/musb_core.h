@@ -112,7 +112,10 @@ struct musb_regs {
 	u16	rxfifoadd;
 	u32	vcontrol;
 	u16	hwvers;
-	u16	reserved2[5];
+	u16	reserved2a[1];
+	u8	ulpi_busctl;
+	u8	reserved2b[1];
+	u16	reserved2[3];
 	u8	epinfo;
 	u8	raminfo;
 	u8	linkinfo;
@@ -180,6 +183,10 @@ struct musb_regs {
 #define MUSB_DEVCTL_HM		0x04
 #define MUSB_DEVCTL_HR		0x02
 #define MUSB_DEVCTL_SESSION	0x01
+
+/* ULPI VBUSCONTROL */
+#define ULPI_USE_EXTVBUS	0x01
+#define ULPI_USE_EXTVBUSIND	0x02
 
 /* TESTMODE */
 #define MUSB_TEST_FORCE_HOST	0x80
@@ -341,6 +348,7 @@ struct musb_config {
 	struct	musb_regs	*regs;
 	u32			timeout;
 	u8			musb_speed;
+	u8			extvbus;
 };
 
 /* externally defined data */

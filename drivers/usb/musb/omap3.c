@@ -38,6 +38,7 @@ static int platform_needs_initialization = 1;
 struct musb_config musb_cfg = {
 	(struct	musb_regs *)MENTOR_USB0_BASE,
 	OMAP3_USB_TIMEOUT,
+	0,
 	0
 };
 

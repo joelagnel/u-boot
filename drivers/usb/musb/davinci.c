@@ -30,6 +30,7 @@
 struct musb_config musb_cfg = {
 	(struct	musb_regs *)MENTOR_USB0_BASE,
 	DAVINCI_USB_TIMEOUT,
+	0,
 	0
 };
 
