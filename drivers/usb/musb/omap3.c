@@ -120,6 +120,10 @@ int musb_platform_init(void)
 		stdby &= ~OMAP3_OTG_FORCESTDBY_STANDBY;
 		writel(stdby, &otg->forcestdby);
 
+#ifdef CONFIG_OMAP3_EVM
+		if (get_omap3_evm_rev() >= OMAP3EVM_BOARD_GEN_2)
+			musb_cfg.extvbus = 1;
+#endif
 		platform_needs_initialization = 0;
 	}
 

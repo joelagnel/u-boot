@@ -44,4 +44,12 @@
 
 int musb_platform_init(void);
 
+#ifdef CONFIG_OMAP3_EVM
+extern u8 get_omap3_evm_rev(void);
+enum {
+       OMAP3EVM_BOARD_GEN_1 = 0, /* EVM Rev between  A - D*/
+       OMAP3EVM_BOARD_GEN_2,   /* EVM Rev >= Rev E*/
+};
+#endif
+
 #endif /* _MUSB_OMAP3_H */
