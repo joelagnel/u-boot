@@ -291,9 +291,22 @@ static int gen_get_link_speed(int phy_addr)
 static int gen_auto_negotiate(int phy_addr)
 {
 	u_int16_t	tmp;
+	u_int16_t       val;
 
 	if (!davinci_eth_phy_read(phy_addr, MII_BMCR, &tmp))
 		return(0);
+
+	val = tmp | BMCR_FULLDPLX | BMCR_ANENABLE | BMCR_SPEED100;
+	davinci_eth_phy_write(phy_addr, MII_BMCR, val);
+	davinci_eth_phy_read(phy_addr, MII_BMCR, &val);
+
+	/* advertise 100 Full Duplex */
+	davinci_eth_phy_read(phy_addr, MII_ADVERTISE, &val);
+	val |= (LPA_10HALF | LPA_10FULL | LPA_100HALF | LPA_100FULL);
+	davinci_eth_phy_write(phy_addr, MII_ADVERTISE, val);
+	davinci_eth_phy_read(phy_addr, MII_ADVERTISE, &val);
+
+	davinci_eth_phy_read(phy_addr, MII_BMCR, &tmp);
 
 	/* Restart Auto_negotiation  */
 	tmp |= BMCR_ANENABLE;
@@ -346,8 +359,9 @@ static void  __attribute__((unused)) davinci_eth_gigabit_enable(void)
 static int davinci_eth_open(struct eth_device *dev, bd_t *bis)
 {
 	dv_reg_p		addr;
-	u_int32_t		clkdiv, cnt;
+	u_int32_t		clkdiv, cnt, regval;
 	volatile emac_desc	*rx_desc;
+	uint16_t 		lpa_val;
 
 	debug_emac("+ emac_open\n");
 
@@ -426,18 +440,6 @@ static int davinci_eth_open(struct eth_device *dev, bd_t *bis)
 	/* Enable ch 0 only */
 	writel(1, &adap_emac->RXUNICASTSET);
 
-	/* Enable MII interface and Full duplex mode */
-#ifdef CONFIG_SOC_DA8XX
-	writel((EMAC_MACCONTROL_MIIEN_ENABLE |
-		EMAC_MACCONTROL_FULLDUPLEX_ENABLE |
-		EMAC_MACCONTROL_RMIISPEED_100),
-	       &adap_emac->MACCONTROL);
-#else
-	writel((EMAC_MACCONTROL_MIIEN_ENABLE |
-		EMAC_MACCONTROL_FULLDUPLEX_ENABLE),
-	       &adap_emac->MACCONTROL);
-#endif
-
 	/* Init MDIO & get link state */
 	clkdiv = (EMAC_MDIO_BUS_FREQ / EMAC_MDIO_CLOCK_FREQ) - 1;
 	writel((clkdiv & 0xff) | MDIO_CONTROL_ENABLE | MDIO_CONTROL_FAULT,
@@ -446,8 +448,30 @@ static int davinci_eth_open(struct eth_device *dev, bd_t *bis)
 	/* We need to wait for MDIO to start */
 	udelay(1000);
 
-	if (!phy.get_link_speed(active_phy_addr))
+	if (!phy.auto_negotiate(active_phy_addr))
 		return(0);
+
+	davinci_eth_phy_read(active_phy_addr, MII_LPA, &lpa_val);
+	if (lpa_val & (LPA_10FULL | LPA_100FULL) ) {
+		/* set EMAC for Full Duplex  */
+		writel((EMAC_MACCONTROL_MIIEN_ENABLE |
+			EMAC_MACCONTROL_FULLDUPLEX_ENABLE),
+			&adap_emac->MACCONTROL);
+	} else {
+		/*set EMAC for Half Duplex  */
+		writel(EMAC_MACCONTROL_MIIEN_ENABLE, &adap_emac->MACCONTROL);
+	}
+
+#ifdef CONFIG_DRIVER_TI_EMAC_USE_RMII
+	regval = readl(&adap_emac->MACCONTROL);
+	if (lpa_val & (LPA_100FULL | LPA_100HALF) ) {
+		writel((regval | EMAC_MACCONTROL_RMIISPEED_100),
+				&adap_emac->MACCONTROL);
+	} else {
+		writel((regval & (~EMAC_MACCONTROL_RMIISPEED_100)),
+			&adap_emac->MACCONTROL);
+	}
+#endif
 
 	emac_gigabit_enable();
 
