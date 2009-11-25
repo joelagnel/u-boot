@@ -90,4 +90,16 @@
 #define EMAC_MDIO_PHY_NUM           1
 #define EMAC_MDIO_PHY_MASK          (1 << EMAC_MDIO_PHY_NUM)
 
+#define PHY_LXT972      (0x001378e2)
+int lxt972_is_phy_connected(int phy_addr);
+int lxt972_get_link_speed(int phy_addr);
+int lxt972_init_phy(int phy_addr);
+int lxt972_auto_negotiate(int phy_addr);
+
+#define PHY_DP83848     (0x20005c90)
+int dp83848_is_phy_connected(int phy_addr);
+int dp83848_get_link_speed(int phy_addr);
+int dp83848_init_phy(int phy_addr);
+int dp83848_auto_negotiate(int phy_addr);
+
 #endif  /* _DM644X_EMAC_H_ */
