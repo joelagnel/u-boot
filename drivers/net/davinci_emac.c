@@ -712,6 +712,7 @@ int davinci_emac_initialize(void)
 	phy_id |= tmp & 0x0000ffff;
 
 	switch (phy_id) {
+	#if defined(PHY_LXT972)
 		case PHY_LXT972:
 			sprintf(phy.name, "LXT972 @ 0x%02x", active_phy_addr);
 			phy.init = lxt972_init_phy;
@@ -719,6 +720,8 @@ int davinci_emac_initialize(void)
 			phy.get_link_speed = lxt972_get_link_speed;
 			phy.auto_negotiate = lxt972_auto_negotiate;
 			break;
+	#endif
+	#if defined(PHY_DP83848)
 		case PHY_DP83848:
 			sprintf(phy.name, "DP83848 @ 0x%02x", active_phy_addr);
 			phy.init = dp83848_init_phy;
@@ -726,6 +729,8 @@ int davinci_emac_initialize(void)
 			phy.get_link_speed = dp83848_get_link_speed;
 			phy.auto_negotiate = dp83848_auto_negotiate;
 			break;
+	#endif
+	#if defined(PHY_ET1011C)
 		case PHY_ET1011C:
 			sprintf(phy.name, "ET1011C @ 0x%02x", active_phy_addr);
 			phy.init = gen_init_phy;
@@ -733,6 +738,7 @@ int davinci_emac_initialize(void)
 			phy.get_link_speed = et1011c_get_link_speed;
 			phy.auto_negotiate = gen_auto_negotiate;
 			break;
+	#endif
 		default:
 			sprintf(phy.name, "GENERIC @ 0x%02x", active_phy_addr);
 			phy.init = gen_init_phy;
