@@ -98,12 +98,7 @@ extern flash_info_t flash_info[];
  * almost-MTU block sizes.  At least try... fall back to 512 if need be.
  * (but those using CONFIG_IP_DEFRAG may want to set a larger block in cfg file)
  */
-#ifdef CONFIG_TFTP_BLOCKSIZE
-#define TFTP_MTU_BLOCKSIZE CONFIG_TFTP_BLOCKSIZE
-#else
-#define TFTP_MTU_BLOCKSIZE 1468
-#endif
-
+#define TFTP_MTU_BLOCKSIZE 512
 static unsigned short TftpBlkSize=TFTP_BLOCK_SIZE;
 static unsigned short TftpBlkSizeOption=TFTP_MTU_BLOCKSIZE;
 
