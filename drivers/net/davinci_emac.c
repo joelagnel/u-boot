@@ -42,6 +42,7 @@
 #include <miiphy.h>
 #include <malloc.h>
 #include <asm/arch/emac_defs.h>
+#include "davinci_emac.h"
 #include <asm/io.h>
 
 unsigned int	emac_dbg = 0;
