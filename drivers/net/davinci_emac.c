@@ -48,6 +48,17 @@
 unsigned int	emac_dbg = 0;
 #define debug_emac(fmt,args...)	if (emac_dbg) printf(fmt,##args)
 
+#ifdef EMAC_HW_RAM_ADDR
+#warning "Use different address for BD
+#define BD_TO_HW(x)    \
+       ( ( (x) == 0) ? 0 : ( (x) - EMAC_WRAPPER_RAM_ADDR + EMAC_HW_RAM_ADDR ))
+#define HW_TO_BD(x)    \
+       ( ( (x) == 0) ? 0 : ( (x) - EMAC_HW_RAM_ADDR + EMAC_WRAPPER_RAM_ADDR ))
+#else
+#define BD_TO_HW(x)    (x)
+#define HW_TO_BD(x)    (x)
+#endif
+
 #ifdef DAVINCI_EMAC_GIG_ENABLE
 #define emac_gigabit_enable()	davinci_eth_gigabit_enable()
 #else
@@ -389,7 +400,7 @@ static int davinci_eth_open(struct eth_device *dev, bd_t *bis)
 	/* Create RX queue and set receive process in place */
 	emac_rx_active_head = emac_rx_desc;
 	for (cnt = 0; cnt < EMAC_MAX_RX_BUFFERS; cnt++) {
-		rx_desc->next = (u_int32_t)(rx_desc + 1);
+		rx_desc->next = BD_TO_HW((u_int32_t)(rx_desc + 1));
 		rx_desc->buffer = &emac_rx_buffers[cnt * (EMAC_MAX_ETHERNET_PKT_SIZE + EMAC_PKT_ALIGN)];
 		rx_desc->buff_off_len = EMAC_MAX_ETHERNET_PKT_SIZE;
 		rx_desc->pkt_flag_len = EMAC_CPPI_OWNERSHIP_BIT;
@@ -441,7 +452,7 @@ static int davinci_eth_open(struct eth_device *dev, bd_t *bis)
 	emac_gigabit_enable();
 
 	/* Start receive process */
-	writel((u_int32_t)emac_rx_desc, &adap_emac->RX0HDP);
+	writel((BD_TO_HW((u_int32_t)emac_rx_desc)), &adap_emac->RX0HDP);
 
 	debug_emac("- emac_open\n");
 
@@ -559,7 +570,7 @@ static int davinci_eth_send_packet (struct eth_device *dev,
 				      EMAC_CPPI_OWNERSHIP_BIT |
 				      EMAC_CPPI_EOP_BIT);
 	/* Send the packet */
-	writel((unsigned long)emac_tx_desc, &adap_emac->TX0HDP);
+	writel((BD_TO_HW((unsigned int) emac_tx_desc)), &adap_emac->TX0HDP);
 
 	/* Wait for packet to complete or link down */
 	while (1) {
@@ -603,14 +614,14 @@ static int davinci_eth_rcv_packet (struct eth_device *dev)
 		}
 
 		/* Ack received packet descriptor */
-		writel((unsigned long)rx_curr_desc, &adap_emac->RX0CP);
+		writel((BD_TO_HW((unsigned int) rx_curr_desc)), &adap_emac->RX0CP);
 		curr_desc = rx_curr_desc;
-		emac_rx_active_head =
-			(volatile emac_desc *) rx_curr_desc->next;
+		emac_rx_active_head = (volatile emac_desc *)
+					(HW_TO_BD(rx_curr_desc->next));
 
 		if (status & EMAC_CPPI_EOQ_BIT) {
 			if (emac_rx_active_head) {
-				writel((unsigned long)emac_rx_active_head,
+				writel((BD_TO_HW((unsigned int) emac_rx_active_head)),
 				       &adap_emac->RX0HDP);
 			} else {
 				emac_rx_queue_active = 0;
@@ -628,7 +639,7 @@ static int davinci_eth_rcv_packet (struct eth_device *dev)
 			emac_rx_active_head = curr_desc;
 			emac_rx_active_tail = curr_desc;
 			if (emac_rx_queue_active != 0) {
-				writel((unsigned long)emac_rx_active_head,
+				writel((BD_TO_HW((unsigned int) emac_rx_active_head)),
 				       &adap_emac->RX0HDP);
 				printf ("INFO: emac_rcv_pkt: active queue head = 0, HDP fired\n");
 				emac_rx_queue_active = 1;
@@ -636,10 +647,10 @@ static int davinci_eth_rcv_packet (struct eth_device *dev)
 		} else {
 			tail_desc = emac_rx_active_tail;
 			emac_rx_active_tail = curr_desc;
-			tail_desc->next = (unsigned int) curr_desc;
+			tail_desc->next = BD_TO_HW((unsigned int) curr_desc);
 			status = tail_desc->pkt_flag_len;
 			if (status & EMAC_CPPI_EOQ_BIT) {
-				writel((unsigned long)curr_desc,
+				writel((BD_TO_HW((unsigned int) curr_desc)),
 				       &adap_emac->RX0HDP);
 				status &= ~EMAC_CPPI_EOQ_BIT;
 				tail_desc->pkt_flag_len = status;
