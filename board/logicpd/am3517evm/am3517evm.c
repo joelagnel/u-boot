@@ -28,9 +28,18 @@
 #include <asm/arch/mem.h>
 #include <asm/arch/mux.h>
 #include <asm/arch/sys_proto.h>
+#include <asm/arch/emac_defs.h>
 #include <asm/mach-types.h>
 #include <i2c.h>
 #include "am3517evm.h"
+
+
+#define AM3517_IP_SW_RESET     0x48002598
+#define CPGMACSS_SW_RST                (1 << 1)
+
+
+
+
 
 /*
  * Routine: board_init
@@ -55,14 +64,63 @@ int board_init(void)
  */
 int misc_init_r(void)
 {
+       volatile unsigned int ctr;
+       u32 reset;
+
+
 #ifdef CONFIG_DRIVER_OMAP34XX_I2C
 	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
 #endif
 
 	dieid_num_r();
 
+
+#if defined(CONFIG_DRIVER_TI_EMAC)
+
+       omap_request_gpio(30);
+       omap_set_gpio_direction(30,0);
+       omap_set_gpio_dataout(30,0);
+       ctr  = 0;
+       do{
+               udelay(1000);
+               ctr++;
+               }while (ctr <300);
+       omap_set_gpio_dataout(30,1);
+       ctr =0;
+       /* allow the PHY to stabilize and settle down */
+       do{
+               udelay(1000);
+               ctr++;
+               }while (ctr <300);
+
+       /*ensure that the module is out of reset*/
+       reset = readl(AM3517_IP_SW_RESET);
+       reset &= (~CPGMACSS_SW_RST);
+       writel(reset,AM3517_IP_SW_RESET);
+
+#endif
+
+
+
 	return 0;
 }
+
+
+/*
+ * Initializes on-chip ethernet controllers.
+ * to override, implement board_eth_init()
+ */
+int cpu_eth_init(bd_t *bis)
+{
+#if defined(CONFIG_DRIVER_TI_EMAC)
+       printf("davinci_emac_initialize\n");
+       davinci_emac_initialize();
+#endif
+       return 0;
+ }
+
+
+
 
 /*
  * Routine: set_muxconf_regs
