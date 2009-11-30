@@ -120,6 +120,7 @@ void set_muxconf_regs(void)
 static void setup_net_chip(void)
 {
 	struct gpio *gpio3_base = (struct gpio *)OMAP34XX_GPIO3_BASE;
+	struct gpio *gpio1_base = (struct gpio *)OMAP34XX_GPIO1_BASE;
 	struct ctrl *ctrl_base = (struct ctrl *)OMAP34XX_CTRL_BASE;
 
 	/* Configure GPMC registers */
@@ -139,18 +140,31 @@ static void setup_net_chip(void)
 	writew(readw(&ctrl_base->gpmc_nadv_ale) | 0x0E00,
 		&ctrl_base->gpmc_nadv_ale);
 
-	/* Make GPIO 64 as output pin */
-	writel(readl(&gpio3_base->oe) & ~(GPIO0), &gpio3_base->oe);
-
-	/* Now send a pulse on the GPIO pin */
-	writel(GPIO0, &gpio3_base->setdataout);
-	udelay(1);
-	writel(GPIO0, &gpio3_base->cleardataout);
-	udelay(1);
-	writel(GPIO0, &gpio3_base->setdataout);
-
 	/* determine omap3evm revision */
 	omap3_evm_get_revision();
+
+	if ( get_omap3_evm_rev() == OMAP3EVM_BOARD_GEN_1 ){
+		/* Make GPIO 64 as output pin */
+		writel(readl(&gpio3_base->oe) & ~(GPIO0), &gpio3_base->oe);
+
+		/* Now send a pulse on the GPIO pin */
+		writel(GPIO0, &gpio3_base->setdataout);
+		udelay(1);
+		writel(GPIO0, &gpio3_base->cleardataout);
+		udelay(1);
+		writel(GPIO0, &gpio3_base->setdataout);
+	}else{
+		/* Make GPIO 07 as output pin */
+		writel(readl(&gpio1_base->oe) & ~(GPIO7), &gpio1_base->oe);
+
+		/* Now send a pulse on the GPIO pin */
+		writel(GPIO7, &gpio1_base->setdataout);
+		udelay(1);
+		writel(GPIO7, &gpio1_base->cleardataout);
+		udelay(1);
+		writel(GPIO7, &gpio1_base->setdataout);
+	}
+
 }
 
 int board_eth_init(bd_t *bis)
