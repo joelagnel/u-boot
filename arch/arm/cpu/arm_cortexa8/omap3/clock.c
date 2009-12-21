@@ -324,26 +324,28 @@ void prcm_init(void)
 	sr32(&prcm_base->clken_pll_mpu, 0, 3, PLL_LOCK);
 	wait_on_value(ST_MPU_CLK, 1, &prcm_base->idlest_pll_mpu, LDELAY);
 
-	/* Getting the base address to IVA DPLL param table */
-	dpll_param_p = (dpll_param *) get_iva_dpll_param();
+	if (is_cpu_family(CPU_OMAP34XX)) {
+		/* Getting the base address to IVA DPLL param table */
+		dpll_param_p = (dpll_param *) get_iva_dpll_param();
 
-	/* Moving it to the right sysclk and ES rev base */
-	dpll_param_p = dpll_param_p + 3 * clk_index + sil_index;
+		/* Moving it to the right sysclk and ES rev base */
+		dpll_param_p = dpll_param_p + 3 * clk_index + sil_index;
 
-	/* IVA DPLL (set to 12*20=240MHz) */
-	sr32(&prcm_base->clken_pll_iva2, 0, 3, PLL_STOP);
-	wait_on_value(ST_IVA2_CLK, 0, &prcm_base->idlest_pll_iva2, LDELAY);
-	/* set M2 */
-	sr32(&prcm_base->clksel2_pll_iva2, 0, 5, dpll_param_p->m2);
-	/* set M */
-	sr32(&prcm_base->clksel1_pll_iva2, 8, 11, dpll_param_p->m);
-	/* set N */
-	sr32(&prcm_base->clksel1_pll_iva2, 0, 7, dpll_param_p->n);
-	/* FREQSEL */
-	sr32(&prcm_base->clken_pll_iva2, 4, 4, dpll_param_p->fsel);
-	/* lock mode */
-	sr32(&prcm_base->clken_pll_iva2, 0, 3, PLL_LOCK);
-	wait_on_value(ST_IVA2_CLK, 1, &prcm_base->idlest_pll_iva2, LDELAY);
+		/* IVA DPLL (set to 12*20=240MHz) */
+		sr32(&prcm_base->clken_pll_iva2, 0, 3, PLL_STOP);
+		wait_on_value(ST_IVA2_CLK, 0, &prcm_base->idlest_pll_iva2, LDELAY);
+		/* set M2 */
+		sr32(&prcm_base->clksel2_pll_iva2, 0, 5, dpll_param_p->m2);
+		/* set M */
+		sr32(&prcm_base->clksel1_pll_iva2, 8, 11, dpll_param_p->m);
+		/* set N */
+		sr32(&prcm_base->clksel1_pll_iva2, 0, 7, dpll_param_p->n);
+		/* FREQSEL */
+		sr32(&prcm_base->clken_pll_iva2, 4, 4, dpll_param_p->fsel);
+		/* lock mode */
+		sr32(&prcm_base->clken_pll_iva2, 0, 3, PLL_LOCK);
+		wait_on_value(ST_IVA2_CLK, 1, &prcm_base->idlest_pll_iva2, LDELAY);
+	}
 
 	/* Set up GPTimers to sys_clk source only */
 	sr32(&prcm_base->clksel_per, 0, 8, 0xff);
