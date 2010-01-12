@@ -470,4 +470,30 @@ const omap3_sysinfo sysinfo = {
 	MUX_VAL(CP(MMC2_DAT6),      (IDIS | PTU | EN  | M4)) /*GPIO_138 BT_EN*/\
 	MUX_VAL(CP(MMC2_DAT7),      (IDIS | PTU | EN  | M4)) /*GPIO_139 WLAN_EN*/
 
+/*
+ * Configure Timings for DVI D
+ */
+static const struct panel_config dvid_cfg = {
+	.timing_h	= 0x0ff03f31, /* Horizantal timing */
+	.timing_v	= 0x01400504, /* Vertical timing */
+	.pol_freq	= 0x00007028, /* Pol Freq */
+	.divisor	= 0x00010006, /* 72Mhz Pixel Clock */
+	.lcd_size	= 0x02ff03ff, /* 1024x768 */
+	.panel_type	= 0x01, /* TFT */
+	.data_lines	= 0x03, /* 24 Bit RGB */
+	.load_mode	= 0x02, /* Frame Mode */
+	.panel_color	= DVI_BEAGLE_ORANGE_COL /* ORANGE */
+};
+
+static const struct panel_config dvid_cfg_xm = {
+	.timing_h	= 0x1a4024c9, /* Horizantal timing */
+	.timing_v	= 0x02c00509, /* Vertical timing */
+	.pol_freq	= 0x00007028, /* Pol Freq */
+	.divisor	= 0x00010001, /* 96MHz Pixel Clock */
+	.lcd_size	= 0x02ff03ff, /* 1024x768 */
+	.panel_type	= 0x01, /* TFT */
+	.data_lines	= 0x03, /* 24 Bit RGB */
+	.load_mode	= 0x02, /* Frame Mode */
+	.panel_color	= DVI_BEAGLE_ORANGE_COL /* ORANGE */
+};
 #endif
