@@ -471,6 +471,21 @@
 #define TWL4030_USB_PHY_CLK_CTRL_STS			0xFF
 
 /*
+ * Voltage Selection in PM Receiver Module
+ */
+#define TWL4030_PM_RECEIVER_VAUX2_VSEL_18		0x05
+#define TWL4030_PM_RECEIVER_VAUX3_VSEL_28		0x03
+#define TWL4030_PM_RECEIVER_VPLL2_VSEL_18		0x05
+#define TWL4030_PM_RECEIVER_VDAC_VSEL_18		0x03
+#define TWL4030_PM_RECEIVER_VMMC1_VSEL_30		0x02
+
+/*
+ * Device Selection in PM Receiver Module
+ */
+#define TWL4030_PM_RECEIVER_DEV_GRP_P1			0x20
+#define TWL4030_PM_RECEIVER_DEV_GRP_ALL			0xE0
+
+/*
  * Convience functions to read and write from TWL4030
  *
  * chip_no is the i2c address, it must be one of the chip addresses

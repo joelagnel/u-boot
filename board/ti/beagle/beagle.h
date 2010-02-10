@@ -34,6 +34,11 @@ const omap3_sysinfo sysinfo = {
 };
 
 #define BOARD_REVISION_MASK	(0x1 << 11)
+/* BeagleBoard revisions */
+#define REVISION_AXBX	0x7
+#define REVISION_CX	0x6
+#define REVISION_C4	0x5
+#define REVISION_D	0x0
 
 /*
  * IEN  - Input Enable
@@ -264,7 +269,7 @@ const omap3_sysinfo sysinfo = {
 	MUX_VAL(CP(HDQ_SIO),		(IDIS | PTU | EN  | M4)) /*GPIO_170*/\
 	MUX_VAL(CP(MCSPI1_CLK),		(IEN  | PTU | EN  | M4)) /*GPIO_171*/\
 	MUX_VAL(CP(MCSPI1_SIMO),	(IEN  | PTU | EN  | M4)) /*GPIO_172*/\
-	MUX_VAL(CP(MCSPI1_SOMI),	(IEN  | PTD | DIS | M0)) /*McSPI1_SOMI*/\
+	MUX_VAL(CP(MCSPI1_SOMI),	(IEN  | PTU | EN  | M4)) /*GPIO_173*/\
 	MUX_VAL(CP(MCSPI1_CS0),		(IEN  | PTD | EN  | M0)) /*McSPI1_CS0*/\
 	MUX_VAL(CP(MCSPI1_CS1),		(IDIS | PTD | EN  | M0)) /*McSPI1_CS1*/\
 	MUX_VAL(CP(MCSPI1_CS2),		(IDIS | PTD | DIS | M4)) /*GPIO_176*/\
