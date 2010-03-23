@@ -268,6 +268,10 @@ int readenv (size_t offset, u_char * buf)
 
 	u_char *char_ptr;
 
+	/* fail if no nand detected */
+	if (nand_info[0].type == 0)
+		return 1;
+
 	blocksize = nand_info[0].erasesize;
 	len = min(blocksize, CONFIG_ENV_SIZE);
 
