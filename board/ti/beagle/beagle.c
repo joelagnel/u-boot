@@ -75,7 +75,7 @@ int beagle_get_revision(void)
  *		GPIO173, GPIO172, GPIO171: 1 1 1 => Ax/Bx
  *		GPIO173, GPIO172, GPIO171: 1 1 0 => C1/2/3
  *		GPIO173, GPIO172, GPIO171: 1 0 1 => C4
- *		GPIO173, GPIO172, GPIO171: 0 0 0 => D
+ *		GPIO173, GPIO172, GPIO171: 0 0 0 => XM
  */
 void beagle_identify(void)
 {
@@ -108,29 +108,36 @@ int misc_init_r(void)
 	twl4030_power_init();
 	twl4030_led_init(TWL4030_LED_LEDEN_LEDAON | TWL4030_LED_LEDEN_LEDBON);
 
-	printf("Board revision ");
 	switch (beagle_revision) {
 	case REVISION_AXBX:
-		printf("Ax/Bx\n");
+		printf("Beagle Rev Ax/Bx\n");
 		break;
 	case REVISION_CX:
-		printf("C1/C2/C3\n");
+		printf("Beagle Rev C1/C2/C3\n");
 		MUX_BEAGLE_C();
 		break;
 	case REVISION_C4:
-		printf("C4\n");
+		printf("Beagle Rev C4\n");
 		MUX_BEAGLE_C();
 		/* Set VAUX2 to 1.8V for EHCI PHY */
 		twl4030_pmrecv_vsel_cfg(TWL4030_PM_RECEIVER_VAUX2_DEDICATED,
 					TWL4030_PM_RECEIVER_VAUX2_VSEL_18,
 					TWL4030_PM_RECEIVER_VAUX2_DEV_GRP,
 					TWL4030_PM_RECEIVER_DEV_GRP_P1);
+		setenv("mpurate", "720");
 		break;
-	case REVISION_D:
-		printf("D\n");
+	case REVISION_XM:
+		printf("Beagle xM Rev A\n");
+		MUX_BEAGLE_XM();
+		/* Set VAUX2 to 1.8V for EHCI PHY */
+		twl4030_pmrecv_vsel_cfg(TWL4030_PM_RECEIVER_VAUX2_DEDICATED,
+					TWL4030_PM_RECEIVER_VAUX2_VSEL_18,
+					TWL4030_PM_RECEIVER_VAUX2_DEV_GRP,
+					TWL4030_PM_RECEIVER_DEV_GRP_P1);
+		setenv("mpurate", "720");
 		break;
 	default:
-		printf("unknown 0x%02x\n", beagle_revision);
+		printf("Beagle unknown 0x%02x\n", beagle_revision);
 	}
 
 	/* Configure GPIOs to output */
