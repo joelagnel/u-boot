@@ -318,6 +318,7 @@ int misc_init_r(void)
 		GPIO15 | GPIO14 | GPIO13 | GPIO12), &gpio5_base->oe);
 
 	dieid_num_r();
+	omap3_dss_enable();
 
 	return 0;
 }
