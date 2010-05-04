@@ -49,7 +49,7 @@ unsigned int	emac_dbg = 0;
 #define debug_emac(fmt,args...)	if (emac_dbg) printf(fmt,##args)
 
 #ifdef EMAC_HW_RAM_ADDR
-#warning "Use different address for BD
+#warning "Use different address for BD"
 #define BD_TO_HW(x)    \
        ( ( (x) == 0) ? 0 : ( (x) - EMAC_WRAPPER_RAM_ADDR + EMAC_HW_RAM_ADDR ))
 #define HW_TO_BD(x)    \
@@ -328,7 +328,7 @@ static int davinci_eth_open(struct eth_device *dev, bd_t *bis)
 	dv_reg_p		addr;
 	u_int32_t		clkdiv, cnt,regval;
 	volatile emac_desc	*rx_desc;
-	uint16_t 		lpa_val,val;
+	uint16_t 		lpa_val;
 	unsigned long		mac_hi;
 	unsigned long		mac_lo;
 
