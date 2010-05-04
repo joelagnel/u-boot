@@ -49,7 +49,7 @@ unsigned int	emac_dbg = 0;
 #define debug_emac(fmt,args...)	if (emac_dbg) printf(fmt,##args)
 
 #ifdef EMAC_HW_RAM_ADDR
-#warning "Use different address for BD
+#warning "Use different address for BD"
 #define BD_TO_HW(x)    \
        ( ( (x) == 0) ? 0 : ( (x) - EMAC_WRAPPER_RAM_ADDR + EMAC_HW_RAM_ADDR ))
 #define HW_TO_BD(x)    \
