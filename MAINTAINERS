@@ -810,6 +810,10 @@ Alex Züpke <azu@sysgo.de>
 	lart		SA1100
 	dnp1110		SA1110
 
+Vaibhav Hiremath <hvaibhav@ti.com>
+
+	am3517_evm	ARM CORTEX-A8 (AM35x SoC)
+
 -------------------------------------------------------------------------
 
 Unknown / orphaned boards:

@@ -32,14 +32,14 @@
 #include <i2c.h>
 #include "am3517evm.h"
 
-DECLARE_GLOBAL_DATA_PTR;
-
 /*
  * Routine: board_init
  * Description: Early hardware init.
  */
 int board_init(void)
 {
+	DECLARE_GLOBAL_DATA_PTR;
+
 	gpmc_init(); /* in SRAM or SDRAM, finish GPMC */
 	/* board id for Linux */
 	gd->bd->bi_arch_number = MACH_TYPE_OMAP3517EVM;
