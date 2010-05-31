@@ -183,4 +183,18 @@ struct gpio {
 #define WIDTH_8BIT		0x0000
 #define WIDTH_16BIT		0x1000	/* bit pos for 16 bit in gpmc */
 
+/*
+ * Hawkeye values
+ */
+#define HAWKEYE_OMAP34XX	0xb7ae
+#define HAWKEYE_AM35XX		0xb868
+
+#define HAWKEYE_SHIFT		12
+
+/*
+ * Define CPU families
+ */
+#define CPU_OMAP34XX		0x3400  /* OMAP34xx/OMAP35 devices */
+#define CPU_AM35XX		0x3500  /* AM35xx devices          */
+
 #endif

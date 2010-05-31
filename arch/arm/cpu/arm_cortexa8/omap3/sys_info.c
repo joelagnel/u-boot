@@ -40,16 +40,19 @@ static char *rev_s[CPU_3XX_MAX_REV] = {
 				"3.0",
 				"3.1"};
 
-static u8 cpu_revision;
+static u16 cpu_family;
+static u16 cpu_id;
+static u8  cpu_revision;
 
 /**
  * Identify the silicon
  *
- * Currently, it identifies the cpu revision.
+ * Currently, it identifies the cpu family and silicon revision.
  */
 void identify_cpu (void)
 {
 	u32 cpuid = 0;
+	u16 hawkeye;
 	struct ctrl_id *id_base;
 
 	/*
@@ -58,6 +61,7 @@ void identify_cpu (void)
 	 */
 	__asm__ __volatile__("mrc p15, 0, %0, c0, c0, 0":"=r"(cpuid));
 	if ((cpuid & 0xf) == 0x0) {
+		cpu_family = CPU_OMAP34XX;
 		cpu_revision = CPU_3XX_ES10;
 	} else {
 		/* Decode the IDs on > ES1.0 */
@@ -65,14 +69,25 @@ void identify_cpu (void)
 
 		cpuid = readl(&id_base->idcode);
 
+		hawkeye  = (cpuid >> HAWKEYE_SHIFT) & 0xffff;
 		cpu_revision = (cpuid >> CPU_3XX_ID_SHIFT) & 0xf;
 
-		/* Some early ES2.0 seem to report rev 0, fix this */
-		if(cpu_revision == 0)
-			cpu_revision = CPU_3XX_ES20;
-	}
+		switch (hawkeye) {
+		case HAWKEYE_OMAP34XX:
+			cpu_family = CPU_OMAP34XX;
+			/* Some early ES2.0 seem to report ID 0, fix this */
+			if(cpu_revision == 0)
+				cpu_revision = CPU_3XX_ES20;
+			break;
+		case HAWKEYE_AM35XX:
+			cpu_family = CPU_AM35XX;
+			break;
 
-	return 0;
+		default:
+			cpu_family = CPU_OMAP34XX;
+			break;
+		}
+	}
 }
 
 /*
@@ -87,6 +102,20 @@ int arch_cpu_init (void)
 	identify_cpu();
 	return 0;
 }
+
+/*
+ * Check if cpu belongs to specific family
+ *
+ * Returns 1 if true, 0 if false.
+ */
+u8 is_cpu_family(u16 family)
+{
+	if (cpu_family == family)
+		return 1;
+
+	return 0;
+}
+
 /*****************************************************************
  * dieid_num_r(void) - read and set die ID
  *****************************************************************/
