@@ -40,6 +40,41 @@ static char *rev_s[CPU_3XX_MAX_REV] = {
 				"3.0",
 				"3.1"};
 
+static u8 cpu_revision;
+
+/**
+ * Perform architecture specific initialization.
+ *
+ * Currently, it identifies the cpu revision.
+ */
+int arch_cpu_init (void)
+{
+	u32 cpuid = 0;
+	struct ctrl_id *id_base;
+
+	/*
+	 * On ES1.0 the IDCODE register is not exposed on L4
+	 * so using CPU ID to differentiate between ES1.0 and > ES1.0.
+	 */
+	__asm__ __volatile__("mrc p15, 0, %0, c0, c0, 0":"=r"(cpuid));
+	if ((cpuid & 0xf) == 0x0) {
+		cpu_revision = CPU_3XX_ES10;
+	} else {
+		/* Decode the IDs on > ES1.0 */
+		id_base = (struct ctrl_id *) OMAP34XX_ID_L4_IO_BASE;
+
+		cpuid = readl(&id_base->idcode);
+
+		cpu_revision = (cpuid >> CPU_3XX_ID_SHIFT) & 0xf;
+
+		/* Some early ES2.0 seem to report rev 0, fix this */
+		if(cpu_revision == 0)
+			cpu_revision = CPU_3XX_ES20;
+	}
+
+	return 0;
+}
+
 /*****************************************************************
  * dieid_num_r(void) - read and set die ID
  *****************************************************************/
@@ -77,30 +112,9 @@ u32 get_cpu_type(void)
 /******************************************
  * get_cpu_rev(void) - extract version info
  ******************************************/
-u32 get_cpu_rev(void)
+u8 get_cpu_rev(void)
 {
-	u32 cpuid = 0;
-	struct ctrl_id *id_base;
-
-	/*
-	 * On ES1.0 the IDCODE register is not exposed on L4
-	 * so using CPU ID to differentiate between ES1.0 and > ES1.0.
-	 */
-	__asm__ __volatile__("mrc p15, 0, %0, c0, c0, 0":"=r"(cpuid));
-	if ((cpuid & 0xf) == 0x0)
-		return CPU_3XX_ES10;
-	else {
-		/* Decode the IDs on > ES1.0 */
-		id_base = (struct ctrl_id *) OMAP34XX_ID_L4_IO_BASE;
-
-		cpuid = (readl(&id_base->idcode) >> CPU_3XX_ID_SHIFT) & 0xf;
-
-		/* Some early ES2.0 seem to report ID 0, fix this */
-		if(cpuid == 0)
-			cpuid = CPU_3XX_ES20;
-
-		return cpuid;
-	}
+	return cpu_revision;
 }
 
 /***************************************************************************

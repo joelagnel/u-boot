@@ -20,6 +20,8 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
+#define CONFIG_ARCH_CPU_INIT	1
+
 /*
  * High Level Configuration Options
  */
