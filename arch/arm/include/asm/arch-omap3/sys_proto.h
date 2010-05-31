@@ -41,6 +41,7 @@ void enable_gpmc_cs_config(const u32 *gpmc_config, struct gpmc_cs *cs, u32 base,
 void watchdog_init(void);
 void set_muxconf_regs(void);
 
+void identify_cpu(void);
 u8 get_cpu_rev(void);
 u32 get_mem_type(void);
 u32 get_sysboot_value(void);
