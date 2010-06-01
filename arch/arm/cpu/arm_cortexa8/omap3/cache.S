@@ -139,6 +139,11 @@ l2_cache_enable:
 	cmp	r0, #1
 	beq	l2_cache_enable_LATER_THAN_ES2	@ family is AM35xx
 
+	mov	r0, #CPU_OMAP36XX
+	bl	is_cpu_family
+	cmp	r0, #1
+	beq	l2_cache_enable_LATER_THAN_ES2	@ family of OMAP36x/37x
+
 	mov	r0, #CPU_OMAP34XX
 	bl	is_cpu_family
 	cmp	r0, #1
