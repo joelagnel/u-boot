@@ -182,7 +182,8 @@ void prcm_init(void)
 	 * and sil_index will get the values for that SysClk for the
 	 * appropriate silicon rev.
 	 */
-	if (get_cpu_rev())
+	if ((is_cpu_family(CPU_OMAP34XX) && (get_cpu_rev() >= CPU_3XX_ES20)) ||
+		(is_cpu_family(CPU_AM35XX)))
 		sil_index = 1;
 
 	/* Unlock MPU DPLL (slows things down, and needed later) */

@@ -130,11 +130,24 @@ finished_inval:
 
 
 l2_cache_enable:
-	stmfd	r13!, {r0, r1, r2, lr}
-	@ ES2 onwards we can disable/enable L2 ourselves
+	push	{r0, r1, r2, lr}
+	@ We can disable/enable L2 ourselves for these devices
+	@ - OMAP3430/OMAP35xx (ES2 onwards)
+	@ - AM35xx
+	mov	r0, #CPU_AM35XX
+	bl	is_cpu_family
+	cmp	r0, #1
+	beq	l2_cache_enable_LATER_THAN_ES2	@ family is AM35xx
+
+	mov	r0, #CPU_OMAP34XX
+	bl	is_cpu_family
+	cmp	r0, #1
+	bne	l2_cache_enable_END		@ Family isn't OMAP34xx/35xx
+
 	bl	get_cpu_rev
 	cmp	r0, #CPU_3XX_ES20
 	blt	l2_cache_disable_EARLIER_THAN_ES2
+l2_cache_enable_LATER_THAN_ES2:
 	mrc	15, 0, r3, cr1, cr0, 1
 	orr	r3, r3, #2
 	mcr	15, 0, r3, cr1, cr0, 1
@@ -161,11 +174,24 @@ l2_cache_enable_END:
 
 
 l2_cache_disable:
-	stmfd	r13!, {r0, r1, r2, lr}
-	@ ES2 onwards we can disable/enable L2 ourselves
+	push	{r0, r1, r2, lr}
+	@ We can disable/enable L2 ourselves for these devices
+	@ - OMAP3430/OMAP35xx (ES2 onwards)
+	@ - AM35xx
+	mov	r0, #CPU_AM35XX
+	bl	is_cpu_family
+	cmp	r0, #1
+	beq	l2_cache_disable_LATER_THAN_ES2	@ family is AM35xx
+
+	mov	r0, #CPU_OMAP34XX
+	bl	is_cpu_family
+	cmp	r0, #1
+	bne	l2_cache_enable_END		@ Family isn't OMAP34xx/35xx
+
 	bl	get_cpu_rev
 	cmp	r0, #CPU_3XX_ES20
 	blt	l2_cache_disable_EARLIER_THAN_ES2
+l2_cache_disable_LATER_THAN_ES2:
 	mrc	15, 0, r3, cr1, cr0, 1
 	bic	r3, r3, #2
 	mcr	15, 0, r3, cr1, cr0, 1
