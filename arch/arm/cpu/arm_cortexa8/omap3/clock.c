@@ -403,7 +403,16 @@ void per_clocks_enable(void)
 	/* Enable the ICLK for 32K Sync Timer as its used in udelay */
 	sr32(&prcm_base->iclken_wkup, 2, 1, 0x1);
 
+	sr32(&prcm_base->fclken1_core, 24, 1, 1);
+	sr32(&prcm_base->iclken_wkup, 24, 1, 1);
+
+	sr32(&prcm_base->fclken1_core, 25, 1, 1);
+	sr32(&prcm_base->iclken_wkup, 25, 1, 1);
+
+#ifndef CONFIG_OMAP3_AM3517EVM
 	sr32(&prcm_base->fclken_iva2, 0, 32, FCK_IVA2_ON);
+#endif
+
 	sr32(&prcm_base->fclken1_core, 0, 32, FCK_CORE1_ON);
 	sr32(&prcm_base->iclken1_core, 0, 32, ICK_CORE1_ON);
 	sr32(&prcm_base->iclken2_core, 0, 32, ICK_CORE2_ON);
@@ -411,8 +420,12 @@ void per_clocks_enable(void)
 	sr32(&prcm_base->iclken_wkup, 0, 32, ICK_WKUP_ON);
 	sr32(&prcm_base->fclken_dss, 0, 32, FCK_DSS_ON);
 	sr32(&prcm_base->iclken_dss, 0, 32, ICK_DSS_ON);
+
+#ifndef CONFIG_OMAP3_AM3517EVM
 	sr32(&prcm_base->fclken_cam, 0, 32, FCK_CAM_ON);
 	sr32(&prcm_base->iclken_cam, 0, 32, ICK_CAM_ON);
+#endif
+
 	sr32(&prcm_base->fclken_per, 0, 32, FCK_PER_ON);
 	sr32(&prcm_base->iclken_per, 0, 32, ICK_PER_ON);
 
