@@ -421,6 +421,12 @@ struct nand_chip {
 	struct nand_bbt_descr	*bbt_td;
 	struct nand_bbt_descr	*bbt_md;
 
+	/*
+	 * WORKAROUND: To suuport both Micron and Hynix NAND/DDR parts
+	 */
+	unsigned int mfd_id;
+	unsigned int dev_id;
+
 	struct nand_bbt_descr	*badblock_pattern;
 
 	void		*priv;

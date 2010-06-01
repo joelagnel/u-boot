@@ -33,10 +33,14 @@
  * MA 02111-1307 USA
  */
 #include <common.h>
+#include <nand.h>
 #include <asm/io.h>
 #include <asm/arch/sys_proto.h>
 #include <asm/arch/mem.h>
 #include <asm/cache.h>
+
+/* Make default to 166MHz, applicable for OMAP35x and AM/Dm37x with Micron */
+unsigned int is_ddr_166M = 1;
 
 extern omap3_sysinfo sysinfo;
 
@@ -231,8 +235,29 @@ void s_init(void)
 
 	per_clocks_enable();
 
-	if (!in_sdram)
+	if (!in_sdram) {
+		unsigned int mfd_id, dev_id;
+		/*
+		 * WORKAROUND: To suuport both Micron and Hynix NAND/DDR parts
+		 */
+		nand_init();
+		get_nand_id(&mfd_id, &dev_id);
+
+		switch (mfd_id) {
+		/* Hynix NAND part */
+		case 0xAD:
+			is_ddr_166M = 0;
+			break;
+		case 0x2C:
+			is_ddr_166M = 1;
+			break;
+		default:
+			is_ddr_166M = 1;
+			break;
+		}
+
 		mem_init();
+	}
 }
 
 /******************************************************************************

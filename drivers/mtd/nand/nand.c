@@ -96,3 +96,14 @@ void nand_init(void)
 	board_nand_select_device(nand_info[nand_curr_device].priv, nand_curr_device);
 #endif
 }
+
+int get_nand_id(unsigned int *mfd_id, unsigned int *dev_id)
+{
+	if (nand_curr_device == -1)
+		return -1;
+
+	*mfd_id = nand_chip[nand_curr_device].mfd_id;
+	*dev_id = nand_chip[nand_curr_device].dev_id;
+
+	return 0;
+}
