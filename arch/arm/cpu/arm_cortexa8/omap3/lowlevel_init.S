@@ -367,10 +367,10 @@ get_per_dpll_param:
  * (Populated for 13MHz only)
  */
 mpu_36x_dpll_param:
-.word 300, 12, 0, 1
-.word 300, 12, 0, 1
-.word 300, 12, 0, 1
-.word 300, 12, 0, 1
+.word 600, 12, 0, 1
+.word 600, 12, 0, 1
+.word 600, 12, 0, 1
+.word 600, 12, 0, 1
 
 iva_36x_dpll_param:
 .word 20, 0, 0, 1
