@@ -60,12 +60,6 @@ struct ctrl {
 #endif /* __ASSEMBLY__ */
 #endif /* __KERNEL_STRICT_NAMES */
 
-/* cpu type */
-#define OMAP3503		0x5c00
-#define OMAP3515		0x1c00
-#define OMAP3525		0x4c00
-#define OMAP3530		0x0c00
-
 #ifndef __KERNEL_STRICT_NAMES
 #ifndef __ASSEMBLY__
 struct ctrl_id {

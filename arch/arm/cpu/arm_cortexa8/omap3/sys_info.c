@@ -44,6 +44,8 @@ static u16 cpu_family;
 static u16 cpu_id;
 static u8  cpu_revision;
 
+static u32 get_cpu_type(void);
+
 /**
  * Identify the silicon
  *
@@ -51,7 +53,7 @@ static u8  cpu_revision;
  */
 void identify_cpu (void)
 {
-	u32 cpuid = 0;
+	u32 cpuid = 0, cputype;
 	u16 hawkeye;
 	struct ctrl_id *id_base;
 
@@ -72,6 +74,9 @@ void identify_cpu (void)
 		hawkeye  = (cpuid >> HAWKEYE_SHIFT) & 0xffff;
 		cpu_revision = (cpuid >> CPU_3XX_ID_SHIFT) & 0xf;
 
+		/*
+		 * Identify cpu family and revision
+		 */
 		switch (hawkeye) {
 		case HAWKEYE_OMAP34XX:
 			cpu_family = CPU_OMAP34XX;
@@ -85,6 +90,51 @@ void identify_cpu (void)
 
 		default:
 			cpu_family = CPU_OMAP34XX;
+			break;
+		}
+
+		cputype = get_cpu_type();
+		switch (cpu_family)
+		{
+		case CPU_OMAP34XX:
+			switch (cputype) {
+			case CTRL_OMAP3503:
+				cpu_id = OMAP3503;
+				break;
+			case CTRL_OMAP3515:
+				cpu_id = OMAP3515;
+				break;
+			case CTRL_OMAP3525:
+				cpu_id = OMAP3525;
+				break;
+			case CTRL_OMAP3530:
+				cpu_id = OMAP3430;	/* Same as OMAP3530 */
+				break;
+			default:
+				cpu_id = OMAP3430;
+				break;
+			}
+			break;
+
+		case CPU_AM35XX:
+			switch (cputype) {
+			case CTRL_AM3505:
+				cpu_id = AM3505;
+				break;
+			case CTRL_AM3517:
+				cpu_id = AM3517;
+				break;
+			default:
+				cpu_id = AM3505;
+				break;
+			}
+			break;
+
+		default:
+			/*
+			 * Fall back to most common device
+			 */
+			cpu_id = OMAP3430;
 			break;
 		}
 	}
@@ -145,7 +195,7 @@ void dieid_num_r(void)
 /******************************************
  * get_cpu_type(void) - extract cpu info
  ******************************************/
-u32 get_cpu_type(void)
+static u32 get_cpu_type(void)
 {
 	return readl(&ctrl_base->ctrl_omap_stat);
 }

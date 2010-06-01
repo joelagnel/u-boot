@@ -161,8 +161,6 @@ struct gpio {
 #define DDR_133		133	/* most combo, some mem d-boards */
 #define DDR_165		165	/* future parts */
 
-#define CPU_3430	0x3430
-
 /*
  * 343x real hardware:
  *  ES1     = rev 0
@@ -196,5 +194,29 @@ struct gpio {
  */
 #define CPU_OMAP34XX		0x3400  /* OMAP34xx/OMAP35 devices */
 #define CPU_AM35XX		0x3500  /* AM35xx devices          */
+
+/*
+ * Define CPUs
+ */
+#define OMAP3430		0x3430
+
+#define OMAP3503		0x3503
+#define OMAP3515		0x3515
+#define OMAP3525		0x3525
+#define OMAP3530		0x3530
+
+#define AM3505			0x3505
+#define AM3517			0x3517
+
+/*
+ * Control status register values corresponding to cpu variants
+ */
+#define CTRL_OMAP3503		0x5c00
+#define CTRL_OMAP3515		0x1c00
+#define CTRL_OMAP3525		0x4c00
+#define CTRL_OMAP3530		0x0c00
+
+#define CTRL_AM3505		0x5c00
+#define CTRL_AM3517		0x1c00
 
 #endif
