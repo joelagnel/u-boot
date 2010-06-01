@@ -318,45 +318,60 @@ u32 get_device_type(void)
  */
 int print_cpuinfo (void)
 {
-	char *cpu_s, *sec_s;
+	char cpu_s[16], sec_s[4];
 
-	switch (get_cpu_type()) {
+	switch (cpu_id) {
 	case OMAP3503:
-		cpu_s = "3503";
+		strcpy(cpu_s, "OMAP3503");
 		break;
 	case OMAP3515:
-		cpu_s = "3515";
+		strcpy(cpu_s, "OMAP3515");
 		break;
 	case OMAP3525:
-		cpu_s = "3525";
+		strcpy(cpu_s, "OMAP3503");
 		break;
+	case OMAP3430:
 	case OMAP3530:
-		cpu_s = "3530";
+		strcpy(cpu_s, "OMAP3430/3530");
 		break;
+	case CTRL_AM3505:
+		strcpy(cpu_s, "AM3505");
+		break;
+	case CTRL_AM3517:
+		strcpy(cpu_s, "AM3517");
+		break;
+
 	default:
-		cpu_s = "35XX";
-		break;
+		if (cpu_family == CPU_AM35XX)
+			strcpy(cpu_s, "AM35xx");
+		else
+			strcpy(cpu_s, "OMAP34xx/35xx");
 	}
 
 	switch (get_device_type()) {
 	case TST_DEVICE:
-		sec_s = "TST";
+		strcpy(sec_s, "TST");
 		break;
 	case EMU_DEVICE:
-		sec_s = "EMU";
+		strcpy(sec_s, "EMU");
 		break;
 	case HS_DEVICE:
-		sec_s = "HS";
+		strcpy(sec_s, "HS");
 		break;
 	case GP_DEVICE:
-		sec_s = "GP";
+		strcpy(sec_s, "GP");
 		break;
 	default:
-		sec_s = "?";
+		strcpy(sec_s, "?");
 	}
 
-	printf("OMAP%s-%s ES%s, CPU-OPP2 L3-165MHz\n",
-			cpu_s, sec_s, rev_s[get_cpu_rev()]);
+	/*
+	 * TBD: Revision numbers for AM35x may not be same as OMAP35x.
+	 *      Will need to re-look sometime later.
+	 */
+	printf("%s-%s ES%s,%s L3-165MHz\n",
+			cpu_s, sec_s, rev_s[get_cpu_rev()],
+			(cpu_family == CPU_AM35XX) ? "" : " CPU-OPP2");
 
 	return 0;
 }
