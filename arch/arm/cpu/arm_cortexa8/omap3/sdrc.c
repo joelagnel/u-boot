@@ -142,8 +142,13 @@ void do_sdrc_init(u32 cs, u32 early)
 			RAMSIZE_128 | BANKALLOCATION | B32NOT16 | B32NOT16 |
 			DEEPPD | DDR_SDRAM, &sdrc_base->cs[cs].mcfg);
 	writel(ARCV | ARE_ARCV_1, &sdrc_base->cs[cs].rfr_ctrl);
-	writel(V_ACTIMA_165, &sdrc_actim_base->ctrla);
-	writel(V_ACTIMB_165, &sdrc_actim_base->ctrlb);
+	if (is_cpu_family(CPU_OMAP36XX)) {
+		writel(V_ACTIMA_200, &sdrc_actim_base->ctrla);
+		writel(V_ACTIMB_200, &sdrc_actim_base->ctrlb);
+	} else {
+		writel(V_ACTIMA_165, &sdrc_actim_base->ctrla);
+		writel(V_ACTIMB_165, &sdrc_actim_base->ctrlb);
+	}
 
 	writel(CMD_NOP, &sdrc_base->cs[cs].manual);
 	writel(CMD_PRECHARGE, &sdrc_base->cs[cs].manual);

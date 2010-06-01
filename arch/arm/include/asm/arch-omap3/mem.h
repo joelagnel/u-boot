@@ -141,6 +141,47 @@ enum {
 #error "Please choose the right DDR type in config header"
 #endif
 
+
+/* Hynix part of AM/DM37xEVM (200MHz optimized)
+ *   ACTIMA
+ *	TDAL		= 6
+ *	TDPL (Twr)	= 3
+ *	TRRD		= 2
+ *	TRCD		= 4
+ *	TRP		= 3
+ *	TRAS		= 8
+ *	TRC		= 11
+ *	TRFC		= 18
+ *   ACTIMB
+ *	TWTR		= 2
+ *	TCKE		= 2
+ *	TXP		= 1
+ *	TXSR		= 28
+ */
+#define TDAL_200	6
+#define TDPL_200	3
+#define TRRD_200	2
+#define TRCD_200	4
+#define TRP_200		3
+#define TRAS_200	8
+#define TRC_200		11
+#define TRFC_200	18
+#define V_ACTIMA_200	((TRFC_200 << 27) | (TRC_200 << 22) | \
+			(TRAS_200 << 18) | (TRP_200 << 15) |  \
+			(TRCD_200 << 12) | (TRRD_200 << 9) |  \
+			(TDPL_200 << 6) | (TDAL_200))
+
+#define TWTR_200	2
+#define TCKE_200	1
+#define TXP_200		1
+#define XSR_200		28
+#define V_ACTIMB_200	(((TCKE_200 << 12) | (XSR_200 << 0)) |	\
+			(TXP_200 << 8) | (TWTR_200 << 16))
+
+#define EVM_SDRC_ACTIM_CTRLA_0	V_ACTIMA_200
+#define EVM_SDRC_ACTIM_CTRLB_0	V_ACTIMB_200
+
+
 /*
  * GPMC settings -
  * Definitions is as per the following format
