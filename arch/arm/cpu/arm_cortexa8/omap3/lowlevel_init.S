@@ -385,11 +385,11 @@ core_36x_dpll_param:
 .word 400, 12, 0, 1
 
 per_36x_dpll_param:
-/*    SYSCLK    M       N       M2      M3      M4      M5      M6      m2DIV */
-.word 13000,    1728,   12,     9,      32,     18,     8,      6,      2
-.word 13000,    1728,   12,     9,      32,     18,     8,      6,      2
-.word 13000,    1728,   12,     9,      32,     18,     8,      6,      2
-.word 13000,    1728,   12,     9,      32,     18,     8,      6,      2
+/*    SYSCLK    M       N      M2      M3      M4     M5      M6      m2DIV */
+.word 13000,    864,   12,     9,      16,     2,     8,      6,      1
+.word 13000,    864,   12,     9,      16,     2,     8,      6,      1
+.word 13000,    864,   12,     9,      16,     2,     8,      6,      1
+.word 13000,    864,   12,     9,      16,     2,     8,      6,      1
 
 .globl get_36x_mpu_dpll_param
 get_36x_mpu_dpll_param:
