@@ -273,7 +273,10 @@ void prcm_init(void)
 	/* Getting the base address to PER DPLL param table */
 
 	/* Set N */
-	dpll_param_p = (dpll_param *) get_per_dpll_param();
+	if (is_cpu_family(CPU_OMAP36XX))
+		dpll_param_p = (dpll_param *) get_36xx_per_dpll_param();
+	else
+		dpll_param_p = (dpll_param *) get_per_dpll_param();
 
 	/* Moving it to the right sysclk base */
 	dpll_param_p = dpll_param_p + clk_index;

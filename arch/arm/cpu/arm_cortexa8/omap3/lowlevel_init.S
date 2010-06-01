@@ -359,3 +359,26 @@ per_dpll_param:
 get_per_dpll_param:
 	adr	r0, per_dpll_param
 	mov	pc, lr
+
+
+/* 36xx PER DPLL values */
+per_36xx_dpll_param:
+/* 12MHz */
+.word PER_36XX_M_12, PER_36XX_N_12, PER_36XX_FSEL_12, PER_36XX_M2_12
+
+/* 13MHz */
+.word PER_36XX_M_13, PER_36XX_N_13, PER_36XX_FSEL_13, PER_36XX_M2_13
+
+/* 19.2MHz */
+.word PER_36XX_M_19P2, PER_36XX_N_19P2, PER_36XX_FSEL_19P2, PER_36XX_M2_19P2
+
+/* 26MHz */
+.word PER_36XX_M_26, PER_36XX_N_26, PER_36XX_FSEL_26, PER_36XX_M2_26
+
+/* 38.4MHz */
+.word PER_36XX_M_38P4, PER_36XX_N_38P4, PER_36XX_FSEL_38P4, PER_36XX_M2_38P4
+
+.globl get_36xx_per_dpll_param
+get_36xx_per_dpll_param:
+	adr	r0, per_36xx_dpll_param
+	mov	pc, lr

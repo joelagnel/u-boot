@@ -186,6 +186,7 @@ struct gpio {
  */
 #define HAWKEYE_OMAP34XX	0xb7ae
 #define HAWKEYE_AM35XX		0xb868
+#define HAWKEYE_OMAP36XX	0xb891
 
 #define HAWKEYE_SHIFT		12
 
@@ -194,6 +195,7 @@ struct gpio {
  */
 #define CPU_OMAP34XX		0x3400  /* OMAP34xx/OMAP35 devices */
 #define CPU_AM35XX		0x3500  /* AM35xx devices          */
+#define CPU_OMAP36XX		0x3600  /* OMAP36xx devices        */
 
 /*
  * Define CPUs
@@ -208,6 +210,8 @@ struct gpio {
 #define AM3505			0x3505
 #define AM3517			0x3517
 
+#define OMAP3630		0x3630
+#define OMAP3730		0x3730
 /*
  * Control status register values corresponding to cpu variants
  */
@@ -218,5 +222,7 @@ struct gpio {
 
 #define CTRL_AM3505		0x5c00
 #define CTRL_AM3517		0x1c00
+
+#define CTRL_OMAP3730		0x0c00
 
 #endif

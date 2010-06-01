@@ -88,6 +88,10 @@ void identify_cpu (void)
 			cpu_family = CPU_AM35XX;
 			break;
 
+		case HAWKEYE_OMAP36XX:
+			cpu_family = CPU_OMAP36XX;
+			break;
+
 		default:
 			cpu_family = CPU_OMAP34XX;
 			break;
@@ -126,6 +130,17 @@ void identify_cpu (void)
 				break;
 			default:
 				cpu_id = AM3505;
+				break;
+			}
+			break;
+
+		case CPU_OMAP36XX:
+			switch (cputype) {
+			case CTRL_OMAP3730:
+				cpu_id = OMAP3730;	/* Same as OMAP3630 */
+				break;
+			default:
+				cpu_id = OMAP3630;
 				break;
 			}
 			break;
