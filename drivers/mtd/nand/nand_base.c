@@ -2809,8 +2809,6 @@ int nand_scan_ident(struct mtd_info *mtd, int maxchips)
 	/* Store the number of chips and calc total size for mtd */
 	chip->numchips = i;
 	mtd->size = i * chip->chipsize;
-	chip->mfd_id = nand_maf_id;
-	chip->dev_id = type->id;
 
 	return 0;
 }
