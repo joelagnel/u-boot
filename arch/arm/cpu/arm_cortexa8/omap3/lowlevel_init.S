@@ -367,29 +367,29 @@ get_per_dpll_param:
  * (Populated for 13MHz only)
  */
 mpu_36x_dpll_param:
-.word 300, 12, 0, 1
-.word 300, 12, 0, 1
-.word 300, 12, 0, 1
-.word 300, 12, 0, 1
+.word 600, 12, 0, 1
+.word 600, 12, 0, 1
+.word 600, 12, 0, 1
+.word 600, 12, 0, 1
 
 iva_36x_dpll_param:
-.word 10, 0, 0, 1
-.word 10, 0, 0, 1
-.word 10, 0, 0, 1
-.word 10, 0, 0, 1
+.word 20, 0, 0, 1
+.word 20, 0, 0, 1
+.word 20, 0, 0, 1
+.word 20, 0, 0, 1
 
 core_36x_dpll_param:
-.word 200, 12, 0, 1
-.word 200, 12, 0, 1
-.word 200, 12, 0, 1
-.word 200, 12, 0, 1
+.word 400, 12, 0, 1
+.word 400, 12, 0, 1
+.word 400, 12, 0, 1
+.word 400, 12, 0, 1
 
 per_36x_dpll_param:
 /*    SYSCLK    M       N      M2      M3      M4     M5      M6      m2DIV */
-.word 26000,    432,   12,     9,      16,     9,     4,      3,      1
-.word 26000,    432,   12,     9,      16,     9,     4,      3,      1
-.word 26000,    432,   12,     9,      16,     9,     4,      3,      1
-.word 26000,    432,   12,     9,      16,     9,     4,      3,      1
+.word 13000,    864,   12,     9,      16,     9,     4,      3,      1
+.word 13000,    864,   12,     9,      16,     9,     4,      3,      1
+.word 13000,    864,   12,     9,      16,     9,     4,      3,      1
+.word 13000,    864,   12,     9,      16,     9,     4,      3,      1
 
 .globl get_36x_mpu_dpll_param
 get_36x_mpu_dpll_param:
