@@ -115,6 +115,12 @@
 /* DDR - I use Micron DDR */
 #define CONFIG_OMAP3_MICRON_DDR		1
 
+/* Enable Multi Bus support for I2C */
+#define CONFIG_I2C_MULTI_BUS		1
+
+/* Probe all devices */
+#define CONFIG_SYS_I2C_NOPROBES		{0x0, 0x0}
+
 /* USB */
 #define CONFIG_MUSB_UDC			1
 #define CONFIG_USB_OMAP3		1
@@ -158,6 +164,7 @@
 #define CONFIG_CMD_NFS      /* NFS support          */
 #define CONFIG_CMD_PING
 #define CONFIG_CMD_DHCP
+#define CONFIG_VIDEO_OMAP3	/* DSS Support			*/
 #define CONFIG_CMD_SETEXPR	/* Evaluate expressions		*/
 
 #undef CONFIG_CMD_FLASH		/* flinfo, erase, protect	*/
@@ -204,10 +211,11 @@
 							/* partition */
 
 /* Environment information */
-#define CONFIG_BOOTDELAY		2
+#define CONFIG_BOOTDELAY		3
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
-	"loadaddr=0x82000000\0" \
+	"loadaddr=0x80200000\0" \
+	"rdaddr=0x81000000\0" \
 	"usbtty=cdc_acm\0" \
 	"usbethaddr=de:ad:be:ef\0" \
 	"bootfile=uImage.beagle\0" \
@@ -215,15 +223,17 @@
 	"mpurate=auto\0" \
 	"buddy=none "\
 	"optargs=\0" \
-	"camera=none\0" \
+	"camera=lbcm3m1\0" \
 	"vram=12M\0" \
-	"dvimode=1024x768MR-16@60\0" \
+	"dvimode=640x480MR-16@60\0" \
 	"defaultdisplay=dvi\0" \
 	"mmcdev=0\0" \
 	"mmcroot=/dev/mmcblk0p2 rw\0" \
 	"mmcrootfstype=ext3 rootwait\0" \
 	"nandroot=/dev/mtdblock4 rw\0" \
 	"nandrootfstype=jffs2\0" \
+	"ramroot=/dev/ram0 rw ramdisk_size=65536 initrd=0x81000000,64M\0" \
+	"ramrootfstype=ext2\0" \
 	"mmcargs=setenv bootargs console=${console} " \
 		"${optargs} " \
 		"mpurate=${mpurate} " \
@@ -244,13 +254,15 @@
 		"omapdss.def_disp=${defaultdisplay} " \
 		"root=${nandroot} " \
 		"rootfstype=${nandrootfstype}\0" \
-	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} uEnv.txt\0" \
+	"bootenv=uEnv.txt\0" \
+	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
 	"importbootenv=echo Importing environment from mmc ...; " \
 		"env import -t $loadaddr $filesize\0" \
 	"ramargs=setenv bootargs console=${console} " \
 		"${optargs} " \
 		"mpurate=${mpurate} " \
 		"buddy=${buddy} "\
+		"camera=${camera} "\
 		"vram=${vram} " \
 		"omapfb.mode=dvi:${dvimode} " \
 		"omapdss.def_disp=${defaultdisplay} " \
@@ -266,11 +278,18 @@
 		"run nandargs; " \
 		"nand read ${loadaddr} 280000 400000; " \
 		"bootm ${loadaddr}\0" \
+	"ramboot=echo Booting from ramdisk ...; " \
+		"run ramargs; " \
+		"bootm ${loadaddr}\0" \
 
 #define CONFIG_BOOTCOMMAND \
 	"if mmc rescan ${mmcdev}; then " \
+		"if userbutton; then " \
+			"setenv bootenv user.txt;" \
+		"fi;" \
 		"echo SD/MMC found on device ${mmcdev};" \
 		"if run loadbootenv; then " \
+			"echo Loaded environment from ${bootenv};" \
 			"run importbootenv;" \
 		"fi;" \
 		"if test -n $uenvcmd; then " \
@@ -281,7 +300,7 @@
 			"run mmcboot;" \
 		"fi;" \
 	"fi;" \
-	"run nandboot;" \
+	"run nandboot;"
 
 #define CONFIG_AUTO_COMPLETE		1
 /*
