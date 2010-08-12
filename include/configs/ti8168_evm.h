@@ -219,6 +219,21 @@
 # define CONFIG_MTD_DEVICE
 #endif	/* NOR support */
 
+/* I2C support */
+#define CONFIG_CMD_I2C
+#define CONFIG_HARD_I2C			1
+#define CONFIG_SYS_I2C_SPEED		100000
+#define CONFIG_SYS_I2C_SLAVE		1
+#define CONFIG_SYS_I2C_BUS		0
+#define CONFIG_SYS_I2C_BUS_SELECT	1
+#define CONFIG_DRIVER_TI81XX_I2C	1
+
+/* EEPROM definitions */
+#define CONFIG_SYS_I2C_EEPROM_ADDR_LEN		3
+#define CONFIG_SYS_I2C_EEPROM_ADDR		0x50
+#define CONFIG_SYS_EEPROM_PAGE_WRITE_BITS	6
+#define CONFIG_SYS_EEPROM_PAGE_WRITE_DELAY_MS	20
+
 /* Unsupported features */
 #undef CONFIG_USE_IRQ
 
