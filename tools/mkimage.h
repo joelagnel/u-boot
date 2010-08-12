@@ -141,6 +141,7 @@ void mkimage_register (struct image_type_params *tparams);
  */
 void init_kwb_image_type (void);
 void init_imx_image_type (void);
+void init_ti_image_type (void);
 void init_default_image_type (void);
 void init_fit_image_type (void);
 
