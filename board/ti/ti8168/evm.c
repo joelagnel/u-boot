@@ -44,6 +44,75 @@ void walking_one_test(unsigned long start_addr, unsigned long end_addr);
 void data_walking_test(unsigned long addr, unsigned long mask);
 void address_walking_test(unsigned long addr, unsigned long mask);
 
+#ifdef CONFIG_TI816X_VOLT_SCALE
+#define NUM_VOLT_DATA 4
+
+struct voltage_scale_data {
+	u32 efuse_data;
+	u8  gpio_val;
+};
+
+/*
+ * TODO: Populate this table based on silicon characterization data
+ */
+static struct voltage_scale_data ti816x_volt_scale_data[NUM_VOLT_DATA] = {
+	{0, 0},
+	{0, 0},
+	{0, 0},
+	{0, 0},
+};
+
+static u8 voltage_scale_lookup(u32 efuse_data)
+{
+	int i;
+	u8  gpio_val = 0;
+
+	for (i=0; i < NUM_VOLT_DATA; i++) {
+		if (ti816x_volt_scale_data[i].efuse_data == efuse_data) {
+			gpio_val = ti816x_volt_scale_data[i].gpio_val;
+			break;
+		}
+	}
+	return gpio_val;
+}
+
+/*
+ * The routine reads the efuse register and programs the GPIO
+ * to adjust the TPS40041 core voltage.
+ * Assumptions:
+ * 1. The efuse data is programmed into TI816X_SMRT_SCALE_ADDR
+ * 2. The efuse and gpio clocks are already enabled
+ */
+static void voltage_scale_init(void)
+{
+	u32 sr_efuse_data;
+	u8  gpio_val;
+	u32 gpio_reg_val;
+
+	sr_efuse_data = __raw_readl(TI816X_SMRT_SCALE_ADDR);
+
+	gpio_val = voltage_scale_lookup(sr_efuse_data);
+	if (gpio_val != 0) {
+		gpio_val &= 0xF;
+
+		/* Enable Output on GPIO0[0:3] */
+		gpio_reg_val = __raw_readl(TI816X_GPIO0_BASE + 0x134);
+		gpio_reg_val &= 0xF;
+		__raw_writel(gpio_reg_val, TI816X_GPIO0_BASE + 0x134);
+
+		/* Clear any existing output data */
+		gpio_reg_val = __raw_readl(TI816X_GPIO0_BASE + 0x190);
+		gpio_reg_val &= 0xF;
+		__raw_writel(gpio_reg_val, TI816X_GPIO0_BASE + 0x190);
+
+		/* Program the GPIO to change the TPS40041 Voltage */
+		gpio_reg_val = __raw_readl(TI816X_GPIO0_BASE + 0x194);
+		gpio_reg_val &= gpio_val;
+		__raw_writel(gpio_reg_val, TI816X_GPIO0_BASE + 0x194);
+	}
+}
+#endif
+
 /*******************************************************
  * Routine: delay
  * Description: spinning delay to use before udelay works
@@ -919,6 +988,9 @@ void s_init(u32 in_ddr)
 	prcm_init(in_ddr);			/* Setup the PLLs and the clocks for the peripherals */
 	if (!in_ddr)
 		config_ti816x_sdram_ddr();	/* Do DDR settings */
+#ifdef CONFIG_TI816X_VOLT_SCALE
+	voltage_scale_init();
+#endif
 }
 
 /* optionally do something like blinking LED */
