@@ -86,6 +86,7 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
 	case 0:
 		ds->regs = (struct mcspi *)OMAP3_MCSPI1_BASE;
 		break;
+#ifndef CONFIG_TI81XX
 	case 1:
 		ds->regs = (struct mcspi *)OMAP3_MCSPI2_BASE;
 		break;
@@ -95,6 +96,7 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
 	case 3:
 		ds->regs = (struct mcspi *)OMAP3_MCSPI4_BASE;
 		break;
+#endif
 	default:
 		printf("SPI error: unsupported bus %i. \
 			Supported busses 0 - 3\n", bus);
@@ -102,10 +104,14 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
 	}
 	ds->slave.bus = bus;
 
+#ifdef CONFIG_TI81XX
+	if ((bus == 0) && (cs > 3)) {
+#else
 	if (((bus == 0) && (cs > 3)) ||
 			((bus == 1) && (cs > 1)) ||
 			((bus == 2) && (cs > 1)) ||
 			((bus == 3) && (cs > 0))) {
+#endif
 		printf("SPI error: unsupported chip select %i \
 			on bus %i\n", cs, bus);
 		return NULL;
@@ -114,7 +120,8 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
 
 	if (max_hz > OMAP3_MCSPI_MAX_FREQ) {
 		printf("SPI error: unsupported frequency %i Hz. \
-			Max frequency is 48 Mhz\n", max_hz);
+			Max frequency is %d Mhz\n", max_hz,
+			(OMAP3_MCSPI_MAX_FREQ/1000/1000));
 		return NULL;
 	}
 	ds->freq = max_hz;
@@ -164,7 +171,11 @@ int spi_claim_bus(struct spi_slave *slave)
 
 	conf = readl(&ds->regs->channel[ds->slave.cs].chconf);
 
-	/* standard 4-wire master mode:	SCK, MOSI/out, MISO/in, nCS
+	/* channel defaults - 1.5 clock TCS and FIFO mode for TX/RX */
+	conf |= OMAP3_MCSPI_CHCONF_TCS | OMAP3_MCSPI_CHCONF_FFEW |
+			OMAP3_MCSPI_CHCONF_FFER;
+
+	/* standard 4-wire master mode:  SCK, MOSI/out, MISO/in, nCS
 	 * REVISIT: this controller could support SPI_3WIRE mode.
 	 */
 	conf &= ~(OMAP3_MCSPI_CHCONF_IS|OMAP3_MCSPI_CHCONF_DPE1);
