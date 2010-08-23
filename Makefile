@@ -279,6 +279,9 @@ LIBS += lib/libfdt/libfdt.o
 LIBS += api/libapi.o
 LIBS += post/libpost.o
 
+ifeq ($(SOC),ti81xx)
+LIBS += $(CPUDIR)/omap-common/libomap-common.o
+endif
 ifeq ($(SOC),omap3)
 LIBS += $(CPUDIR)/omap-common/libomap-common.o
 endif
@@ -867,6 +870,17 @@ SX1_config:		unconfig
 tx25_config	: unconfig
 	@echo "CONFIG_NAND_U_BOOT = y" >> $(obj)include/config.mk
 	@$(MKCONFIG) $@ arm arm926ejs tx25 karo mx25
+
+ti8168_evm_min_config:	unconfig
+	@mkdir -p $(obj)include
+	@echo "#define CONFIG_TI81XX"	>>$(obj)include/config.h
+	@echo "#define CONFIG_TI816X"	>>$(obj)include/config.h
+	@if [ "$(findstring _min_,$@)" ] ; then \
+		echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
+		echo "#define CONFIG_NO_ETH"    >>$(obj)include/config.h ; \
+		echo "Setting up TI8168 minimal build..." ; \
+	fi;
+	@$(MKCONFIG) -a ti8168_evm arm armv7 ti8168 ti ti81xx
 
 #########################################################################
 ## XScale Systems
