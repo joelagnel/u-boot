@@ -873,6 +873,7 @@ tx25_config	: unconfig
 
 ti8168_evm_min_config	\
 ti8168_evm_nand_config	\
+ti8168_evm_nor_config	\
 ti8168_evm_spi_config:	unconfig
 	@mkdir -p $(obj)include
 	@echo "#define CONFIG_TI81XX"	>>$(obj)include/config.h
@@ -886,6 +887,10 @@ ti8168_evm_spi_config:	unconfig
 		echo "#define CONFIG_NAND_BOOT"    >>$(obj)include/config.h ; \
 		echo "#define CONFIG_NO_ETH" >>$(obj)include/config.h ; \
 		echo "Setting up TI8168 NAND build..." ; \
+	elif [ "$(findstring _nor_,$@)" ] ; then \
+		echo "#define CONFIG_NOR_BOOT"    >>$(obj)include/config.h ; \
+		echo "#define CONFIG_NO_ETH" >>$(obj)include/config.h ; \
+		echo "Setting up TI8168 NOR build..." ; \
 	elif [ "$(findstring _spi_,$@)" ] ; then \
 		echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
 		echo "#define CONFIG_SPI_BOOT"    >>$(obj)include/config.h ; \
