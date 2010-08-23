@@ -56,6 +56,7 @@ COBJS-$(CONFIG_NAND_S3C64XX) += s3c64xx.o
 COBJS-$(CONFIG_NAND_SPEAR) += spr_nand.o
 COBJS-$(CONFIG_NAND_OMAP_GPMC) += omap_gpmc.o
 COBJS-$(CONFIG_NAND_PLAT) += nand_plat.o
+COBJS-$(CONFIG_NAND_TI81XX) += ti81xx_nand.o
 endif
 
 COBJS	:= $(COBJS-y)

@@ -21,6 +21,10 @@ LIB	= $(obj)lib$(SOC).o
 SOBJS	:= lowlevel_init.o
 SOBJS	+= cache.o
 
+COBJS	+= mem.o
+
+COBJS-$(CONFIG_NAND_TI81XX)	+= elm.o
+
 SRCS	:= $(SOBJS:.o=.S) $(COBJS:.o=.c)
 OBJS	:= $(addprefix $(obj),$(COBJS) $(COBJS-y) $(SOBJS))
 
