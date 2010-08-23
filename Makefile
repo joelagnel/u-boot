@@ -885,16 +885,13 @@ ti8168_evm_spi_config:	unconfig
 	elif [ "$(findstring _nand_,$@)" ] ; then \
 		echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
 		echo "#define CONFIG_NAND_BOOT"    >>$(obj)include/config.h ; \
-		echo "#define CONFIG_NO_ETH" >>$(obj)include/config.h ; \
 		echo "Setting up TI8168 NAND build..." ; \
 	elif [ "$(findstring _nor_,$@)" ] ; then \
 		echo "#define CONFIG_NOR_BOOT"    >>$(obj)include/config.h ; \
-		echo "#define CONFIG_NO_ETH" >>$(obj)include/config.h ; \
 		echo "Setting up TI8168 NOR build..." ; \
 	elif [ "$(findstring _spi_,$@)" ] ; then \
 		echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
 		echo "#define CONFIG_SPI_BOOT"    >>$(obj)include/config.h ; \
-		echo "#define CONFIG_NO_ETH" >>$(obj)include/config.h ; \
 		echo "Setting up TI8168 SPI build..." ; \
 	fi;
 	@$(MKCONFIG) -a ti8168_evm arm armv7 ti8168 ti ti81xx
