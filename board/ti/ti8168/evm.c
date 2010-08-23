@@ -23,6 +23,8 @@
 #include <asm/arch/sys_proto.h>
 #include <asm/arch/mem.h>
 #include <asm/arch/nand.h>
+#include <net.h>
+#include <netdev.h>
 
 #define __raw_readl(a)		(*(volatile unsigned int *)(a))
 #define __raw_writel(v, a)	(*(volatile unsigned int *)(a) = (v))
@@ -81,6 +83,15 @@ int board_init(void)
 
 	return 0;
 }
+
+#ifdef CONFIG_DRIVER_TI_EMAC
+int board_eth_init(bd_t *bis)
+{
+	/* TODO : read MAC address from EFUSE */
+	davinci_emac_initialize();
+	return 0;
+}
+#endif
 
 /*
  * Configure DRAM banks
