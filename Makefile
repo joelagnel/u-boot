@@ -3200,28 +3200,28 @@ s5p_goni_config:	unconfig
 smdkc100_config:	unconfig
 	@$(MKCONFIG) $(@:_config=) arm arm_cortexa8 smdkc100 samsung s5pc1xx
 
-ti8168_evm_min_config	\
-ti8168_evm_nand_config	\
-ti8168_evm_nor_config	\
-ti8168_evm_spi_config:	unconfig
+ti8168_evm_config	\
+ti8168_evm_config_nand	\
+ti8168_evm_config_nor	\
+ti8168_evm_config_spi:	unconfig
 	@mkdir -p $(obj)include
 	@echo "#define CONFIG_TI81XX"	>>$(obj)include/config.h
 	@echo "#define CONFIG_TI816X"	>>$(obj)include/config.h
-	@if [ "$(findstring _min_,$@)" ] ; then \
-		echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
-		echo "#define CONFIG_NO_ETH"    >>$(obj)include/config.h ; \
-		echo "Setting up TI8168 minimal build..." ; \
-	elif [ "$(findstring _nand_,$@)" ] ; then \
+	@if [ "$(findstring _nand,$@)" ] ; then \
 		echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
 		echo "#define CONFIG_NAND_BOOT"    >>$(obj)include/config.h ; \
-		echo "Setting up TI8168 NAND build..." ; \
-	elif [ "$(findstring _nor_,$@)" ] ; then \
+		echo "Setting up TI8168 NAND build with ENV in NAND..." ; \
+	elif [ "$(findstring _nor,$@)" ] ; then \
 		echo "#define CONFIG_NOR_BOOT"    >>$(obj)include/config.h ; \
-		echo "Setting up TI8168 NOR build..." ; \
-	elif [ "$(findstring _spi_,$@)" ] ; then \
+		echo "Setting up TI8168 NOR build with ENV in NOR..." ; \
+	elif [ "$(findstring _spi,$@)" ] ; then \
 		echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
 		echo "#define CONFIG_SPI_BOOT"    >>$(obj)include/config.h ; \
-		echo "Setting up TI8168 SPI build..." ; \
+		echo "Setting up TI8168 SPI build with ENV in SPI..." ; \
+	else	\
+		echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
+		echo "#define CONFIG_NAND_BOOT"    >>$(obj)include/config.h ; \
+		echo "Setting up TI8168 default build with NAND..." ; \
 	fi;
 	@$(MKCONFIG) -a ti8168_evm arm arm_cortexa8 ti8168 ti ti81xx
 

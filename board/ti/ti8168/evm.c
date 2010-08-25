@@ -23,6 +23,8 @@
 #include <asm/arch/sys_proto.h>
 #include <asm/arch/mem.h>
 #include <asm/arch/nand.h>
+#include <linux/mtd/nand.h>
+#include <nand.h>
 #include <net.h>
 #include <netdev.h>
 
@@ -1006,7 +1008,7 @@ void reset_cpu (ulong addr)
 	__raw_writel(addr, PRM_DEVICE_RSTCTRL);
 }
 
-#ifdef CONFIG_NAND_TI816X
+#ifdef CONFIG_NAND_TI81XX
 /******************************************************************************
  * Command to switch between NAND HW and SW ecc
  *****************************************************************************/
@@ -1045,5 +1047,5 @@ U_BOOT_CMD(
 	"            3 for bch16\n"
 );
 
-#endif /* CONFIG_NAND_TI816X */
+#endif /* CONFIG_NAND_TI81XX */
 
