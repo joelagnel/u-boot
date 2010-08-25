@@ -144,18 +144,20 @@
 #endif
 
 /* NAND support */
-#if defined(CONFIG_NAND_BOOT)
-# define CONFIG_CMD_NAND
-# define CONFIG_NAND_TI81XX
-# define GPMC_NAND_ECC_LP_x16_LAYOUT 	1
-# define NAND_BASE			(0x08000000)	/* FIXME not sure */
-# define CONFIG_SYS_NAND_ADDR		NAND_BASE	/* physical address */
+#define CONFIG_CMD_NAND
+#define CONFIG_NAND_TI81XX
+#define GPMC_NAND_ECC_LP_x16_LAYOUT 	1
+#define NAND_BASE			(0x08000000)	/* FIXME not sure */
+#define CONFIG_SYS_NAND_ADDR		NAND_BASE	/* physical address */
 							/* to access nand */
-# define CONFIG_SYS_NAND_BASE		NAND_BASE	/* physical address */
+#define CONFIG_SYS_NAND_BASE		NAND_BASE	/* physical address */
 							/* to access nand at */
 							/* CS0 */
-# define CONFIG_SYS_MAX_NAND_DEVICE	1		/* Max number of NAND */
+#define CONFIG_SYS_MAX_NAND_DEVICE	1		/* Max number of NAND */
 							/* devices */
+# define CONFIG_ENV_IS_IN_NAND
+/* ENV in NAND */
+#if defined(CONFIG_NAND_BOOT)
 # define CONFIG_ENV_IS_IN_NAND
 
 # ifdef CONFIG_ENV_IS_IN_NAND
@@ -175,13 +177,16 @@
 # endif
 #endif /* NAND support */
 
+/* SPI support */
+#define CONFIG_OMAP3_SPI
+#define CONFIG_MTD_DEVICE
+#define CONFIG_SPI_FLASH
+#define CONFIG_SPI_FLASH_WINBOND
+#define CONFIG_CMD_SF
+#define CONFIG_SF_DEFAULT_SPEED	(75000000)
+
+/* ENV in SPI */
 #if defined(CONFIG_SPI_BOOT)
-# define CONFIG_OMAP3_SPI
-# define CONFIG_MTD_DEVICE
-# define CONFIG_SPI_FLASH
-# define CONFIG_SPI_FLASH_WINBOND
-# define CONFIG_CMD_SF
-# define CONFIG_SF_DEFAULT_SPEED	(75000000)
 # define CONFIG_ENV_IS_IN_SPI_FLASH	1
 # ifdef CONFIG_ENV_IS_IN_SPI_FLASH
 #  define CONFIG_SYS_FLASH_BASE		(0)
@@ -198,6 +203,8 @@
 
 /* NOR support */
 #if defined(CONFIG_NOR_BOOT)
+# undef CONFIG_CMD_NAND			/* Remove NAND support */
+# undef CONFIG_NAND_TI81XX
 # ifdef CONFIG_SYS_MALLOC_LEN
 #  undef CONFIG_SYS_MALLOC_LEN
 # endif
