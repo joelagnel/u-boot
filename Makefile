@@ -3200,6 +3200,18 @@ s5p_goni_config:	unconfig
 smdkc100_config:	unconfig
 	@$(MKCONFIG) $(@:_config=) arm arm_cortexa8 smdkc100 samsung s5pc1xx
 
+ti8148_evm_min_nand:	unconfig
+	@mkdir -p $(obj)include
+	@echo "#define CONFIG_TI81XX"	>>$(obj)include/config.h
+	@echo "#define CONFIG_TI814X"	>>$(obj)include/config.h
+	@if [ "$(findstring _min_,$@)" ] ; then \
+		echo "#define CONFIG_TI814X_MIN_CONFIG"    >>$(obj)include/config.h ; \
+		echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
+		echo "#define CONFIG_NO_ETH"    >>$(obj)include/config.h ; \
+		echo "Setting up TI8148 minimal build for 1st stage..." ; \
+	fi;
+	@$(MKCONFIG) -a ti8148_evm arm arm_cortexa8 ti8148 ti ti81xx
+
 ti8168_evm_config	\
 ti8168_evm_config_nand	\
 ti8168_evm_config_nor	\

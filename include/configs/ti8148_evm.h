@@ -17,9 +17,9 @@
 #ifndef __CONFIG_TI8148_EVM_H
 #define __CONFIG_TI8148_EVM_H
 
-/* In the 1st stage we have just 110K, so cut down wherever possible */
-#ifdef CONFIG_TI814X_MIN_CONFIG
-
+#ifndef CONFIG_TI814X_MIN_CONFIG
+# include <config_cmd_default.h>
+#else
 # define CONFIG_CMD_MEMORY	/* for mtest */
 # undef CONFIG_GZIP
 # undef CONFIG_ZLIB
@@ -27,15 +27,11 @@
 # undef CONFIG_BOOTM_NETBSD
 # undef CONFIG_BOOTM_RTEMS
 # undef CONFIG_SREC
-//# undef CONFIG_XYZMODEM
-# define CONFIG_CMD_LOADB	/* loadb			*/
-# define CONFIG_CMD_LOADY	/* loady */
-# define CONFIG_SETUP_PLL
-# define CONFIG_TI814X_CONFIG_DDR
+# undef CONFIG_XYZMODEM
+
 # define CONFIG_ENV_SIZE			0x400
 # define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (8 * 1024))
-# define CONFIG_SYS_PROMPT		"TI-MIN#"
-#define CONFIG_BOOTDELAY		3	/* set to negative value for no autoboot */
+# define CONFIG_SYS_PROMPT		"TI#"
 # define CONFIG_EXTRA_ENV_SETTINGS \
 	"verify=yes\0" \
 	"bootcmd=nand read 0x81000000 0x20000 0x40000; go 0x81000000\0" \
@@ -63,6 +59,25 @@
 
 #define CONFIG_SYS_AUTOLOAD		"yes"
 
+
+#endif
+
+/*
+ * Size of malloc() pool
+ */
+#define CONFIG_ENV_SIZE			0x400
+#define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (8 * 1024))
+#define CONFIG_SYS_GBL_DATA_SIZE	128	/* size in bytes reserved for
+						   initial data */
+
+//#define CONFIG_TI814X_EVM_DDR2			/* Configure DDR2 in U-Boot */
+#define CONFIG_MISC_INIT_R		1
+
+#define CONFIG_BOOTDELAY		3	/* set to negative value for no autoboot */
+#define CONFIG_SYS_AUTOLOAD		"no"
+#define CONFIG_EXTRA_ENV_SETTINGS \
+	"verify=yes\0" \
+	"bootfile=uImage\0" \
 
 /*
  * Miscellaneous configurable options
@@ -144,7 +159,7 @@
 #endif
 
 #if defined(CONFIG_SYS_NO_FLASH)
-# define CONFIG_ENV_IS_NOWHERE
+#define CONFIG_ENV_IS_NOWHERE
 #endif
 
 /* NAND support */
