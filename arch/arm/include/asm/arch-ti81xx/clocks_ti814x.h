@@ -18,16 +18,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
  */
-#ifndef _CLOCKS_H_
-#define _CLOCKS_H_
+#ifndef _CLOCKS_TI814X_H_
+#define _CLOCKS_TI814X_H_
 
-#ifdef CONFIG_TI816X
-#include <asm/arch/clocks_ti816x.h>
-#endif
+/* Put the pll config values over here */
 
-#ifdef CONFIG_TI81$X
-#include <asm/arch/clocks_ti814x.h>
-#endif
-
-#endif
+#endif	/* endif _CLOCKS_TI814X_H_ */
 

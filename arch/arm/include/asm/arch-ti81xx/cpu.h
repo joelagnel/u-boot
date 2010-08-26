@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef _TI816X_CPU_H
-#define _TI816X_CPU_H
+#ifndef _TI81XX_CPU_H
+#define _TI81XX_CPU_H
 
 #if !(defined(__KERNEL_STRICT_NAMES) || defined(__ASSEMBLY__))
 #include <asm/types.h>
@@ -93,6 +93,7 @@ struct gptimer {
 /* TI816X specific bits for PRM_DEVICE module */
 #define GLOBAL_RST_COLD			BIT(1)
 
+#ifdef CONFIG_TI816X
 /* PLL related registers */
 #define MAINPLL_CTRL			(CTRL_BASE + 0x0400)
 #define MAINPLL_PWD			(CTRL_BASE + 0x0404)
@@ -123,7 +124,6 @@ struct gptimer {
 
 #define DDR_RCD				(CTRL_BASE + 0x070C)
 
-
 #define VIDEOPLL_CTRL			(CTRL_BASE + 0x0470)
 #define VIDEOPLL_PWD			(CTRL_BASE + 0x0474)
 #define VIDEOPLL_FREQ1			(CTRL_BASE + 0x0478)
@@ -144,9 +144,12 @@ struct gptimer {
 #define AUDIOPLL_FREQ5			(CTRL_BASE + 0x04C8)
 #define AUDIOPLL_DIV5			(CTRL_BASE + 0x04CC)
 
+#endif
+
 /* PRCM */
 #define CM_DPLL_OFFSET			(PRCM_BASE + 0x0300)
 
+//#ifdef CONFIG_TI816X
 #define CM_TIMER1_CLKSEL		(CM_DPLL_OFFSET + 0x90)
 
 /* Timers */
@@ -158,18 +161,19 @@ struct gptimer {
 #define CM_ALWON_TIMER_5_CLKCTRL	(PRCM_BASE + 0x1580)
 #define CM_ALWON_TIMER_6_CLKCTRL	(PRCM_BASE + 0x1584)
 #define CM_ALWON_TIMER_7_CLKCTRL	(PRCM_BASE + 0x1588)
+//#endif
 
 #define CM_ALWON_WDTIMER_CLKCTRL	(PRCM_BASE + 0x158C)
 #define CM_ALWON_SPI_CLKCTRL		(PRCM_BASE + 0x1590)
 #define CM_ALWON_CONTROL_CLKCTRL	(PRCM_BASE + 0x15C4)
-#define CM_ALWON_ETH0_CLKCTRL		(PRCM_BASE + 0x15D4)
-#define CM_ALWON_ETH1_CLKCTRL		(PRCM_BASE + 0x15D8)
 
 #define CM_ALWON_L3_SLOW_CLKSTCTRL	(PRCM_BASE + 0x1400)
 
+#ifdef CONFIG_TI816X
 #define CM_ALWON_CUST_EFUSE_CLKCTRL	(PRCM_BASE + 0x1628)
 #define CM_ALWON_GPIO_0_CLKCTRL		(PRCM_BASE + 0x155c)
 #define CM_ALWON_GPIO_0_OPTFCLKEN_DBCLK (PRCM_BASE + 0x155c)
+#endif
 
 /* Ethernet */
 #define CM_ETHERNET_CLKSTCTRL		(PRCM_BASE + 0x1404)
@@ -182,21 +186,29 @@ struct gptimer {
 #define CM_ALWON_UART_2_CLKCTRL		(PRCM_BASE + 0x1558)
 
 /* I2C */
-
+/* Note: In ti814x I2C0 and I2C2 have common clk control */
 #define CM_ALWON_I2C_0_CLKCTRL		(PRCM_BASE + 0x1564)
 
 /* UART2 registers */
-#define UART_SYSCFG			(UART2_BASE + 0x54)
-#define UART_SYSSTS			(UART2_BASE + 0x58)
-#define UART_LCR			(UART2_BASE + 0x0C)
-#define UART_EFR			(UART2_BASE + 0x08)
-#define UART_MCR			(UART2_BASE + 0x10)
-#define UART_SCR			(UART2_BASE + 0x40)
-#define UART_TCR			(UART2_BASE + 0x18)
-#define UART_FCR			(UART2_BASE + 0x08)
-#define UART_DLL			(UART2_BASE + 0x00)
-#define UART_DLH			(UART2_BASE + 0x04)
-#define UART_MDR			(UART2_BASE + 0x20)
+#ifdef CONFIG_TI816X
+#define DEFAULT_UART_BASE		UART2_BASE
+#endif
+
+#ifdef CONFIG_TI814X
+#define DEFAULT_UART_BASE		UART0_BASE
+#endif
+
+#define UART_SYSCFG			(DEFAULT_UART_BASE + 0x54)
+#define UART_SYSSTS			(DEFAULT_UART_BASE + 0x58)
+#define UART_LCR			(DEFAULT_UART_BASE + 0x0C)
+#define UART_EFR			(DEFAULT_UART_BASE + 0x08)
+#define UART_MCR			(DEFAULT_UART_BASE + 0x10)
+#define UART_SCR			(DEFAULT_UART_BASE + 0x40)
+#define UART_TCR			(DEFAULT_UART_BASE + 0x18)
+#define UART_FCR			(DEFAULT_UART_BASE + 0x08)
+#define UART_DLL			(DEFAULT_UART_BASE + 0x00)
+#define UART_DLH			(DEFAULT_UART_BASE + 0x04)
+#define UART_MDR			(DEFAULT_UART_BASE + 0x20)
 
 /*DMM & EMIF4 MMR Declaration*/
 #define DMM_LISA_MAP__0			(DMM_BASE + 0x40)
@@ -232,11 +244,13 @@ struct gptimer {
 #define EMIF4_1_DDR_PHY_CTRL_1_SHADOW	(EMIF4_1_CFG_BASE + 0xE8)
 
 /*EMIF4 PRCM Defintion*/
+#ifdef CONFIG_TI816X
 #define CM_DEFAULT_L3_FAST_CLKSTCTRL	(PRCM_BASE + 0x0508)
 #define CM_DEFAULT_EMIF_0_CLKCTRL	(PRCM_BASE + 0x0520)
 #define CM_DEFAULT_EMIF_1_CLKCTRL    	(PRCM_BASE + 0x0524)
 #define CM_DEFAULT_DMM_CLKCTRL 		(PRCM_BASE + 0x0528)
 #define CM_DEFAULT_FW_CLKCTRL 		(PRCM_BASE + 0x052C)
+#endif
 
 /* Smartreflex Registers */
 #define TI816X_SMRT_SCALE_ADDR		(CTRL_BASE + 0x06A0)
@@ -246,14 +260,20 @@ struct gptimer {
 
 /* ALWON PRCM */
 #define CM_ALWON_OCMC_0_CLKSTCTRL	(PRCM_BASE + 0x1414)
-#define CM_ALWON_OCMC_1_CLKSTCTRL	(PRCM_BASE + 0x1418)
 #define CM_ALWON_OCMC_0_CLKCTRL		(PRCM_BASE + 0x15B4)
+
+#ifdef CONFIG_TI816X
+#define CM_ALWON_OCMC_1_CLKSTCTRL	(PRCM_BASE + 0x1418)
 #define CM_ALWON_OCMC_1_CLKCTRL		(PRCM_BASE + 0x15B8)
+#endif
+
 #define CM_ALWON_GPMC_CLKCTRL		(PRCM_BASE + 0x15D0)
 
 /* OCMC */
+#ifdef CONFIG_TI816X
 #define SRAM0_SIZE			(0x40000)
 #define SRAM_GPMC_STACK_SIZE		(0x40)
+#endif
 
 #define LOW_LEVEL_SRAM_STACK		(SRAM0_START + SRAM0_SIZE - 4)
 
@@ -271,6 +291,7 @@ struct gptimer {
 /* PAD configuration register offsets and values for gpmc address
  * lines a12 - a26
  */
+#ifdef CONFIG_TI816X
 
 #define TIM7_OUT			(CTRL_BASE + 0xb34)	/* a12 */
 #define UART1_CTSN			(CTRL_BASE + 0xadc)	/* a13 */
@@ -303,6 +324,8 @@ struct gptimer {
 #define GPMC_A23 			GPO_IO6
 #define GPMC_A24 			TIM6_OUT
 #define GPMC_A25 			SC0_DATA
+
+#endif
 
 #ifndef __KERNEL_STRICT_NAMES
 #ifndef __ASSEMBLY__

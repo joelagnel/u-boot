@@ -208,5 +208,9 @@
 
 #endif	/* CONFIG_TI816X_EVM_DDR2 */
 
+#ifdef CONFIG_TI814X_EVM_DDR2
+/* ti814x specific settings to be added */
+#endif
+
 #endif  /* _DDR_DEFS_H */
 

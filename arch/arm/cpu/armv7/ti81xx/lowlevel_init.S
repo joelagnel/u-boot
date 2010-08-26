@@ -29,6 +29,7 @@
 _TEXT_BASE:
 	.word	CONFIG_SYS_TEXT_BASE	/* Load address (RAM) */
 
+#ifdef CONFIG_NOR_BOOT
 /* GPMC CFG values for Spansion S29GL512P11TFI010 & S29GL512N11TFI010
  * This should work for most NOR, else we might have to move
  * these defines to evm.h
@@ -288,6 +289,8 @@ sc1_rst_addr:
 	.word  SC1_RST
 ram_addr_mask:
 	.word RAM_ADDR_MASK
+#endif
+
 /*****************************************************************************
  * lowlevel_init: - Platform low level init.
  * Corrupted Register : r0, r1, r2, r3, r4, r5, r6
@@ -327,6 +330,7 @@ mark1:
 	b s_init_start
 #endif
 
+#ifdef CONFIG_NOR_BOOT
 ocmc_init_start:
 	/**** enable ocmc 0 ****/
 	/* CLKSTCTRL */
@@ -380,6 +384,7 @@ nor_init_start:
 	mov lr, r0	 /* gpmc init code in sram should return to s_init_start */
 	ldr r0, sram_pc_start
 	mov pc, r0	/* transfer ctrl to nor_gpmc_init() in sram */
+#endif
 
 s_init_start:
 	mov r0, r10 /* passing in_ddr in r0 */
@@ -389,6 +394,7 @@ s_init_start:
 	/* the literal pools origin */
 	.ltorg
 
+#ifdef CONFIG_NOR_BOOT
 cm_alwon_ocmc_0_clkstctrl_addr:
 	.word CM_ALWON_OCMC_0_CLKSTCTRL
 cm_alwon_ocmc_0_clkctrl_addr:
@@ -397,6 +403,10 @@ cm_alwon_ocmc_1_clkstctrl_addr:
 	.word CM_ALWON_OCMC_1_CLKSTCTRL
 cm_alwon_ocmc_1_clkctrl_addr:
 	.word CM_ALWON_OCMC_1_CLKCTRL
+SRAM_STACK:
+	.word (SRAM0_START + SRAM0_SIZE - SRAM_GPMC_STACK_SIZE)
+#endif
+
 _mark1:
 	.word mark1
 _lowlevel_init:
@@ -404,6 +414,8 @@ _lowlevel_init:
 _s_init_start:
 	.word s_init_start
 
+#ifdef CONFIG_TI814X_MIN_CONFIG
 SRAM_STACK:
-	.word (SRAM0_START + SRAM0_SIZE - SRAM_GPMC_STACK_SIZE)
+	.word (SRAM0_START + 0x2800)	/* we'll place stack+heap+gd in top 10 KB */ 
+#endif
 

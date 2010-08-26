@@ -39,14 +39,14 @@
 #define DM_TIMER7_BASE			0x4804A000
 
 /* GPIO Base address */
-#define TI816X_GPIO0_BASE		0x48032000
-#define TI816X_GPIO1_BASE		0x4804C000
+#define GPIO0_BASE			0x48032000
+#define GPIO1_BASE			0x4804C000
 
 /* BCH Error Location Module */
 #define ELM_BASE			0x48080000
 
 /* Watchdog Timer */
-#define WD1_BASE			0x480C2000
+#define WDT_BASE			0x480C2000
 
 /* Control Module Base Address */
 #define CTRL_BASE			0x48140000
@@ -59,9 +59,12 @@
 #define EMIF4_1_CFG_BASE		0x4D000000
 #define DMM_BASE			0x4E000000
 
+#ifdef CONFIG_TI816X
 #define DDRPHY_0_CONFIG_BASE		0x48198000
 #define DDRPHY_1_CONFIG_BASE		0x4819a000
 #define DDRPHY_CONFIG_BASE 		((emif == 0) ? DDRPHY_0_CONFIG_BASE:DDRPHY_1_CONFIG_BASE)
+#endif
+
 /* GPMC Base address */
 #define GPMC_BASE			0x50000000
 
