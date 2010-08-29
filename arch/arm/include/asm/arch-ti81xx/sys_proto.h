@@ -31,12 +31,9 @@ typedef struct {
 
 void prcm_init(u32);
 void per_clocks_enable(void);
-
 void gpmc_init(void);
-
 void watchdog_init(void);
 void set_muxconf_regs(void);
-
 u32 get_cpu_rev(void);
 u32 get_mem_type(void);
 u32 get_sysboot_value(void);
