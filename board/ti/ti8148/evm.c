@@ -40,6 +40,7 @@ static void usb_pll_config(void);
 #endif
 
 static void unlock_pll_control_mmr(void);
+
 /*
  * spinning delay to use before udelay works
  */
@@ -324,41 +325,163 @@ static void pll_config(u32 base, u32 n, u32 m, u32 m2, u32 clkctrl_val)
 }
 #endif
 
-/*******************************************************
- * Routine: misc_init_r
- ********************************************************/
-int misc_init_r (void)
+static void pcie_pll_config()
 {
-	return 0;
+	/* Powerdown both reclkp/n single ended receiver */
+	__raw_writel(0x00000002, SERDES_REFCLK_CTRL);
+
+	__raw_writel(0x00000000, PCIE_PLLCFG0);
+
+	/* PCIe(2.5GHz) mode, 100MHz refclk, MDIVINT = 25, disable (50,100,125M) clks */
+	__raw_writel(0x00640000, PCIE_PLLCFG1);
+
+	/* SSC Mantissa and exponent = 0 */
+	__raw_writel(0x00000000, PCIE_PLLCFG2);
+
+	/* TBD */
+	__raw_writel(0x004008E0, PCIE_PLLCFG3);
+
+	/* TBD */
+	__raw_writel(0x0000609C, PCIE_PLLCFG4);
+
+	/* pcie_serdes_cfg_misc */
+	/* TODO: verify the address over here (CTRL_BASE + 0x6FC = 0x481406FC ???)*/
+	__raw_writel(0x00000E7B, 0x48141318);
+	delay(3);
+
+	/* Enable PLL LDO */
+	__raw_writel(0x00000004, PCIE_PLLCFG0);
+	delay(3);
+
+	/* Enable DIG LDO, PLL LD0 */
+	__raw_writel(0x00000014, PCIE_PLLCFG0);
+	delay(3);
+
+	/* Enable DIG LDO, ENBGSC_REF, PLL LDO */
+	__raw_writel(0x00000016, PCIE_PLLCFG0);
+	delay(3);
+	__raw_writel(0x00000016, PCIE_PLLCFG0);		/* TODO: Really needed? */
+	delay(3);
+	__raw_writel(0x00000016, PCIE_PLLCFG0);		/* TODO: Really needed? */
+	delay(3);
+
+	/* Enable DIG LDO, SELSC, ENBGSC_REF, PLL LDO */
+	__raw_writel(0x00000017, PCIE_PLLCFG0);
+	delay(3);
+
+	/* wait for ADPLL lock */
+	while(__raw_readl(PCIE_PLLSTATUS) != 0x1);
+
 }
 
-/*****************************************************************
- * Routine: peripheral_enable
- * Description: Enable the clks & power for perifs (TIMER1, UART0,...)
- *
- ******************************************************************/
-static void peripheral_enable(void)
+static void sata_pll_config()
 {
-	/* DMTimers */
+	__raw_writel(0xC12C003C, SATA_PLLCFG1);
+	__raw_writel(0x004008E0, SATA_PLLCFG3);
+	delay(35);
+
+	/* Enable PLL LDO */
+	__raw_writel(0x00000004, SATA_PLLCFG0);
+	delay(75);
+
+	/* Enable DIG LDO, ENBGSC_REF, PLL LDO */
+	__raw_writel(0xC0000016, SATA_PLLCFG0);
+	delay(60);
+
+	/* Enable DIG LDO, SELSC, ENBGSC_REF, PLL LDO */
+	__raw_writel(0xC0000017, SATA_PLLCFG0);
+
+	/* wait for ADPLL lock */
+	while(__raw_readl(SATA_PLLSTATUS) != 0x1);
+}
+
+static void usb_pll_config()
+{
+	pll_config(USB_PLL_BASE,
+			USB_N, USB_M,
+			USB_M2, USB_CLKCTRL);
+}
+
+static void modena_pll_config()
+{
+	pll_config(MODENA_PLL_BASE,
+			MODENA_N, MODENA_M,
+			MODENA_M2, MODENA_CLKCTRL);
+}
+
+static void l3_pll_config()
+{
+	pll_config(L3_PLL_BASE,
+			L3_N, L3_M,
+			L3_M2, L3_CLKCTRL);
+}
+
+static void ddr_pll_config()
+{
+	pll_config(DDR_PLL_BASE,
+			DDR_N, DDR_M,
+			DDR_M2, DDR_CLKCTRL);
+}
+
+/*
+ * configure individual ADPLLJ
+ */
+static void pll_config(u32 base, u32 n, u32 m, u32 m2, u32 clkctrl_val)
+{
+	u32 m2nval, mn2val, read_clkctrl = 0;
+	m2nval = (m2 << 16) | n;
+	mn2val = m;
+
+	/*
+	 * ref_clk = 20/(n + 1);
+	 * clkout_dco = ref_clk * m;
+	 * clk_out = clkout_dco/m2;
+	*/
+
+	__raw_writel(m2nval, (base + ADPLLJ_M2NDIV));
+	__raw_writel(mn2val, (base + ADPLLJ_MN2DIV));
+
+	/* Load M2, N2 dividers of ADPLL */
+	__raw_writel(0x1, (base + ADPLLJ_TENABLEDIV));
+	__raw_writel(0x0, (base + ADPLLJ_TENABLEDIV));
+
+	/* Loda M, N dividers of ADPLL */
+	__raw_writel(0x1, (base + ADPLLJ_TENABLE));
+	__raw_writel(0x0, (base + ADPLLJ_TENABLE));
+
+	read_clkctrl = __raw_readl(base + ADPLLJ_CLKCTRL);
+	__raw_writel((read_clkctrl & 0xff7e3fff) | clkctrl_val,
+			base + ADPLLJ_CLKCTRL);
+
+	/* Wait for phase and freq lock */
+	while((__raw_readl(base + ADPLLJ_STATUS) & 0x00000600) != 0x00000600);
+
+}
+
+/*
+ * Enable the clks & power for perifs (TIMER1, UART0,...)
+ */
+void per_clocks_enable(void)
+{
+	u32 temp;
+
 	__raw_writel(0x2, CM_ALWON_L3_SLOW_CLKSTCTRL);
 
-	/* First we need to enable the modules and setup the clk path
-	 * Then the timers need to be configured by writing to their registers
-	 * To access the timer registers we need the module to be
-	 * enabled which is what we do in the first step
-	 */
-
+	/* TODO: No module level enable as in ti8148 ??? */
+#if 0
 	/* TIMER 1 */
 	__raw_writel(0x2, CM_ALWON_TIMER_1_CLKCTRL);
+#endif
+	/* Selects OSC0 (20MHz) for DMTIMER1 */
+	temp = __raw_readl(DMTIMER_CLKSRC);
+	temp &= (0x7 << 3);
+	temp |= (0x4 << 3);
+	__raw_writel(temp, DMTIMER_CLKSRC);
 
-	/* Selects CLKIN (27MHz) */
-	__raw_writel(0x2, CM_TIMER1_CLKSEL);
-
+#if 0
 	while(((__raw_readl(CM_ALWON_L3_SLOW_CLKSTCTRL) & (0x80000<<1)) >> (19+1)) != 1);
-
 	while(((__raw_readl(CM_ALWON_TIMER_1_CLKCTRL) & 0x30000)>>16) !=0);
-
-
+#endif
 	__raw_writel(0x2,(DM_TIMER1_BASE + 0x54));
 	while(__raw_readl(DM_TIMER1_BASE + 0x10) & 1);
 
@@ -380,7 +503,7 @@ static void peripheral_enable(void)
 	__raw_writel(0x2, CM_ALWON_SPI_CLKCTRL);
 	while(__raw_readl(CM_ALWON_SPI_CLKCTRL) != 0x2);
 
-	/* I2C0 */
+	/* I2C0 and I2C2 */
 	__raw_writel(0x2, CM_ALWON_I2C_0_CLKCTRL);
 	while(__raw_readl(CM_ALWON_I2C_0_CLKCTRL) != 0x2);
 
@@ -389,25 +512,28 @@ static void peripheral_enable(void)
 	__raw_writel(0x2, CM_ALWON_ETHERNET_0_CLKCTRL);
 	__raw_writel(0x2, CM_ALWON_ETHERNET_1_CLKCTRL);
 
-
-
 }
 
-/******************************************************************************
- * prcm_init() - inits clocks for PRCM as defined in clocks.h
- *****************************************************************************/
+/*
+ * inits clocks for PRCM as defined in clocks.h
+ */
 void prcm_init(u32 in_ddr)
 {
-	/* For future */
-	u32 clk_index = 0, sil_index = 0;
-
 	/* Enable the control module */
 	__raw_writel(0x2, CM_ALWON_CONTROL_CLKCTRL);
 
-	/* pll init functions come here */
+#ifdef CONFIG_SETUP_PLL
+	/* Setup the various plls */
+	pcie_pll_config();
+	sata_pll_config();
+	modena_pll_config();
+	l3_pll_config();
+	ddr_pll_config();
 
+	usb_pll_config();
 	/*  With clk freqs setup to desired values, enable the required peripherals */
-	peripheral_enable();
+	per_clocks_enable();
+#endif
 }
 
 static void unlock_pll_control_mmr(void)
@@ -515,23 +641,42 @@ void cpsw_pad_config(u32 instance)
 
 
 /*
+ * baord specific muxing of pins
+ */
+void set_muxconf_regs(void)
+{
+	u32 i, add, val;
+	u32 pad_conf[] = {
+#include "mux.h"
+	};
+
+	for (i = 0; i<N_PINS; i++)
+	{
+		add = PIN_CTRL_BASE + (i*4);
+		val = __raw_readl(add);
+		val |= pad_conf[i];
+		__raw_writel(val, add);
+	}
+}
+
+/*
  * early system init of muxing and clocks.
  */
 void s_init(u32 in_ddr)
 {
 	l2_cache_enable();		/* Can be removed as A8 comes up with L2 enabled */
 	prcm_init(in_ddr);		/* Setup the PLLs and the clocks for the peripherals */
-#if CONFIG_TI814X_CONFIG_DDR
+#ifdef CONFIG_TI814X_CONFIG_DDR
 	if (!in_ddr)
 		config_ti814x_sdram_ddr();	/* Do DDR settings */
 #endif
+	set_muxconf_regs();
+
 }
 
-/* optionally do something like blinking LED */
-void board_hang (void)
-{ while (0) {};}
-
-/* Reset the board */
+/*
+ * Reset the board
+ */
 void reset_cpu (ulong addr)
 {
 	addr = __raw_readl(PRM_DEVICE_RSTCTRL);
