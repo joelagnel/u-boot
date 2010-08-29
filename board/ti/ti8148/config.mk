@@ -15,15 +15,11 @@
 #
 
 sinclude $(OBJTREE)/board/$(BOARDDIR)/config.tmp
-# TEXT_BASE for the 2 stages is different and comes from the Makefile
-# Output image name. Used only in case of non-xip. For NOR boot u-boot.bin
-# could be used.
-TI_IMAGE = u-boot.noxip.bin
 # This will be used by mkimage extension to select header for image
 TI_DEVICE = ti81xx
 # ROM code will load u-boot to this address
-TI_LOAD_ADDR = 0x40304800
-TEXT_BASE = 0x80300000
+TI_LOAD_ADDR = 0x40300000
+# TEXT_BASE for the 2 stages is different and comes from the Makefile
 CROSS_COMPILE:= arm-none-linux-gnueabi-
 LDSCRIPT:=board/ti/ti8148/u-boot.lds
 
