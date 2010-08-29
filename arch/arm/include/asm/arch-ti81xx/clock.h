@@ -25,7 +25,7 @@
 #include <asm/arch/clocks_ti816x.h>
 #endif
 
-#ifdef CONFIG_TI81$X
+#ifdef CONFIG_TI814X
 #include <asm/arch/clocks_ti814x.h>
 #endif
 

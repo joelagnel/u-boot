@@ -93,8 +93,8 @@ struct gptimer {
 /* TI816X specific bits for PRM_DEVICE module */
 #define GLOBAL_RST_COLD			BIT(1)
 
-#ifdef CONFIG_TI816X
 /* PLL related registers */
+#ifdef CONFIG_TI816X
 #define MAINPLL_CTRL			(CTRL_BASE + 0x0400)
 #define MAINPLL_PWD			(CTRL_BASE + 0x0404)
 #define MAINPLL_FREQ1			(CTRL_BASE + 0x0408)
@@ -146,10 +146,79 @@ struct gptimer {
 
 #endif
 
+#ifdef CONFIG_TI814X
+
+#define PCIE_PLLCFG0			(CTRL_BASE + 0x6D8)
+#define PCIE_PLLCFG1			(CTRL_BASE + 0x6DC)
+#define PCIE_PLLCFG2			(CTRL_BASE + 0x6E0)
+#define PCIE_PLLCFG3			(CTRL_BASE + 0x6E4)
+#define PCIE_PLLCFG4			(CTRL_BASE + 0x6E8)
+#define PCIE_PLLSTATUS			(CTRL_BASE + 0x6EC)
+#define PCIE_RXSTATUS			(CTRL_BASE + 0x6F0)
+#define PCIE_TXSTATUS			(CTRL_BASE + 0x6F4)
+#define SERDES_REFCLK_CTRL		(CTRL_BASE + 0xE24)
+
+#define SATA_PLLCFG0			(CTRL_BASE + 0x720)
+#define SATA_PLLCFG1			(CTRL_BASE + 0x724)
+#define SATA_PLLCFG2			(CTRL_BASE + 0x728)
+#define SATA_PLLCFG3			(CTRL_BASE + 0x72C)
+#define SATA_PLLCFG4			(CTRL_BASE + 0x730)
+#define SATA_PLLSTATUS			(CTRL_BASE + 0x734)
+#define SATA_RXSTATUS			(CTRL_BASE + 0x738)
+#define SATA_TXSTATUS			(CTRL_BASE + 0x73C)
+
+/* pin muxing registers */
+#define PIN_CTRL_BASE			(CTRL_BASE + 0x800)
+#define N_PINS				(271) /* PIN1=800, PIN 271=800+270*4=C38) */
+
+/* Clocks are derived from ADPLLJ */
+#define ADPLLJ_CLKCTRL			0x4
+#define ADPLLJ_TENABLE			0x8
+#define ADPLLJ_TENABLEDIV		0xC
+#define ADPLLJ_M2NDIV			0x10
+#define ADPLLJ_MN2DIV			0x14
+#define ADPLLJ_STATUS			0x18
+
+/* ADPLLJ register values */
+#define ADPLLJ_CLKCTRL_HS2		0x00000801 /* HS2 mode, TINT2 = 1 */
+#define ADPLLJ_CLKCTRL_HS1		0x00001001 /* HS1 mode, TINT2 = 1 */
+#define ADPLLJ_CLKCTRL_CLKDCO		0x200A0000 /* Enable CLKDCOEN, CLKLDOEN, CLKDCOPWDNZ */
+
+#define MODENA_PLL_BASE			(PLL_SUBSYS_BASE + 0x048)
+#define DSP_PLL_BASE			(PLL_SUBSYS_BASE + 0x080)
+#define SGX_PLL_BASE			(PLL_SUBSYS_BASE + 0x0B0)
+#define IVA_PLL_BASE			(PLL_SUBSYS_BASE + 0x0E0)
+#define L3_PLL_BASE			(PLL_SUBSYS_BASE + 0x110)
+#define ISS_PLL_BASE			(PLL_SUBSYS_BASE + 0x140)
+#define DSS_PLL_BASE			(PLL_SUBSYS_BASE + 0x170)
+#define VIDEO0_PLL_BASE			(PLL_SUBSYS_BASE + 0x1A0)
+#define VIDEO1_PLL_BASE			(PLL_SUBSYS_BASE + 0x1D0)
+#define HDMI_PLL_BASE			(PLL_SUBSYS_BASE + 0x200)
+#define AUDIO_PLL_BASE			(PLL_SUBSYS_BASE + 0x230)
+#define USB_PLL_BASE			(PLL_SUBSYS_BASE + 0x260)
+#define DDR_PLL_BASE			(PLL_SUBSYS_BASE + 0x290)
+
+#define OSC_SRC				(PLL_SUBSYS_BASE + 0x2C0)
+#define ARM_CLKSRC			(PLL_SUBSYS_BASE + 0x2C4)
+#define VIDEO_PLL_CLKSRC		(PLL_SUBSYS_BASE + 0x2C8)
+#define MLB_ATL_CLKSRC			(PLL_SUBSYS_BASE + 0x2CC)
+#define McASP235_AUX_CLKSRC		(PLL_SUBSYS_BASE + 0x2D0)
+#define McASP_AHCLK_CLKSRC		(PLL_SUBSYS_BASE + 0x2D4)
+#define McBSP_UART_CLKSRC		(PLL_SUBSYS_BASE + 0x2D8)
+#define HDMI_I2S_CLKSRC			(PLL_SUBSYS_BASE + 0x2DC)
+#define DMTIMER_CLKSRC			(PLL_SUBSYS_BASE + 0x2E0)
+#define CLKOUT_MUX			(PLL_SUBSYS_BASE + 0x2E4)
+#define RMII_REFCLK_SRC			(PLL_SUBSYS_BASE + 0x2E8)
+#define SECSS_CLKSRC			(PLL_SUBSYS_BASE + 0x2EC)
+#define SYSCLK18_SRC			(PLL_SUBSYS_BASE + 0x2F0)
+#define WDT0_CLKSRC			(PLL_SUBSYS_BASE + 0x2F4)
+
+#endif
+
 /* PRCM */
 #define CM_DPLL_OFFSET			(PRCM_BASE + 0x0300)
 
-//#ifdef CONFIG_TI816X
+#ifdef CONFIG_TI816X
 #define CM_TIMER1_CLKSEL		(CM_DPLL_OFFSET + 0x90)
 
 /* Timers */
@@ -161,7 +230,7 @@ struct gptimer {
 #define CM_ALWON_TIMER_5_CLKCTRL	(PRCM_BASE + 0x1580)
 #define CM_ALWON_TIMER_6_CLKCTRL	(PRCM_BASE + 0x1584)
 #define CM_ALWON_TIMER_7_CLKCTRL	(PRCM_BASE + 0x1588)
-//#endif
+#endif
 
 #define CM_ALWON_WDTIMER_CLKCTRL	(PRCM_BASE + 0x158C)
 #define CM_ALWON_SPI_CLKCTRL		(PRCM_BASE + 0x1590)
@@ -171,9 +240,10 @@ struct gptimer {
 
 #ifdef CONFIG_TI816X
 #define CM_ALWON_CUST_EFUSE_CLKCTRL	(PRCM_BASE + 0x1628)
+#endif
+
 #define CM_ALWON_GPIO_0_CLKCTRL		(PRCM_BASE + 0x155c)
 #define CM_ALWON_GPIO_0_OPTFCLKEN_DBCLK (PRCM_BASE + 0x155c)
-#endif
 
 /* Ethernet */
 #define CM_ETHERNET_CLKSTCTRL		(PRCM_BASE + 0x1404)
@@ -198,6 +268,8 @@ struct gptimer {
 #define DEFAULT_UART_BASE		UART0_BASE
 #endif
 
+/* UART registers */
+/*TODO:Move to a new file */
 #define UART_SYSCFG			(DEFAULT_UART_BASE + 0x54)
 #define UART_SYSSTS			(DEFAULT_UART_BASE + 0x58)
 #define UART_LCR			(DEFAULT_UART_BASE + 0x0C)
@@ -211,6 +283,7 @@ struct gptimer {
 #define UART_MDR			(DEFAULT_UART_BASE + 0x20)
 
 /*DMM & EMIF4 MMR Declaration*/
+/*TODO: Move to a new file */
 #define DMM_LISA_MAP__0			(DMM_BASE + 0x40)
 #define DMM_LISA_MAP__1			(DMM_BASE + 0x44)
 #define DMM_LISA_MAP__2			(DMM_BASE + 0x48)
@@ -250,6 +323,12 @@ struct gptimer {
 #define CM_DEFAULT_EMIF_1_CLKCTRL    	(PRCM_BASE + 0x0524)
 #define CM_DEFAULT_DMM_CLKCTRL 		(PRCM_BASE + 0x0528)
 #define CM_DEFAULT_FW_CLKCTRL 		(PRCM_BASE + 0x052C)
+#endif
+
+#ifdef CONFIG_TI814X
+#define CM_ALWON2_DMM_CLKCTRL		(PRCM_BASE + 0x0528)
+#define CM_ALWON2_FW_CLKCTRL		(PRCM_BASE + 0x052C)
+#define CM_ALWON_L3_FAST_CLKSTCTRL	(PRCM_BASE + 0x1430)
 #endif
 
 /* Smartreflex Registers */

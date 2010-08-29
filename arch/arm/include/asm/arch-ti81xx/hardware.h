@@ -14,8 +14,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __TI816X_HARDWARE_H
-#define __TI816X_HARDWARE_H
+#ifndef __TI81XX_HARDWARE_H
+#define __TI81XX_HARDWARE_H
 
 /* The objective is to keep only the overall memory map here
  * The break-up of the memory map for individual modules registers should
@@ -65,8 +65,15 @@
 #define DDRPHY_CONFIG_BASE 		((emif == 0) ? DDRPHY_0_CONFIG_BASE:DDRPHY_1_CONFIG_BASE)
 #endif
 
+#ifdef CONFIG_TI814X
+#define DDRPHY_0_CONFIG_BASE		(CTRL_BASE + 0x1400)
+#define DDRPHY_1_CONFIG_BASE		(CTRL_BASE + 0x1500)
+#define DDRPHY_CONFIG_BASE 		((emif == 0) ? DDRPHY_0_CONFIG_BASE:DDRPHY_1_CONFIG_BASE)
+#endif
+
+
 /* GPMC Base address */
 #define GPMC_BASE			0x50000000
 
-#endif /* __TI816X_HARDWARE_H */
+#endif /* __TI81XX_HARDWARE_H */
 
