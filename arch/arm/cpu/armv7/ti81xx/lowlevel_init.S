@@ -416,6 +416,6 @@ _s_init_start:
 
 #ifdef CONFIG_TI814X_MIN_CONFIG
 SRAM_STACK:
-	.word (SRAM0_START + 0x2800)	/* we'll place stack+heap+gd in top 10 KB */ 
+	.word (SRAM0_START + 0x2800)	/* we'll place stack+heap+gd in top 10 KB */
 #endif
 
