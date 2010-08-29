@@ -70,7 +70,8 @@ int board_init(void)
 	regVal |= (1<<3);
 	__raw_writel(regVal, UART_SYSCFG);
 
-	gd->bd->bi_arch_number = MACH_TYPE_TI8168EVM;
+	/* mach type passed to kernel */
+	gd->bd->bi_arch_number = MACH_TYPE_TI8148EVM;
 
 	/* address of boot parameters */
 	gd->bd->bi_boot_params = PHYS_DRAM_1 + 0x100;
@@ -79,9 +80,7 @@ int board_init(void)
 }
 
 /*
- * Configure DRAM banks
- *
- * Description: sets uboots idea of sdram size
+ * sets uboots idea of sdram size
  */
 int dram_init(void)
 {
@@ -96,44 +95,44 @@ int dram_init(void)
 }
 
 
-/*************************************************************
- *  get_device_type(): tell if GP/HS/EMU/TST
- *************************************************************/
+/*
+ *  tell if GP/HS/EMU/TST
+ */
 u32 get_device_type(void)
 {
-	int mode;
+	u32 mode;
 	mode = __raw_readl(CONTROL_STATUS) & (DEVICE_MASK);
 	return(mode >>= 8);
 }
 
-/************************************************
- * get_sysboot_value(void) - return SYS_BOOT[4:0]
- ************************************************/
+/*
+ * return SYS_BOOT[4:0]
+ */
 u32 get_sysboot_value(void)
 {
-	int mode;
+	u32 mode;
 	mode = __raw_readl(CONTROL_STATUS) & (SYSBOOT_MASK);
 	return mode;
+}
+
+int misc_init_r (void)
+{
+	return 0;
 }
 
 #ifdef CONFIG_TI814X_EVM_DDR2
 /* assume delay is aprox at least 1us */
 void ddr_delay(int d)
-{  /*
-   * in interactive mode use a user response
-   * printf("Pause... Press enter to continue\n");
-   * getchar();
-   */
-  int i;
-
-  /*
-   * read a control module register.
-   * this is a bit more delay and cannot be optimized by the compiler
-   * assuming one read takes 200 cycles and A8 is runing 1 GHz
-   * somewhat conservative setting
-   */
-  for(i=0; i<50*d; i++)
-    RD_MEM_32(CONTROL_STATUS);
+{
+	 int i;
+	/*
+	* read a control module register.
+	* this is a bit more delay and cannot be optimized by the compiler
+	* assuming one read takes 200 cycles and A8 is runing 1 GHz
+	* somewhat conservative setting
+	*/
+	for(i=0; i<50*d; i++)
+		RD_MEM_32(CONTROL_STATUS);
 }
 
 static void ddr_init_settings(int emif)
