@@ -54,6 +54,11 @@
 /* PRCM Base Address */
 #define PRCM_BASE			0x48180000
 
+/* PLL Subsystem Base Address */
+#ifdef CONFIG_TI814X
+#define PLL_SUBSYS_BASE			0x481C5000
+#endif
+
 /* EMIF Base address */
 #define EMIF4_0_CFG_BASE		0x4C000000
 #define EMIF4_1_CFG_BASE		0x4D000000
