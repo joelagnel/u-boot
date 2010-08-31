@@ -327,7 +327,7 @@ static void pll_config(u32 base, u32 n, u32 m, u32 m2, u32 clkctrl_val)
 static void pcie_pll_config()
 {
 	/* Powerdown both reclkp/n single ended receiver */
-	__raw_writel(0x00000002, SERDES_REFCLK_CTRL);
+	__raw_writel(0x00000000, SERDES_REFCLK_CTRL);
 
 	__raw_writel(0x00000000, PCIE_PLLCFG0);
 
@@ -359,13 +359,13 @@ static void pcie_pll_config()
 	/* Enable DIG LDO, ENBGSC_REF, PLL LDO */
 	__raw_writel(0x00000016, PCIE_PLLCFG0);
 	delay(3);
-	__raw_writel(0x00000016, PCIE_PLLCFG0);		/* TODO: Really needed? */
+	__raw_writel(0x30000016, PCIE_PLLCFG0);
 	delay(3);
-	__raw_writel(0x00000016, PCIE_PLLCFG0);		/* TODO: Really needed? */
+	__raw_writel(0x70000016, PCIE_PLLCFG0);
 	delay(3);
 
 	/* Enable DIG LDO, SELSC, ENBGSC_REF, PLL LDO */
-	__raw_writel(0x00000017, PCIE_PLLCFG0);
+	__raw_writel(0x70000017, PCIE_PLLCFG0);
 	delay(3);
 
 	/* wait for ADPLL lock */
@@ -509,7 +509,6 @@ void per_clocks_enable(void)
 	/* Ethernet */
 	__raw_writel(0x2, CM_ETHERNET_CLKSTCTRL);
 	__raw_writel(0x2, CM_ALWON_ETHERNET_0_CLKCTRL);
-	__raw_writel(0x2, CM_ALWON_ETHERNET_1_CLKCTRL);
 
 }
 
