@@ -21,6 +21,9 @@
 #include <asm/arch/ddr_defs.h>
 #include <asm/arch/hardware.h>
 #include <asm/arch/sys_proto.h>
+#include <net.h>
+#include <miiphy.h>
+#include <netdev.h>
 
 #define __raw_readl(a)		(*(volatile unsigned int *)(a))
 #define __raw_writel(v, a)	(*(volatile unsigned int *)(a) = (v))
@@ -324,6 +327,7 @@ static void pll_config(u32 base, u32 n, u32 m, u32 m2, u32 clkctrl_val)
 }
 #endif
 
+#ifdef CONFIG_SETUP_PLL
 static void pcie_pll_config()
 {
 	/* Powerdown both reclkp/n single ended receiver */
@@ -421,7 +425,7 @@ static void ddr_pll_config()
 			DDR_N, DDR_M,
 			DDR_M2, DDR_CLKCTRL);
 }
-
+#endif
 /*
  * configure individual ADPLLJ
  */
@@ -682,4 +686,124 @@ void reset_cpu (ulong addr)
 	addr |= BIT(1);
 	__raw_writel(addr, PRM_DEVICE_RSTCTRL);
 }
+
+#ifdef CONFIG_DRIVER_TI_CPSW
+
+#define PHY_CONF_REG           22
+#define PHY_CONF_TXCLKEN       (1 << 5)
+
+/* TODO : Check for the board specific PHY */
+static void phy_init(char *name, int addr)
+{
+	unsigned short val;
+	unsigned int   cntr = 0;
+
+	/* Enable PHY to clock out TX_CLK */
+	miiphy_read(name, addr, PHY_CONF_REG, &val);
+	val |= PHY_CONF_TXCLKEN;
+	miiphy_write(name, addr, PHY_CONF_REG, val);
+	miiphy_read(name, addr, PHY_CONF_REG, &val);
+
+	/* Enable Autonegotiation */
+	if (miiphy_read(name, addr, PHY_BMCR, &val) != 0) {
+		printf("failed to read bmcr\n");
+		return;
+	}
+	val |= PHY_BMCR_DPLX | PHY_BMCR_AUTON | PHY_BMCR_100_MBPS;
+	if (miiphy_write(name, addr, PHY_BMCR, val) != 0) {
+		printf("failed to write bmcr\n");
+		return;
+	}
+	miiphy_read(name, addr, PHY_BMCR, &val);
+
+	/* Setup GIG advertisement */
+	miiphy_read(name, addr, PHY_1000BTCR, &val);
+	val |= PHY_1000BTCR_1000FD;
+	val &= ~PHY_1000BTCR_1000HD;
+	miiphy_write(name, addr, PHY_1000BTCR, val);
+	miiphy_read(name, addr, PHY_1000BTCR, &val);
+
+	/* Setup general advertisement */
+	if (miiphy_read(name, addr, PHY_ANAR, &val) != 0) {
+		printf("failed to read anar\n");
+		return;
+	}
+	val |= (PHY_ANLPAR_10 | PHY_ANLPAR_10FD | PHY_ANLPAR_TX | PHY_ANLPAR_TXFD);
+	if (miiphy_write(name, addr, PHY_ANAR, val) != 0) {
+		printf("failed to write anar\n");
+		return;
+	}
+	miiphy_read(name, addr, PHY_ANAR, &val);
+
+	/* Restart auto negotiation*/
+	miiphy_read(name, addr, PHY_BMCR, &val);
+	val |= PHY_BMCR_RST_NEG;
+	miiphy_write(name, addr, PHY_BMCR, val);
+
+       /*check AutoNegotiate complete - it can take upto 3 secs*/
+       do{
+               udelay(40000);
+               cntr++;
+
+               if (!miiphy_read(name, addr, PHY_BMSR, &val)){
+                       if(val & PHY_BMSR_AUTN_COMP)
+                               break;
+               }
+
+       }while(cntr < 250);
+       if (!miiphy_read(name, addr, PHY_BMSR, &val)) {
+               if (!(val & PHY_BMSR_AUTN_COMP))
+                       printf("phy_init: auto negotitation failed!\n");
+       }
+
+       return;
+}
+
+static void cpsw_control(int enabled)
+{
+       /* nothing for now */
+       /* TODO : VTP was here before */
+       return;
+}
+
+static struct cpsw_slave_data cpsw_slaves[] = {
+       {
+               .slave_reg_ofs  = 0x50,
+               .sliver_reg_ofs = 0x700,
+               .phy_id         = 1,
+       },
+       {
+               .slave_reg_ofs  = 0x90,
+               .sliver_reg_ofs = 0x740,
+               .phy_id         = 0,
+       },
+};
+
+static struct cpsw_platform_data cpsw_data = {
+	.mdio_base              = TI814X_CPSW_MDIO_BASE,
+	.cpsw_base              = TI814X_CPSW_BASE,
+	.mdio_div               = 0xff,
+	.channels               = 8,
+	.cpdma_reg_ofs          = 0x100,
+	.slaves                 = 2,
+	.slave_data             = cpsw_slaves,
+	.ale_reg_ofs            = 0x600,
+	.ale_entries            = 1024,
+	.host_port_reg_ofs      = 0x28,
+	.hw_stats_reg_ofs       = 0x400,
+	.mac_control            = /*(1 << 18)   |*/ /* IFCTLA   */
+				(1 << 15)     | /* EXTEN      */
+				(1 << 5)      | /* MIIEN      */
+				(1 << 4)      | /* TXFLOWEN   */
+				(1 << 3),       /* RXFLOWEN   */
+	.control                = cpsw_control,
+	.phy_init               = phy_init,
+	.host_port_num		= 0,
+};
+
+int board_eth_init(bd_t *bis)
+{
+       return cpsw_register(&cpsw_data);
+}
+#endif
 
