@@ -208,6 +208,7 @@ struct cpsw_platform_data {
 	struct cpsw_slave_data  *slave_data;
 	void	(*control)(int enabled);
 	void	(*phy_init)(char *name, int addr);
+	u32	host_port_num;
 };
 
 int cpsw_register(struct cpsw_platform_data *data);

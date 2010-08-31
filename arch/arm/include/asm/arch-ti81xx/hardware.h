@@ -80,5 +80,9 @@
 /* GPMC Base address */
 #define GPMC_BASE			0x50000000
 
+/* CPSW Config space */
+#define TI814X_CPSW_BASE               0x4A100000
+#define TI814X_CPSW_MDIO_BASE          0x4A100800
+
 #endif /* __TI81XX_HARDWARE_H */
 

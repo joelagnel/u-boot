@@ -146,7 +146,6 @@
 
 #if defined(CONFIG_CMD_NET)
 # define CONFIG_DRIVER_TI_CPSW
-# define CONFIG_DRIVER_TI_EMAC
 # define CONFIG_MII
 # define CONFIG_BOOTP_DEFAULT
 # define CONFIG_BOOTP_DNS

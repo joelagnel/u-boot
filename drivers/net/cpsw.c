@@ -94,7 +94,9 @@ struct cpsw_slave_regs {
 	u32	flow_thresh;
 	u32	port_vlan;
 	u32	tx_pri_map;
-	u32	gap_thresh;
+	u32     ts_ctl;
+	u32     ts_seq_ltype;
+	u32     ts_vlan;
 	u32	sa_lo;
 	u32	sa_hi;
 };
@@ -569,8 +571,17 @@ static int cpsw_update_link(struct cpsw_priv *priv)
 	return link;
 }
 
+static inline cpsw_get_slave_port(struct cpsw_priv *priv, u32 slave_num)
+{
+	if (priv->host_port == 0)
+		return slave_num + 1;
+	else
+		return slave_num;
+}
+
 static void cpsw_slave_init(struct cpsw_slave *slave, struct cpsw_priv *priv)
 {
+	u32	slave_port;
 	soft_reset(&slave->sliver->soft_reset);
 
 	/* setup priority mapping */
@@ -584,9 +595,10 @@ static void cpsw_slave_init(struct cpsw_slave *slave, struct cpsw_priv *priv)
 	slave->mac_control = 0;	/* no link yet */
 
 	/* enable forwarding */
-	cpsw_ale_port_state(priv, slave->slave_num, ALE_PORT_STATE_FORWARD);
+	slave_port = cpsw_get_slave_port(priv, slave->slave_num);
+	cpsw_ale_port_state(priv, slave_port, ALE_PORT_STATE_FORWARD);
 
-	cpsw_ale_add_mcast(priv, NetBcastAddr, 1 << slave->slave_num);
+	cpsw_ale_add_mcast(priv, NetBcastAddr, 1 << slave_port);
 
 	priv->data.phy_init(priv->dev->name, slave->data->phy_id);
 }
@@ -836,7 +848,7 @@ int cpsw_register(struct cpsw_platform_data *data)
 		return -ENOMEM;
 	}
 
-	priv->host_port		= data->slaves;
+	priv->host_port         = data->host_port_num;
 	priv->regs		= regs;
 	priv->host_port_regs	= regs + data->host_port_reg_ofs;
 	priv->dma_regs		= regs + data->cpdma_reg_ofs;
