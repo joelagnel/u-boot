@@ -515,6 +515,21 @@ static inline void soft_reset(void *reg)
 		;
 }
 
+static u_int8_t cpsw_eth_mac_addr[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
+
+/*
+ * This function must be called before cpsw_init() if you want to override
+ * the default mac address.
+ */
+void cpsw_eth_set_mac_addr(const u_int8_t *addr)
+{
+	int i;
+
+	for (i = 0; i < sizeof (cpsw_eth_mac_addr); i++) {
+		cpsw_eth_mac_addr[i] = addr[i];
+	}
+}
+
 #define mac_hi(mac)	(((mac)[0] << 0) | ((mac)[1] << 8) |	\
 			 ((mac)[2] << 16) | ((mac)[3] << 24))
 #define mac_lo(mac)	(((mac)[4] << 0) | ((mac)[5] << 8))
@@ -719,7 +734,7 @@ static int cpsw_init(struct eth_device *dev, bd_t *bis)
 	__raw_writel(BIT(priv->host_port), &priv->regs->stat_port_en);
 
 	cpsw_ale_port_state(priv, priv->host_port, ALE_PORT_STATE_FORWARD);
-
+	memcpy(priv->dev->enetaddr, cpsw_eth_mac_addr, 6);
 	cpsw_ale_add_ucast(priv, priv->dev->enetaddr, priv->host_port,
 			   ALE_SECURE);
 	cpsw_ale_add_mcast(priv, NetBcastAddr, 1 << priv->host_port);
