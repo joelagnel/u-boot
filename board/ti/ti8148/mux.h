@@ -17,7 +17,8 @@
 /* 1-4 */	BIT(0), BIT(0), BIT(0), BIT(0),
 /* -8 */	BIT(0), BIT(0), BIT(0), BIT(0),
 /* -12 */	BIT(0), BIT(0), BIT(0), BIT(0),
-/* -16 */	BIT(0), BIT(0), BIT(0), BIT(0),
+		/* 14 usb1_drvvbus, fn8, pulldn enable */
+/* -16 */	BIT(0), BIT(7), BIT(0), BIT(0),
 /* -20 */	BIT(0), BIT(0), BIT(0), BIT(0),
 /* -24 */	BIT(0), BIT(0), BIT(0), BIT(0),
 /* -28 */	BIT(0), BIT(0), BIT(0), BIT(0),
@@ -81,4 +82,5 @@
 /* -260 */	BIT(0), BIT(0), BIT(0), BIT(0),
 /* -264 */	BIT(0), BIT(0), BIT(0), BIT(0),
 /* -268 */	BIT(0), BIT(0), BIT(0), BIT(0),
+		/* 270 usb0_drvvbus, fn1, pulldn enable */
 /* -271 */	BIT(0), BIT(0), BIT(0),
