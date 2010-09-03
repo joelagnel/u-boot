@@ -39,6 +39,31 @@
 #define RD_MEM_32(a) (*(volatile int*)(a))
 #define WR_MEM_8(a, d) (*(volatile char*)(a) = (d))
 #define RD_MEM_8(a) (*(volatile char*)(a))
+/*
+ * IEN  - Input Enable
+ * IDIS - Input Disable
+ * PTD  - Pull type Down
+ * PTU  - Pull type Up
+ * DIS  - Pull type selection is inactive
+ * EN   - Pull type selection is active
+ * M0   - Mode 0
+ */
+#define	IEN	(1 << 8)
+
+#define	IDIS	(0 << 8)
+#define	PTU	(1 << 4)
+#define	PTD	(0 << 4)
+#define	EN	(1 << 3)
+#define	DIS	(0 << 3)
+
+#define	M0	0
+#define	M1	1
+#define	M2	2
+#define	M3	3
+#define	M4	4
+#define	M5	5
+#define	M6	6
+#define	M7	7
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -932,7 +957,9 @@ static void peripheral_enable(void)
 	__raw_writel(0x2, CM_ALWON_ETHERNET_0_CLKCTRL);
 	__raw_writel(0x2, CM_ALWON_ETHERNET_1_CLKCTRL);
 
-
+	/* HSMMC */
+	__raw_writel(0x2, CM_ALWON_HSMMC_CLKCTRL);
+	while(__raw_readl(CM_ALWON_HSMMC_CLKCTRL) != 0x2);
 
 }
 
@@ -958,6 +985,29 @@ void prcm_init(u32 in_ddr)
 	peripheral_enable();
 }
 
+/******************************************************************************
+ * set_muxconf_regs(void) - Setting up the configuration Mux registers 
+ *****************************************************************************/
+void set_muxconf_regs(void)
+{
+	/* HSMMC Padconfig */
+	__raw_writew((PTD | EN | M0), MMC_POW);
+	__raw_writew((PTD | DIS | M0), MMC_CLK);
+	__raw_writew((PTU | EN | M0), MMC_CMD);
+	__raw_writew((PTU | EN | M0), MMC_DAT0);
+	__raw_writew((PTU | EN | M0), MMC_DAT1_SDIRQ);
+	__raw_writew((PTU | EN | M0), MMC_DAT2_SDRW);
+	__raw_writew((PTU | EN | M0), MMC_DAT3);
+}
+
+#ifdef CONFIG_GENERIC_MMC
+int board_mmc_init(bd_t *bis)
+{
+	omap_mmc_init(0);
+	return 0;
+}
+#endif
+
 /**********************************************************
  * Routine: s_init
  * Description: Does early system init of muxing and clocks.
@@ -967,6 +1017,7 @@ void s_init(u32 in_ddr)
 {
 	l2_cache_enable();		/* Can be removed as A8 comes up with L2 enabled */
 	prcm_init(in_ddr);			/* Setup the PLLs and the clocks for the peripherals */
+	set_muxconf_regs();
 	if (!in_ddr)
 		config_ti816x_sdram_ddr();	/* Do DDR settings */
 #ifdef CONFIG_TI816X_VOLT_SCALE

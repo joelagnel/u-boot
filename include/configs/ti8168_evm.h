@@ -122,6 +122,19 @@
 #define CONFIG_SERIAL1			1
 #define CONFIG_CONS_INDEX		1
 
+#define CONFIG_MMC		1
+#define CONFIG_NAND		1
+
+/* Due to restrictions in RBL while in SD Boot mode NAND/NOR support
+ * cannot co-exist in the same u-boot image that is loaded by the RBL from
+ * MMC/SD card.
+ */
+#ifdef CONFIG_SD_BOOT
+/* Save the EVN in SPI Flash */
+#define CONFIG_SPI_BOOT
+#undef CONFIG_NAND
+#endif
+
 #if defined(CONFIG_NO_ETH)
 # undef CONFIG_CMD_NET
 #else
@@ -147,6 +160,7 @@
 #endif
 
 /* NAND support */
+#ifdef CONFIG_NAND
 #define CONFIG_CMD_NAND
 #define CONFIG_NAND_TI81XX
 #define GPMC_NAND_ECC_LP_x16_LAYOUT 	1
@@ -159,6 +173,7 @@
 #define CONFIG_SYS_MAX_NAND_DEVICE	1		/* Max number of NAND */
 							/* devices */
 # define CONFIG_ENV_IS_IN_NAND
+#endif							/* devices */
 /* ENV in NAND */
 #if defined(CONFIG_NAND_BOOT)
 # define CONFIG_ENV_IS_IN_NAND
@@ -243,6 +258,15 @@
 #define CONFIG_SYS_I2C_EEPROM_ADDR		0x50
 #define CONFIG_SYS_EEPROM_PAGE_WRITE_BITS	6
 #define CONFIG_SYS_EEPROM_PAGE_WRITE_DELAY_MS	20
+
+/* HSMMC Definitions */
+#ifdef CONFIG_MMC
+#define CONFIG_GENERIC_MMC
+#define CONFIG_OMAP_HSMMC
+#define CONFIG_CMD_MMC
+#define CONFIG_DOS_PARTITION
+#define CONFIG_CMD_FAT
+#endif
 
 /* Unsupported features */
 #undef CONFIG_USE_IRQ

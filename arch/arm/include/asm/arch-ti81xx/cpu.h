@@ -263,6 +263,9 @@ struct gptimer {
 /* Note: In ti814x I2C0 and I2C2 have common clk control */
 #define CM_ALWON_I2C_0_CLKCTRL		(PRCM_BASE + 0x1564)
 
+/* HSMMC */
+#define CM_ALWON_HSMMC_CLKCTRL		(PRCM_BASE + 0x15B0)
+
 /* UART2 registers */
 #ifdef CONFIG_TI816X
 #define DEFAULT_UART_BASE		UART2_BASE
