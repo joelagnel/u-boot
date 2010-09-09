@@ -878,7 +878,15 @@ ti8148_evm_min_nand:	unconfig
 	@echo "#define CONFIG_TI81XX"	>>$(obj)include/config.h
 	@echo "#define CONFIG_TI814X"	>>$(obj)include/config.h
 	@if [ "$(findstring _min_,$@)" ] ; then \
-		echo "CONFIG_SYS_TEXT_BASE = 0x40300000" >> $(obj)board/ti/ti8148/config.tmp;\
+		echo "#define CONFIG_TI814X_STACK 0x3000" >>$(obj)include/config.h;\
+		echo "CONFIG_SYS_TEXT_BASE = 0x40303000" >> $(obj)board/ti/ti8148/config.tmp; \
+		if [ "$(findstring nand,$@)" ] ; then \
+			echo "TI_IMAGE = u-boot.min.nand" >> $(obj)board/ti/ti8148/config.tmp;\
+		elif [ "$(findstring spi,$@)" ] ; then \
+			echo "TI_IMAGE = u-boot.min.spi.tmp" >> $(obj)board/ti/ti8148/config.tmp;\
+		else	\
+			echo "TI_IMAGE = u-boot.min.nand" >> $(obj)board/ti/ti8148/config.tmp;\
+		fi;	\
 		echo "#define CONFIG_TI814X_MIN_CONFIG"    >>$(obj)include/config.h ; \
 		echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
 		echo "#define CONFIG_NO_ETH"    >>$(obj)include/config.h ; \
@@ -886,6 +894,7 @@ ti8148_evm_min_nand:	unconfig
 	else	\
 		echo "CONFIG_SYS_TEXT_BASE = 0x80300000" >> $(obj)board/ti/ti8148/config.tmp;\
 		echo "#define CONFIG_SYS_NO_FLASH" >> $(obj)include/config.h ; \
+		echo "#define CONFIG_NO_ETH"    >>$(obj)include/config.h ; \
 		echo "Setting up TI8148 default build with NAND..." ; \
 	fi;
 	@$(MKCONFIG) -a ti8148_evm arm armv7 ti8148 ti ti81xx

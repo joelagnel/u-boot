@@ -21,6 +21,10 @@
 #include <asm/arch/ddr_defs.h>
 #include <asm/arch/hardware.h>
 #include <asm/arch/sys_proto.h>
+#include <asm/arch/mem.h>
+#include <asm/arch/nand.h>
+#include <linux/mtd/nand.h>
+#include <nand.h>
 #include <net.h>
 #include <miiphy.h>
 #include <netdev.h>
@@ -78,7 +82,7 @@ int board_init(void)
 
 	/* address of boot parameters */
 	gd->bd->bi_boot_params = PHYS_DRAM_1 + 0x100;
-
+	gpmc_init();
 	return 0;
 }
 
@@ -123,207 +127,75 @@ int misc_init_r (void)
 	return 0;
 }
 
-#ifdef CONFIG_TI814X_EVM_DDR2
-/* assume delay is aprox at least 1us */
-void ddr_delay(int d)
+#ifdef CONFIG_TI814X_CONFIG_DDR
+static void config_ti814x_ddr(void)
 {
-	 int i;
-	/*
-	* read a control module register.
-	* this is a bit more delay and cannot be optimized by the compiler
-	* assuming one read takes 200 cycles and A8 is runing 1 GHz
-	* somewhat conservative setting
-	*/
-	for(i=0; i<50*d; i++)
-		RD_MEM_32(CONTROL_STATUS);
-}
-
-static void ddr_init_settings(int emif)
-{
-	/* DLL Lockdiff */
-	__raw_writel(0xF, (DDRPHY_CONFIG_BASE + 0x028));
-	__raw_writel(0xF, (DDRPHY_CONFIG_BASE + 0x05C));
-	__raw_writel(0xF, (DDRPHY_CONFIG_BASE + 0x090));
-	__raw_writel(0xF, (DDRPHY_CONFIG_BASE + 0x138));
-	__raw_writel(0xF, (DDRPHY_CONFIG_BASE + 0x1DC));
-	__raw_writel(0xF, (DDRPHY_CONFIG_BASE + 0x280));
-	__raw_writel(0xF, (DDRPHY_CONFIG_BASE + 0x324));
-
-	/* setup rank delays */
-	__raw_writel(0x1, (DDRPHY_CONFIG_BASE + 0x134));
-	__raw_writel(0x1, (DDRPHY_CONFIG_BASE + 0x1D8));
-	__raw_writel(0x1, (DDRPHY_CONFIG_BASE + 0x27C));
-	__raw_writel(0x1, (DDRPHY_CONFIG_BASE + 0x320));
-
-
-	__raw_writel(INVERT_CLK_OUT, (DDRPHY_CONFIG_BASE + 0x02C));	/* invert_clk_out cmd0 */
-	__raw_writel(INVERT_CLK_OUT, (DDRPHY_CONFIG_BASE + 0x060));	/* invert_clk_out cmd0 */
-	__raw_writel(INVERT_CLK_OUT, (DDRPHY_CONFIG_BASE + 0x094));	/* invert_clk_out cmd0 */
-
-
-	__raw_writel(CMD_SLAVE_RATIO, (DDRPHY_CONFIG_BASE + 0x01C));	/* cmd0 slave ratio */
-	__raw_writel(CMD_SLAVE_RATIO, (DDRPHY_CONFIG_BASE + 0x050));	/* cmd0 slave ratio */
-	__raw_writel(CMD_SLAVE_RATIO, (DDRPHY_CONFIG_BASE + 0x084));	/* cmd0 slave ratio */
-
-	__raw_writel(DQS_GATE_BYTE_LANE0, (DDRPHY_CONFIG_BASE + 0x108));
-	__raw_writel(0x00000000, (DDRPHY_CONFIG_BASE + 0x10C));
-	__raw_writel(DQS_GATE_BYTE_LANE1, (DDRPHY_CONFIG_BASE + 0x1AC));
-	__raw_writel(0x00000000, (DDRPHY_CONFIG_BASE + 0x1B0));
-	__raw_writel(DQS_GATE_BYTE_LANE2, (DDRPHY_CONFIG_BASE + 0x250));
-	__raw_writel(0x00000000, (DDRPHY_CONFIG_BASE + 0x254));
-	__raw_writel(DQS_GATE_BYTE_LANE3, (DDRPHY_CONFIG_BASE + 0x2F4));
-	__raw_writel(0x00000000, (DDRPHY_CONFIG_BASE + 0x2F8));
-
-	__raw_writel(WR_DQS_RATIO_BYTE_LANE0, (DDRPHY_CONFIG_BASE + 0x0DC));
-	__raw_writel(0x0, (DDRPHY_CONFIG_BASE + 0x0E0));
-	__raw_writel(WR_DQS_RATIO_BYTE_LANE1, (DDRPHY_CONFIG_BASE + 0x180));
-	__raw_writel(0x0, (DDRPHY_CONFIG_BASE + 0x184));
-	__raw_writel(WR_DQS_RATIO_BYTE_LANE2, (DDRPHY_CONFIG_BASE + 0x224));
-	__raw_writel(0x0, (DDRPHY_CONFIG_BASE + 0x228));
-	__raw_writel(WR_DQS_RATIO_BYTE_LANE3, (DDRPHY_CONFIG_BASE + 0x2C8));
-	__raw_writel(0x0, (DDRPHY_CONFIG_BASE + 0x2CC));
-
-	__raw_writel(WR_DATA_RATIO_BYTE_LANE0, (DDRPHY_CONFIG_BASE + 0x120));
-	__raw_writel(0x0, (DDRPHY_CONFIG_BASE + 0x124));
-	__raw_writel(WR_DATA_RATIO_BYTE_LANE1, (DDRPHY_CONFIG_BASE + 0x1C4));
-	__raw_writel(0x0, (DDRPHY_CONFIG_BASE + 0x1C8));
-	__raw_writel(WR_DATA_RATIO_BYTE_LANE2, (DDRPHY_CONFIG_BASE + 0x268));
-	__raw_writel(0x0, (DDRPHY_CONFIG_BASE + 0x26C));
-	__raw_writel(WR_DATA_RATIO_BYTE_LANE3, (DDRPHY_CONFIG_BASE + 0x30C));
-	__raw_writel(0x0, (DDRPHY_CONFIG_BASE + 0x310));
-
-	__raw_writel(RD_DQS_RATIO, (DDRPHY_CONFIG_BASE + 0x0C8));
-	__raw_writel(0x0, (DDRPHY_CONFIG_BASE + 0x0CC));
-	__raw_writel(RD_DQS_RATIO, (DDRPHY_CONFIG_BASE + 0x16C));
-	__raw_writel(0x0, (DDRPHY_CONFIG_BASE + 0x170));
-	__raw_writel(RD_DQS_RATIO, (DDRPHY_CONFIG_BASE + 0x210));
-	__raw_writel(0x0, (DDRPHY_CONFIG_BASE + 0x214));
-	__raw_writel(RD_DQS_RATIO, (DDRPHY_CONFIG_BASE + 0x2B4));
-	__raw_writel(0x0, (DDRPHY_CONFIG_BASE + 0x2B8));
-
-	__raw_writel(0x5, (DDRPHY_CONFIG_BASE + 0x00C));
-	__raw_writel(0x5, (DDRPHY_CONFIG_BASE + 0x010));
-	__raw_writel(0x5, (DDRPHY_CONFIG_BASE + 0x040));
-	__raw_writel(0x5, (DDRPHY_CONFIG_BASE + 0x044));
-	__raw_writel(0x5, (DDRPHY_CONFIG_BASE + 0x074));
-	__raw_writel(0x5, (DDRPHY_CONFIG_BASE + 0x078));
-
-	__raw_writel(0x4, (DDRPHY_CONFIG_BASE + 0x0A8));
-	__raw_writel(0x4, (DDRPHY_CONFIG_BASE + 0x0AC));
-	__raw_writel(0x4, (DDRPHY_CONFIG_BASE + 0x14C));
-	__raw_writel(0x4, (DDRPHY_CONFIG_BASE + 0x150));
-	__raw_writel(0x4, (DDRPHY_CONFIG_BASE + 0x1F0));
-	__raw_writel(0x4, (DDRPHY_CONFIG_BASE + 0x1F4));
-	__raw_writel(0x4, (DDRPHY_CONFIG_BASE + 0x294));
-	__raw_writel(0x4, (DDRPHY_CONFIG_BASE + 0x298));
-
-	__raw_writel(0x5, (DDRPHY_CONFIG_BASE + 0x338));
-	__raw_writel(0x5, (DDRPHY_CONFIG_BASE + 0x340));
-	__raw_writel(0x5, (DDRPHY_CONFIG_BASE + 0x348));
-	__raw_writel(0x5, (DDRPHY_CONFIG_BASE + 0x350));
-
-}
-
-static void emif4p_init(u32 TIM1, u32 TIM2, u32 TIM3, u32 SDREF, u32 SDCFG, u32 RL)
-{
-	/*Program EMIF0 CFG Registers*/
-	__raw_writel(TIM1, EMIF4_0_SDRAM_TIM_1);
-	__raw_writel(TIM1, EMIF4_0_SDRAM_TIM_1_SHADOW);
-	__raw_writel(TIM2, EMIF4_0_SDRAM_TIM_2);
-	__raw_writel(TIM2, EMIF4_0_SDRAM_TIM_2_SHADOW);
-	__raw_writel(TIM3, EMIF4_0_SDRAM_TIM_3);
-	__raw_writel(TIM3, EMIF4_0_SDRAM_TIM_3_SHADOW);
-	__raw_writel(SDCFG, EMIF4_0_SDRAM_CONFIG);
-	//__raw_writel(SDREF, EMIF4_0_SDRAM_REF_CTRL);
-	//__raw_writel(SDREF, EMIF4_0_SDRAM_REF_CTRL_SHADOW);
-	__raw_writel(RL, EMIF4_0_DDR_PHY_CTRL_1);
-	__raw_writel(RL, EMIF4_0_DDR_PHY_CTRL_1_SHADOW);
-
-	if (CONFIG_TI816X_TWO_EMIF){
-	__raw_writel(TIM1, EMIF4_1_SDRAM_TIM_1);
-	__raw_writel(TIM1, EMIF4_1_SDRAM_TIM_1_SHADOW);
-	__raw_writel(TIM2, EMIF4_1_SDRAM_TIM_2);
-	__raw_writel(TIM2, EMIF4_1_SDRAM_TIM_2_SHADOW);
-	__raw_writel(TIM3, EMIF4_1_SDRAM_TIM_3);
-	__raw_writel(TIM3, EMIF4_1_SDRAM_TIM_3_SHADOW);
-	__raw_writel(SDCFG, EMIF4_1_SDRAM_CONFIG);
-	//__raw_writel(SDREF, EMIF4_0_SDRAM_REF_CTRL);
-	//__raw_writel(SDREF, EMIF4_0_SDRAM_REF_CTRL_SHADOW);
-	__raw_writel(RL, EMIF4_1_DDR_PHY_CTRL_1);
-	__raw_writel(RL, EMIF4_1_DDR_PHY_CTRL_1_SHADOW);
-	}
-
-}
-
-static void ddrsetup(void)
-{
-	/* setup a small control period */
-	__raw_writel(0x0000613B, EMIF4_0_SDRAM_REF_CTRL);
-	__raw_writel(0x1000613B, EMIF4_0_SDRAM_REF_CTRL);
-	__raw_writel(0x10000C30, EMIF4_0_SDRAM_REF_CTRL);
-
-	__raw_writel(EMIF_PHYCFG, EMIF4_0_DDR_PHY_CTRL_1);
-	__raw_writel(EMIF_PHYCFG, EMIF4_0_DDR_PHY_CTRL_1_SHADOW);
-
-	if (CONFIG_TI816X_TWO_EMIF){
-	/* setup a small control period */
-	__raw_writel(0x0000613B, EMIF4_1_SDRAM_REF_CTRL);
-	__raw_writel(0x1000613B, EMIF4_1_SDRAM_REF_CTRL);
-	__raw_writel(0x10000C30, EMIF4_1_SDRAM_REF_CTRL);
-
-	__raw_writel(EMIF_PHYCFG, EMIF4_1_DDR_PHY_CTRL_1);
-	__raw_writel(EMIF_PHYCFG, EMIF4_1_DDR_PHY_CTRL_1_SHADOW);
-	}
-
-}
-
-static void update_dqs(int emif)
-{
-}
-
-static void ddr_pll_config()
-{
-	pll_config(DDR_PLL_BASE,
-			DDR_N, DDR_M,
-			DDR_M2, DDR_CLKCTRL);
-}
-
-/*
- * configure individual ADPLLJ
- */
-static void pll_config(u32 base, u32 n, u32 m, u32 m2, u32 clkctrl_val)
-{
+	__raw_writel(0x2, CM_DEFAULT_FW_CLKCTRL);			/*Enable the Power Domain Transition of L3 Fast Domain Peripheral*/
 	__raw_writel(0x2, CM_DEFAULT_L3_FAST_CLKSTCTRL);			/*Enable the Power Domain Transition of L3 Fast Domain Peripheral*/
 	__raw_writel(0x2, CM_DEFAULT_EMIF_0_CLKCTRL);				/*Enable EMIF0 Clock*/
 	__raw_writel(0x2, CM_DEFAULT_EMIF_1_CLKCTRL); 				/*Enable EMIF1 Clock*/
+	__raw_writel(0x2, CM_DEFAULT_DMM_CLKCTRL);
+
 	while((__raw_readl(CM_DEFAULT_L3_FAST_CLKSTCTRL) & 0x300) != 0x300);	/*Poll for L3_FAST_GCLK  & DDR_GCLK  are active*/
 	while((__raw_readl(CM_DEFAULT_EMIF_0_CLKCTRL)) != 0x2);	/*Poll for Module is functional*/
 	while((__raw_readl(CM_DEFAULT_EMIF_1_CLKCTRL)) != 0x2);	/*Poll for Module is functional*/
-
-	ddr_init_settings(0);
-
-	if (CONFIG_TI816X_TWO_EMIF){
-		ddr_init_settings(1);
-	}
-
-	__raw_writel(0x2, CM_DEFAULT_DMM_CLKCTRL); 				/*Enable EMIF1 Clock*/
 	while((__raw_readl(CM_DEFAULT_DMM_CLKCTRL)) != 0x2);		/*Poll for Module is functional*/
 
-	/*Program the DMM to Access EMIF0*/
-	__raw_writel(0x80640300, DMM_LISA_MAP__0);
-	__raw_writel(0xC0640320, DMM_LISA_MAP__1);
+	__raw_writel(__raw_readl(VTP0_CTRL_REG) | 0x00000040 , VTP0_CTRL_REG);
+	__raw_writel(__raw_readl(VTP1_CTRL_REG) | 0x00000040 , VTP1_CTRL_REG);
 
-	/*Program the DMM to Access EMIF1*/
-	__raw_writel(0x80640300, DMM_LISA_MAP__2);
-	__raw_writel(0xC0640320, DMM_LISA_MAP__3);
+	// Write 0 to CLRZ bit
+	__raw_writel(__raw_readl(VTP0_CTRL_REG) & 0xfffffffe , VTP0_CTRL_REG);
+	__raw_writel(__raw_readl(VTP1_CTRL_REG) & 0xfffffffe , VTP1_CTRL_REG);
 
-	/*Enable Tiled Access*/
+	// Write 1 to CLRZ bit
+	__raw_writel(__raw_readl(VTP0_CTRL_REG) | 0x00000001 , VTP0_CTRL_REG);
+	__raw_writel(__raw_readl(VTP1_CTRL_REG) | 0x00000001 , VTP1_CTRL_REG);
+
+	// Read VTP control registers & check READY bits
+	while( (__raw_readl(VTP0_CTRL_REG) & 0x00000020) != 0x20);
+	while( (__raw_readl(VTP1_CTRL_REG) & 0x00000020) != 0x20);
+
+	/*Program the DMM to Access EMIF0 and EMIF1*/
+	__raw_writel(0x80600100, DMM_LISA_MAP__0);
+	__raw_writel(0x80600100, DMM_LISA_MAP__1);
+	__raw_writel(0xC0600200, DMM_LISA_MAP__2);
+	__raw_writel(0xC0600200, DMM_LISA_MAP__3);
+
+	while(__raw_readl(DMM_LISA_MAP__0)!=0x80600100);
+	while(__raw_readl(DMM_LISA_MAP__1)!=0x80600100);
+	while(__raw_readl(DMM_LISA_MAP__2)!=0xC0600200);
+	while(__raw_readl(DMM_LISA_MAP__3)!=0xC0600200);
+
 	__raw_writel(0x80000000, DMM_PAT_BASE_ADDR);
 
-	emif4p_init(EMIF_TIM1, EMIF_TIM2, EMIF_TIM3, EMIF_SDREF & 0xFFFFFFFF, EMIF_SDCFG, 0x10B);
-	ddrsetup();
-	update_dqs(0);
-	update_dqs(1);
+	/*Program EMIF0 CFG Registers*/
+	__raw_writel(0x7, EMIF4_0_DDR_PHY_CTRL_1);//RL =5
+	__raw_writel(0x7, EMIF4_0_DDR_PHY_CTRL_1_SHADOW);//RL =5
+	__raw_writel(0x0AAAF552, EMIF4_0_SDRAM_TIM_1);
+	__raw_writel(0x0AAAF552, EMIF4_0_SDRAM_TIM_1_SHADOW);
+	__raw_writel(0x043631D2, EMIF4_0_SDRAM_TIM_2);
+	__raw_writel(0x043631D2, EMIF4_0_SDRAM_TIM_2_SHADOW);
+	__raw_writel(0x00000327, EMIF4_0_SDRAM_TIM_3);
+	__raw_writel(0x00000327, EMIF4_0_SDRAM_TIM_3_SHADOW);
+	__raw_writel(0x10000C30, EMIF4_0_SDRAM_REF_CTRL);
+	__raw_writel(0x10000C30, EMIF4_0_SDRAM_REF_CTRL_SHADOW);
+	__raw_writel(0x40801AB2, EMIF4_0_SDRAM_CONFIG);// CL = 6
+
+	/*Program EMIF1 CFG Registers*/
+	__raw_writel(0x7, EMIF4_1_DDR_PHY_CTRL_1);
+	__raw_writel(0x7, EMIF4_1_DDR_PHY_CTRL_1_SHADOW);
+	__raw_writel(0x0AAAF552, EMIF4_1_SDRAM_TIM_1);
+	__raw_writel(0x0AAAF552, EMIF4_1_SDRAM_TIM_1_SHADOW);
+	__raw_writel(0x043631D2, EMIF4_1_SDRAM_TIM_2);
+	__raw_writel(0x043631D2, EMIF4_1_SDRAM_TIM_2_SHADOW);
+	__raw_writel(0x00000327, EMIF4_1_SDRAM_TIM_3);
+	__raw_writel(0x00000327, EMIF4_1_SDRAM_TIM_3_SHADOW);
+	__raw_writel(0x10000C30, EMIF4_1_SDRAM_REF_CTRL);
+	__raw_writel(0x10000C30, EMIF4_1_SDRAM_REF_CTRL_SHADOW);
+	__raw_writel(0x40801AB2, EMIF4_1_SDRAM_CONFIG);// CL = 6
+
+
 }
 #endif
 
@@ -331,7 +203,7 @@ static void pll_config(u32 base, u32 n, u32 m, u32 m2, u32 clkctrl_val)
 static void pcie_pll_config()
 {
 	/* Powerdown both reclkp/n single ended receiver */
-	__raw_writel(0x00000000, SERDES_REFCLK_CTRL);
+	__raw_writel(0x00000002, SERDES_REFCLK_CTRL);
 
 	__raw_writel(0x00000000, PCIE_PLLCFG0);
 
@@ -349,7 +221,7 @@ static void pcie_pll_config()
 
 	/* pcie_serdes_cfg_misc */
 	/* TODO: verify the address over here (CTRL_BASE + 0x6FC = 0x481406FC ???)*/
-	__raw_writel(0x00000E7B, 0x48141318);
+	//__raw_writel(0x00000E7B, 0x48141318);
 	delay(3);
 
 	/* Enable PLL LDO */
@@ -379,17 +251,23 @@ static void pcie_pll_config()
 
 static void sata_pll_config()
 {
-	__raw_writel(0xC12C003C, SATA_PLLCFG1);
-	__raw_writel(0x004008E0, SATA_PLLCFG3);
+	__raw_writel(0x00000004, SATA_PLLCFG0);
 	delay(35);
 
+	__raw_writel(0xC12C003C, SATA_PLLCFG1);
+	__raw_writel(0x004008E0, SATA_PLLCFG3);
+	delay(850);
+
 	/* Enable PLL LDO */
-	__raw_writel(0x00000004, SATA_PLLCFG0);
-	delay(75);
+	__raw_writel(0x00000014, SATA_PLLCFG0);
+	delay(850);
 
 	/* Enable DIG LDO, ENBGSC_REF, PLL LDO */
-	__raw_writel(0xC0000016, SATA_PLLCFG0);
+	__raw_writel(0x00000016, SATA_PLLCFG0);
 	delay(60);
+
+	__raw_writel(0xC0000016, SATA_PLLCFG0);
+	delay(2000);
 
 	/* Enable DIG LDO, SELSC, ENBGSC_REF, PLL LDO */
 	__raw_writel(0xC0000017, SATA_PLLCFG0);
@@ -409,7 +287,7 @@ static void modena_pll_config()
 {
 	pll_config(MODENA_PLL_BASE,
 			MODENA_N, MODENA_M,
-			MODENA_M2, MODENA_CLKCTRL);
+			0, MODENA_CLKCTRL);
 }
 
 static void l3_pll_config()
@@ -432,7 +310,11 @@ static void ddr_pll_config()
 static void pll_config(u32 base, u32 n, u32 m, u32 m2, u32 clkctrl_val)
 {
 	u32 m2nval, mn2val, read_clkctrl = 0;
-	m2nval = (m2 << 16) | n;
+	if (m2 == 0)
+		m2nval = n;
+	else
+		m2nval = (m2 << 16) | n;
+
 	mn2val = m;
 
 	/*
@@ -453,8 +335,14 @@ static void pll_config(u32 base, u32 n, u32 m, u32 m2, u32 clkctrl_val)
 	__raw_writel(0x0, (base + ADPLLJ_TENABLE));
 
 	read_clkctrl = __raw_readl(base + ADPLLJ_CLKCTRL);
-	__raw_writel((read_clkctrl & 0xff7e3fff) | clkctrl_val,
+
+	if (m2 == 0)
+		__raw_writel((read_clkctrl & 0xff7fffff) | clkctrl_val,
 			base + ADPLLJ_CLKCTRL);
+	else
+		__raw_writel((read_clkctrl & 0xff7fe3ff) | clkctrl_val,
+			base + ADPLLJ_CLKCTRL);
+
 
 	/* Wait for phase and freq lock */
 	while((__raw_readl(base + ADPLLJ_STATUS) & 0x00000600) != 0x00000600);
@@ -526,8 +414,8 @@ void prcm_init(u32 in_ddr)
 
 #ifdef CONFIG_SETUP_PLL
 	/* Setup the various plls */
-	pcie_pll_config();
-	sata_pll_config();
+//	sata_pll_config();
+//	pcie_pll_config();
 	modena_pll_config();
 	l3_pll_config();
 	ddr_pll_config();
@@ -537,19 +425,6 @@ void prcm_init(u32 in_ddr)
 	per_clocks_enable();
 #endif
 }
-
-static void unlock_pll_control_mmr(void)
-{
-	/* ??? */
-	__raw_writel(0x1EDA4C3D, 0x481C5040);
-	__raw_writel(0x2FF1AC2B, 0x48140060);
-	__raw_writel(0xF757FDC0, 0x48140064);
-	__raw_writel(0xE2BC3A6D, 0x48140068);
-	__raw_writel(0x1EBF131D, 0x4814006c);
-	__raw_writel(0x6F361E05, 0x48140070);
-
-}
-
 
 void cpsw_pad_config(u32 instance)
 {
@@ -661,16 +536,29 @@ void set_muxconf_regs(void)
 	}
 }
 
+void unlock_pll_control_mmr()
+{
+	/* ??? */
+	__raw_writel(0x1EDA4C3D, 0x481C5040);
+	__raw_writel(0x2FF1AC2B, 0x48140060);
+	__raw_writel(0xF757FDC0, 0x48140064);
+	__raw_writel(0xE2BC3A6D, 0x48140068);
+	__raw_writel(0x1EBF131D, 0x4814006c);
+	__raw_writel(0x6F361E05, 0x48140070);
+
+}
+
 /*
  * early system init of muxing and clocks.
  */
 void s_init(u32 in_ddr)
 {
 	l2_cache_enable();		/* Can be removed as A8 comes up with L2 enabled */
+	unlock_pll_control_mmr();
 	prcm_init(in_ddr);		/* Setup the PLLs and the clocks for the peripherals */
 #ifdef CONFIG_TI814X_CONFIG_DDR
 	if (!in_ddr)
-		config_ti814x_sdram_ddr();	/* Do DDR settings */
+		config_ti814x_ddr();	/* Do DDR settings */
 #endif
 	set_muxconf_regs();
 
@@ -806,4 +694,45 @@ int board_eth_init(bd_t *bis)
        return cpsw_register(&cpsw_data);
 }
 #endif
+
+#ifdef CONFIG_NAND_TI81XX
+/******************************************************************************
+ * Command to switch between NAND HW and SW ecc
+ *****************************************************************************/
+extern void ti81xx_nand_switch_ecc(nand_ecc_modes_t hardware, int32_t mode);
+static int do_switch_ecc(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
+{
+	int type = 0;
+	if (argc < 2)
+		goto usage;
+
+	if (strncmp(argv[1], "hw", 2) == 0) {
+		if (argc == 3)
+			type = simple_strtoul(argv[2], NULL, 10);
+		ti81xx_nand_switch_ecc(NAND_ECC_HW, type);
+	}
+	else if (strncmp(argv[1], "sw", 2) == 0)
+		ti81xx_nand_switch_ecc(NAND_ECC_SOFT, 0);
+	else
+		goto usage;
+
+	return 0;
+
+usage:
+	printf ("Usage: nandecc %s\n", cmdtp->usage);
+	return 1;
+}
+
+U_BOOT_CMD(
+	nandecc, 3, 1,	do_switch_ecc,
+	"Switch NAND ECC calculation algorithm b/w hardware and software",
+	"[sw|hw <hw_type>] \n"
+	"   [sw|hw]- Switch b/w hardware(hw) & software(sw) ecc algorithm\n"
+	"   hw_type- 0 for Hamming code\n"
+	"            1 for bch4\n"
+	"            2 for bch8\n"
+	"            3 for bch16\n"
+);
+
+#endif /* CONFIG_NAND_TI81XX */
 

@@ -22,8 +22,8 @@
 #define _CLOCKS_TI814X_H_
 
 /* Put the pll config values over here */
-#define MODENA_N	9
-#define MODENA_M	300
+#define MODENA_N	1
+#define MODENA_M	0x3C
 #define MODENA_M2	1
 #define MODENA_CLKCTRL	0x1
 
@@ -33,7 +33,7 @@
 #define L3_CLKCTRL	0x801
 
 #define DDR_N		19
-#define DDR_M		660
+#define DDR_M		666
 #define DDR_M2		2
 #define DDR_CLKCTRL	0x801
 

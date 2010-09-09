@@ -32,8 +32,11 @@
 # undef CONFIG_BOOTM_NETBSD
 # undef CONFIG_BOOTM_RTEMS
 # undef CONFIG_SREC
-# undef CONFIG_XYZMODEM
-
+//# undef CONFIG_XYZMODEM
+# define CONFIG_CMD_LOADB	/* loadb			*/
+# define CONFIG_CMD_LOADY	/* loady */
+# define CONFIG_SETUP_PLL
+# define CONFIG_TI814X_CONFIG_DDR
 # define CONFIG_ENV_SIZE			0x400
 # define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (8 * 1024))
 # define CONFIG_SYS_PROMPT		"TI#"
@@ -64,17 +67,14 @@
 
 #define CONFIG_SYS_AUTOLOAD		"yes"
 
-
 #endif
 
 #define CONFIG_SYS_GBL_DATA_SIZE	128	/* size in bytes reserved for
 						   initial data */
 
-//#define CONFIG_SETUP_PLL
-//#define CONFIG_TI814X_EVM_DDR2		/* Configure DDR2 in U-Boot */
 #define CONFIG_MISC_INIT_R		1
 
-#define CONFIG_BOOTDELAY		3	/* set to negative value for no autoboot */
+#define CONFIG_BOOTDELAY		-3	/* set to negative value for no autoboot */
 #define CONFIG_SYS_AUTOLOAD		"yes"
 
 
@@ -226,103 +226,6 @@
 # undef CONFIG_CMD_NAND			/* Remove NAND support */
 # undef CONFIG_NAND_TI81XX
 # undef CONFIG_ENV_IS_NOWHERE
-# ifdef CONFIG_SYS_MALLOC_LEN
-#  undef CONFIG_SYS_MALLOC_LEN
-# endif
-# define CONFIG_SYS_FLASH_USE_BUFFER_WRITE 1
-# define CONFIG_SYS_MALLOC_LEN		(0x100000)
-# define CONFIG_SYS_FLASH_CFI
-# define CONFIG_FLASH_CFI_DRIVER
-# define CONFIG_FLASH_CFI_MTD
-# define CONFIG_SYS_MAX_FLASH_SECT	512
-# define CONFIG_SYS_MAX_FLASH_BANKS	1
-# define CONFIG_SYS_FLASH_BASE		(0x08000000)
-# define CONFIG_SYS_MONITOR_BASE	CONFIG_SYS_FLASH_BASE
-# define CONFIG_ENV_IS_IN_FLASH	1
-# define NOR_SECT_SIZE			(128 * 1024)
-# define CONFIG_SYS_ENV_SECT_SIZE	(NOR_SECT_SIZE)
-# define CONFIG_ENV_SECT_SIZE		(NOR_SECT_SIZE)
-# define CONFIG_ENV_OFFSET		(2 * NOR_SECT_SIZE)
-# define CONFIG_ENV_ADDR		(CONFIG_SYS_FLASH_BASE + CONFIG_ENV_OFFSET)
-# define CONFIG_MTD_DEVICE
-#endif	/* NOR support */
-
-
-/* No I2C support in 1st stage */
-#ifndef CONFIG_TI814X_MIN_CONFIG
-
-# define CONFIG_CMD_I2C
-# define CONFIG_HARD_I2C			1
-# define CONFIG_SYS_I2C_SPEED		100000
-# define CONFIG_SYS_I2C_SLAVE		1
-# define CONFIG_SYS_I2C_BUS		0
-# define CONFIG_SYS_I2C_BUS_SELECT	1
-# define CONFIG_DRIVER_TI81XX_I2C	1
-
-/* EEPROM definitions */
-# define CONFIG_SYS_I2C_EEPROM_ADDR_LEN		3
-# define CONFIG_SYS_I2C_EEPROM_ADDR		0x50
-# define CONFIG_SYS_EEPROM_PAGE_WRITE_BITS	6
-# define CONFIG_SYS_EEPROM_PAGE_WRITE_DELAY_MS	20
-
-#endif
-
-/* ENV in NAND */
-#if defined(CONFIG_NAND_BOOT)
-# define CONFIG_ENV_IS_IN_NAND		1
-
-# ifdef CONFIG_ENV_IS_IN_NAND
-#  define CONFIG_SYS_MAX_FLASH_SECT	520		/* max number of sectors in a chip */
-#  define CONFIG_SYS_MAX_FLASH_BANKS	2		/* max number of flash banks */
-#  define CONFIG_SYS_MONITOR_LEN	(256 << 10)	/* Reserve 2 sectors */
-#  define CONFIG_SYS_FLASH_BASE		boot_flash_base
-#  define CONFIG_SYS_MONITOR_BASE	CONFIG_SYS_FLASH_BASE
-#  define MNAND_ENV_OFFSET		0x260000	/* environment starts here */
-#  define CONFIG_SYS_ENV_SECT_SIZE	boot_flash_sec
-#  define CONFIG_ENV_OFFSET		boot_flash_off
-#  define CONFIG_ENV_ADDR		MNAND_ENV_OFFSET
-#  define CONFIG_CMD_SAVEENV
-#  define CONFIG_NOFLASH
-#  undef CONFIG_ENV_IS_NOWHERE
-# endif
-
-# ifndef __ASSEMBLY__
-extern unsigned int boot_flash_base;
-extern volatile unsigned int boot_flash_env_addr;
-extern unsigned int boot_flash_off;
-extern unsigned int boot_flash_sec;
-extern unsigned int boot_flash_type;
-# endif
-#endif /* NAND support */
-
-/* SPI support */
-#define CONFIG_OMAP3_SPI
-#define CONFIG_MTD_DEVICE
-#define CONFIG_SPI_FLASH
-#define CONFIG_SPI_FLASH_WINBOND
-#define CONFIG_CMD_SF
-#define CONFIG_SF_DEFAULT_SPEED	(75000000)
-
-/* ENV in SPI */
-#if defined(CONFIG_SPI_BOOT)
-# define CONFIG_ENV_IS_IN_SPI_FLASH	1
-# ifdef CONFIG_ENV_IS_IN_SPI_FLASH
-#  define CONFIG_SYS_FLASH_BASE		(0)
-#  define SPI_FLASH_ERASE_SIZE		(4 * 1024) /* sector size of SPI flash */
-#  define CONFIG_SYS_ENV_SECT_SIZE	(2 * SPI_FLASH_ERASE_SIZE) /* env size */
-#  define CONFIG_ENV_SECT_SIZE		(CONFIG_SYS_ENV_SECT_SIZE)
-#  define CONFIG_ENV_OFFSET		(64 * SPI_FLASH_ERASE_SIZE)
-#  define CONFIG_ENV_ADDR		(CONFIG_ENV_OFFSET)
-#  define CONFIG_SYS_MAX_FLASH_SECT	(1024) /* no of sectors in SPI flash */
-#  define CONFIG_SYS_MAX_FLASH_BANKS	(1)
-#  undef CONFIG_ENV_IS_NOWHERE
-# endif
-#endif /* SPI support */
-
-/* NOR support */
-#if defined(CONFIG_NOR_BOOT)
-# undef CONFIG_CMD_NAND			/* Remove NAND support */
-# undef CONFIG_NAND_TI81XX
 # ifdef CONFIG_SYS_MALLOC_LEN
 #  undef CONFIG_SYS_MALLOC_LEN
 # endif
