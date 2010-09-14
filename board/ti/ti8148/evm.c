@@ -679,11 +679,7 @@ static struct cpsw_platform_data cpsw_data = {
 	.ale_entries            = 1024,
 	.host_port_reg_ofs      = 0x28,
 	.hw_stats_reg_ofs       = 0x400,
-	.mac_control            = /*(1 << 18)   |*/ /* IFCTLA   */
-				(1 << 15)     | /* EXTEN      */
-				(1 << 5)      | /* MIIEN      */
-				(1 << 4)      | /* TXFLOWEN   */
-				(1 << 3),       /* RXFLOWEN   */
+	.mac_control            = (1 << 5) /* MIIEN      */,
 	.control                = cpsw_control,
 	.phy_init               = phy_init,
 	.host_port_num		= 0,

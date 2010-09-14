@@ -892,10 +892,12 @@ ti8148_evm_min_nand:	unconfig
 		echo "#define CONFIG_NO_ETH"    >>$(obj)include/config.h ; \
 		echo "Setting up TI8148 minimal build for 1st stage..." ; \
 	else	\
-		echo "CONFIG_SYS_TEXT_BASE = 0x80300000" >> $(obj)board/ti/ti8148/config.tmp;\
-		echo "#define CONFIG_SYS_NO_FLASH" >> $(obj)include/config.h ; \
-		echo "#define CONFIG_NO_ETH"    >>$(obj)include/config.h ; \
-		echo "Setting up TI8148 default build with NAND..." ; \
+		if [ "$(findstring _nand,$@)" ] ; then \
+			echo "#define CONFIG_NAND_BOOT"    >>$(obj)include/config.h ; \
+			echo "CONFIG_SYS_TEXT_BASE = 0x80300000" >> $(obj)board/ti/ti8148/config.tmp;\
+			echo "#define CONFIG_SYS_NO_FLASH" >> $(obj)include/config.h ; \
+			echo "Setting up TI8148 default build with NAND..." ; \
+		fi; \
 	fi;
 	@$(MKCONFIG) -a ti8148_evm arm armv7 ti8148 ti ti81xx
 

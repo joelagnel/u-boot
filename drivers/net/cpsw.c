@@ -70,8 +70,8 @@ struct cpsw_mdio_regs {
 	u32	__reserved_1[20];
 
 	struct {
-		u32		access;
-		u32		physel;
+		u32 access;
+		u32 physel;
 #define USERACCESS_GO		(1 << 31)
 #define USERACCESS_WRITE	(1 << 30)
 #define USERACCESS_ACK		(1 << 29)
@@ -252,12 +252,12 @@ static inline void cpsw_ale_set_##name(u32 *ale_entry, u32 value)	\
 
 DEFINE_ALE_FIELD(entry_type,		60,	2)
 DEFINE_ALE_FIELD(mcast_state,		62,	2)
-DEFINE_ALE_FIELD(port_mask,		64,	3)
-DEFINE_ALE_FIELD(ucast_type,		66,	2)
-DEFINE_ALE_FIELD(port_num,		64,	2)
-DEFINE_ALE_FIELD(blocked,		63,	1)
-DEFINE_ALE_FIELD(secure,		62,	1)
-DEFINE_ALE_FIELD(mcast,			47,	1)
+DEFINE_ALE_FIELD(port_mask,		66,	3)
+DEFINE_ALE_FIELD(ucast_type,		62,	2)
+DEFINE_ALE_FIELD(port_num,		66,	2)
+DEFINE_ALE_FIELD(blocked,		65,	1)
+DEFINE_ALE_FIELD(secure,		64,	1)
+DEFINE_ALE_FIELD(mcast,			40,	1)
 
 /* The MAC address field in the ALE entry cannot be macroized as above */
 static inline void cpsw_ale_get_addr(u32 *ale_entry, u8 *addr)
@@ -571,7 +571,7 @@ static int cpsw_update_link(struct cpsw_priv *priv)
 	return link;
 }
 
-static inline cpsw_get_slave_port(struct cpsw_priv *priv, u32 slave_num)
+static inline u32 cpsw_get_slave_port(struct cpsw_priv *priv, u32 slave_num)
 {
 	if (priv->host_port == 0)
 		return slave_num + 1;
