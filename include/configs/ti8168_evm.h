@@ -44,12 +44,18 @@
 
 #define CONFIG_CMD_ASKENV
 #define CONFIG_VERSION_VARIABLE
-#define CONFIG_MMC		1
-#define CONFIG_NAND		1
-#define CONFIG_SPI		1
-#define CONFIG_I2C		1
 
-#ifdef CONFIG_SD_DUAL_BOOT
+/* By default, any image built will have MMC, NAND, SPI and I2C support */
+#define CONFIG_MMC			1
+#define CONFIG_NAND			1
+#define CONFIG_SPI			1
+#define CONFIG_I2C			1
+
+/* Due to size restrictions in RBL while in SD Boot mode, NAND/NOR support
+ * cannot co-exist in the same u-boot image that is loaded by the RBL from
+ * MMC/SD card.
+ */
+#ifdef CONFIG_SD_BOOT
 #undef CONFIG_NAND
 #undef CONFIG_TI816X_ASCIIART
 #undef CONFIG_SPI
@@ -58,7 +64,7 @@
 #define CONFIG_BOOTDELAY	0
 #define CONFIG_SYS_CONSOLE_INFO_QUIET
 #define CONFIG_SYS_AUTOLOAD	"yes"
-#define CONFIG_BOOTCOMMAND	"mmc init;fatload mmc 1 0x80700000 u-boot.bin;go 0x80700000"
+#define CONFIG_BOOTCOMMAND	"mmc init;fatload mmc 1 0x80009000 u-boot.bin;go 0x80009000"
 #define CONFIG_ENV_IS_NOWHERE
 #else
 #define CONFIG_BOOTDELAY		3	/* set to negative value for no autoboot */
@@ -133,16 +139,6 @@
 #define CONFIG_SERIAL1			1
 #define CONFIG_CONS_INDEX		1
 
-/* Due to restrictions in RBL while in SD Boot mode NAND/NOR support
- * cannot co-exist in the same u-boot image that is loaded by the RBL from
- * MMC/SD card.
- */
-#ifdef CONFIG_SD_BOOT
-/* Save the EVN in SPI Flash */
-#define CONFIG_SPI_BOOT
-#undef CONFIG_NAND
-#endif
-
 #if defined(CONFIG_NO_ETH)
 # undef CONFIG_CMD_NET
 #else
@@ -180,6 +176,7 @@
 							/* CS0 */
 #define CONFIG_SYS_MAX_NAND_DEVICE	1		/* Max number of NAND */
 #endif							/* devices */
+
 /* ENV in NAND */
 #if defined(CONFIG_NAND_BOOT)
 # define CONFIG_ENV_IS_IN_NAND		1
@@ -209,8 +206,8 @@ extern unsigned int boot_flash_type;
 # endif
 #endif /* NAND support */
 
-#ifdef CONFIG_SPI
 /* SPI support */
+#ifdef CONFIG_SPI
 #define CONFIG_OMAP3_SPI
 #define CONFIG_MTD_DEVICE
 #define CONFIG_SPI_FLASH
@@ -260,8 +257,8 @@ extern unsigned int boot_flash_type;
 # define CONFIG_MTD_DEVICE
 #endif	/* NOR support */
 
-#ifdef CONFIG_I2C
 /* I2C support */
+#ifdef CONFIG_I2C
 #define CONFIG_CMD_I2C
 #define CONFIG_HARD_I2C			1
 #define CONFIG_SYS_I2C_SPEED		100000
