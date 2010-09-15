@@ -916,9 +916,8 @@ ti8148_evm_min_nand:	unconfig
 ti8168_evm_config	\
 ti8168_evm_config_nand	\
 ti8168_evm_config_nor	\
-ti8168_evm_config_sd_boot	\
-ti8168_evm_config_sd_dual_boot	\
-ti8168_evm_config_spi:	unconfig
+ti8168_evm_config_spi	\
+ti8168_evm_min_sd:	unconfig
 	@mkdir -p $(obj)include
 	@echo "#define CONFIG_TI81XX"	>>$(obj)include/config.h
 	@echo "#define CONFIG_TI816X"	>>$(obj)include/config.h
@@ -933,14 +932,11 @@ ti8168_evm_config_spi:	unconfig
 		echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
 		echo "#define CONFIG_SPI_BOOT"    >>$(obj)include/config.h ; \
 		echo "Setting up TI8168 SPI build with ENV in SPI..." ; \
-	elif [ "$(findstring _sd_boot,$@)" ] ; then \
+	elif [ "$(findstring _sd,$@)" ] ; then \
 		echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
 		echo "#define CONFIG_SD_BOOT"    >>$(obj)include/config.h ; \
-		echo "Setting up TI8168 SD build with ENV in SPI..." ; \
-	elif [ "$(findstring _sd_dual_boot,$@)" ] ; then \
-		echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
-		echo "#define CONFIG_SD_DUAL_BOOT"    >>$(obj)include/config.h ; \
-		echo "Setting up TI8168 SD two Staged build with ENV in SPI..." ; \
+		echo "TI_IMAGE = u-boot.min.sd" >>$(obj)board/ti/ti8168/config.tmp; \
+		echo "Setting up TI8168 SD boot minimal build..." ; \
 	else	\
 		echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
 		echo "#define CONFIG_NAND_BOOT"    >>$(obj)include/config.h ; \
