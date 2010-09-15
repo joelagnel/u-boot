@@ -39,11 +39,19 @@
 # define CONFIG_TI814X_CONFIG_DDR
 # define CONFIG_ENV_SIZE			0x400
 # define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (8 * 1024))
-# define CONFIG_SYS_PROMPT		"TI#"
+# define CONFIG_SYS_PROMPT		"TI-MIN#"
+#define CONFIG_BOOTDELAY		3	/* set to negative value for no autoboot */
+#ifdef CONFIG_SPI
+# define CONFIG_EXTRA_ENV_SETTINGS \
+	"verify=yes\0" \
+	"bootcmd=sf probe 0; sf read 0x81000000 0x20000 0x40000; go 0x81000000\0" \
+
+#else
 # define CONFIG_EXTRA_ENV_SETTINGS \
 	"verify=yes\0" \
 	"bootcmd=nand read 0x81000000 0x20000 0x40000; go 0x81000000\0" \
 
+#endif
 #else
 
 # include <config_cmd_default.h>
