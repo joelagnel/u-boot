@@ -902,7 +902,6 @@ ti8148_evm_min_nand:	unconfig
 	else	\
 		echo "CONFIG_SYS_TEXT_BASE = 0x80300000" >> $(obj)board/ti/ti8148/config.tmp;\
 		echo "#define CONFIG_SYS_NO_FLASH" >> $(obj)include/config.h ; \
-		echo "#define CONFIG_NO_ETH"    >>$(obj)include/config.h ; \
 		if [ "$(findstring _nand,$@)" ] ; then \
 			echo "#define CONFIG_NAND_BOOT"    >>$(obj)include/config.h ; \
 			echo "Setting up TI8148 default build with ENV in NAND..." ; \
