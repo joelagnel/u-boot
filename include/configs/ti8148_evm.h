@@ -64,7 +64,7 @@
 # define CONFIG_CMDLINE_TAG        	1	/* enable passing of ATAGs  */
 # define CONFIG_SETUP_MEMORY_TAGS  	1
 # define CONFIG_INITRD_TAG	  	1	/* Required for ramdisk support */
-#define CONFIG_BOOTDELAY		-3	/* set to negative value for no autoboot */
+#define CONFIG_BOOTDELAY		3	/* set to negative value for no autoboot */
 
 #endif
 
