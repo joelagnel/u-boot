@@ -38,9 +38,9 @@
 #define CONFIG_MISC_INIT_R		1
 #define CONFIG_TI816X_ASCIIART		1	/* The eye */
 
-#define CONFIG_CMDLINE_TAG        	1	/* enable passing of ATAGs  */
-#define CONFIG_SETUP_MEMORY_TAGS  	1
-#define CONFIG_INITRD_TAG	  	1	/* Required for ramdisk support */
+#define CONFIG_CMDLINE_TAG		1	/* enable passing of ATAGs  */
+#define CONFIG_SETUP_MEMORY_TAGS	1
+#define CONFIG_INITRD_TAG		1	/* Required for ramdisk support */
 
 #define CONFIG_CMD_ASKENV
 #define CONFIG_VERSION_VARIABLE
@@ -56,20 +56,20 @@
  * MMC/SD card.
  */
 #ifdef CONFIG_SD_BOOT
-#undef CONFIG_NAND
-#undef CONFIG_TI816X_ASCIIART
-#undef CONFIG_SPI
-#undef CONFIG_I2C
-#define CONFIG_NO_ETH
-#define CONFIG_BOOTDELAY	0
-#define CONFIG_SYS_CONSOLE_INFO_QUIET
-#define CONFIG_SYS_AUTOLOAD	"yes"
-#define CONFIG_BOOTCOMMAND	"mmc init;fatload mmc 1 0x80009000 u-boot.bin;go 0x80009000"
-#define CONFIG_ENV_IS_NOWHERE
+# undef CONFIG_NAND
+# undef CONFIG_TI816X_ASCIIART
+# undef CONFIG_SPI
+# undef CONFIG_I2C
+# define CONFIG_NO_ETH
+# define CONFIG_BOOTDELAY	0
+# define CONFIG_SYS_CONSOLE_INFO_QUIET
+# define CONFIG_SYS_AUTOLOAD	"yes"
+# define CONFIG_BOOTCOMMAND	"mmc init;fatload mmc 1 0x80009000 u-boot.bin;go 0x80009000"
+# define CONFIG_ENV_IS_NOWHERE
 #else
-#define CONFIG_BOOTDELAY		3	/* set to negative value for no autoboot */
-#define CONFIG_SYS_AUTOLOAD		"no"
-#define CONFIG_EXTRA_ENV_SETTINGS \
+# define CONFIG_BOOTDELAY		3	/* set to negative value for no autoboot */
+# define CONFIG_SYS_AUTOLOAD		"no"
+# define CONFIG_EXTRA_ENV_SETTINGS \
 	"verify=yes\0" \
 	"bootfile=uImage\0" \
 	"ramdisk_file=ramdisk.gz\0"
@@ -99,8 +99,8 @@
 					+ (8 * 1024 * 1024))
 
 #undef  CONFIG_SYS_CLKS_IN_HZ				/* everything, incl board info, in Hz */
-#define CONFIG_SYS_LOAD_ADDR		0x81000000  	/* Default load address */
-#define CONFIG_SYS_HZ			1000        	/* 1ms clock */
+#define CONFIG_SYS_LOAD_ADDR		0x81000000	/* Default load address */
+#define CONFIG_SYS_HZ			1000	/* 1ms clock */
 
 /* Hardware related */
 
@@ -155,7 +155,7 @@
 # define CONFIG_BOOTP_SEND_HOSTNAME
 # define CONFIG_BOOTP_GATEWAY
 # define CONFIG_BOOTP_SUBNETMASK
-# define CONFIG_NET_RETRY_COUNT 	10
+# define CONFIG_NET_RETRY_COUNT		10
 # define CONFIG_NET_MULTI
 #endif
 
@@ -165,16 +165,16 @@
 
 /* NAND support */
 #ifdef CONFIG_NAND
-#define CONFIG_CMD_NAND
-#define CONFIG_NAND_TI81XX
-#define GPMC_NAND_ECC_LP_x16_LAYOUT 	1
-#define NAND_BASE			(0x08000000)	/* FIXME not sure */
-#define CONFIG_SYS_NAND_ADDR		NAND_BASE	/* physical address */
+# define CONFIG_CMD_NAND
+# define CONFIG_NAND_TI81XX
+# define GPMC_NAND_ECC_LP_x16_LAYOUT	1
+# define NAND_BASE			(0x08000000)	/* FIXME not sure */
+# define CONFIG_SYS_NAND_ADDR		NAND_BASE	/* physical address */
 							/* to access nand */
-#define CONFIG_SYS_NAND_BASE		NAND_BASE	/* physical address */
+# define CONFIG_SYS_NAND_BASE		NAND_BASE	/* physical address */
 							/* to access nand at */
 							/* CS0 */
-#define CONFIG_SYS_MAX_NAND_DEVICE	1		/* Max number of NAND */
+# define CONFIG_SYS_MAX_NAND_DEVICE	1		/* Max number of NAND */
 #endif							/* devices */
 
 /* ENV in NAND */
@@ -208,12 +208,12 @@ extern unsigned int boot_flash_type;
 
 /* SPI support */
 #ifdef CONFIG_SPI
-#define CONFIG_OMAP3_SPI
-#define CONFIG_MTD_DEVICE
-#define CONFIG_SPI_FLASH
-#define CONFIG_SPI_FLASH_WINBOND
-#define CONFIG_CMD_SF
-#define CONFIG_SF_DEFAULT_SPEED	(75000000)
+# define CONFIG_OMAP3_SPI
+# define CONFIG_MTD_DEVICE
+# define CONFIG_SPI_FLASH
+# define CONFIG_SPI_FLASH_WINBOND
+# define CONFIG_CMD_SF
+# define CONFIG_SF_DEFAULT_SPEED	(75000000)
 #endif
 
 /* ENV in SPI */
@@ -259,27 +259,27 @@ extern unsigned int boot_flash_type;
 
 /* I2C support */
 #ifdef CONFIG_I2C
-#define CONFIG_CMD_I2C
-#define CONFIG_HARD_I2C			1
-#define CONFIG_SYS_I2C_SPEED		100000
-#define CONFIG_SYS_I2C_SLAVE		1
-#define CONFIG_SYS_I2C_BUS		0
-#define CONFIG_SYS_I2C_BUS_SELECT	1
-#define CONFIG_DRIVER_TI81XX_I2C	1
+# define CONFIG_CMD_I2C
+# define CONFIG_HARD_I2C			1
+# define CONFIG_SYS_I2C_SPEED		100000
+# define CONFIG_SYS_I2C_SLAVE		1
+# define CONFIG_SYS_I2C_BUS		0
+# define CONFIG_SYS_I2C_BUS_SELECT	1
+# define CONFIG_DRIVER_TI81XX_I2C	1
 
 /* EEPROM definitions */
-#define CONFIG_SYS_I2C_EEPROM_ADDR_LEN		3
-#define CONFIG_SYS_I2C_EEPROM_ADDR		0x50
-#define CONFIG_SYS_EEPROM_PAGE_WRITE_BITS	6
-#define CONFIG_SYS_EEPROM_PAGE_WRITE_DELAY_MS	20
+# define CONFIG_SYS_I2C_EEPROM_ADDR_LEN		3
+# define CONFIG_SYS_I2C_EEPROM_ADDR		0x50
+# define CONFIG_SYS_EEPROM_PAGE_WRITE_BITS	6
+# define CONFIG_SYS_EEPROM_PAGE_WRITE_DELAY_MS	20
 #endif
 
 /* HSMMC Definitions */
 #ifdef CONFIG_MMC
-#define CONFIG_OMAP3_MMC	1
-#define CONFIG_CMD_MMC		1
-#define CONFIG_DOS_PARTITION	1
-#define CONFIG_CMD_FAT		1
+# define CONFIG_OMAP3_MMC	1
+# define CONFIG_CMD_MMC		1
+# define CONFIG_DOS_PARTITION	1
+# define CONFIG_CMD_FAT		1
 #endif
 
 /* Unsupported features */
