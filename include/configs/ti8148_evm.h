@@ -221,7 +221,7 @@
 #  define SPI_FLASH_ERASE_SIZE		(4 * 1024) /* sector size of SPI flash */
 #  define CONFIG_SYS_ENV_SECT_SIZE	(2 * SPI_FLASH_ERASE_SIZE) /* env size */
 #  define CONFIG_ENV_SECT_SIZE		(CONFIG_SYS_ENV_SECT_SIZE)
-#  define CONFIG_ENV_OFFSET		(64 * SPI_FLASH_ERASE_SIZE)
+#  define CONFIG_ENV_OFFSET		(96 * SPI_FLASH_ERASE_SIZE)
 #  define CONFIG_ENV_ADDR		(CONFIG_ENV_OFFSET)
 #  define CONFIG_SYS_MAX_FLASH_SECT	(1024) /* no of sectors in SPI flash */
 #  define CONFIG_SYS_MAX_FLASH_BANKS	(1)
