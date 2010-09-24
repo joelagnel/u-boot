@@ -251,29 +251,27 @@ static void pcie_pll_config()
 
 static void sata_pll_config()
 {
-	__raw_writel(0x00000004, SATA_PLLCFG0);
-	delay(35);
-
 	__raw_writel(0xC12C003C, SATA_PLLCFG1);
 	__raw_writel(0x004008E0, SATA_PLLCFG3);
-	delay(850);
+	delay(0xFFFF);
+
+	__raw_writel(0x80000004, SATA_PLLCFG0);
+	delay(0xFFFF);
 
 	/* Enable PLL LDO */
-	__raw_writel(0x00000014, SATA_PLLCFG0);
-	delay(850);
+	__raw_writel(0x80000014, SATA_PLLCFG0);
+	delay(0xFFFF);
 
 	/* Enable DIG LDO, ENBGSC_REF, PLL LDO */
-	__raw_writel(0x00000016, SATA_PLLCFG0);
-	delay(60);
+	__raw_writel(0x80000016, SATA_PLLCFG0);
+	delay(0xFFFF);
 
-	__raw_writel(0xC0000016, SATA_PLLCFG0);
-	delay(2000);
-
-	/* Enable DIG LDO, SELSC, ENBGSC_REF, PLL LDO */
 	__raw_writel(0xC0000017, SATA_PLLCFG0);
+	delay(0xFFFF);
 
 	/* wait for ADPLL lock */
-	while(__raw_readl(SATA_PLLSTATUS) != 0x1);
+	while(((__raw_readl(SATA_PLLSTATUS) & 0x01) == 0x0));
+
 }
 
 static void usb_pll_config()
@@ -401,6 +399,7 @@ void per_clocks_enable(void)
 	/* Ethernet */
 	__raw_writel(0x2, CM_ETHERNET_CLKSTCTRL);
 	__raw_writel(0x2, CM_ALWON_ETHERNET_0_CLKCTRL);
+	while((__raw_readl(CM_ALWON_ETHERNET_0_CLKCTRL) & 0x30000) != 0);
 
 }
 
@@ -414,7 +413,7 @@ void prcm_init(u32 in_ddr)
 
 #ifdef CONFIG_SETUP_PLL
 	/* Setup the various plls */
-//	sata_pll_config();
+	sata_pll_config();
 //	pcie_pll_config();
 	modena_pll_config();
 	l3_pll_config();
@@ -548,6 +547,98 @@ void unlock_pll_control_mmr()
 
 }
 
+
+void cpsw_pad_config(u32 instance)
+{
+#define PADCTRL_BASE 0x48140000
+#define PAD232_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B9C))
+#define PAD233_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BA0))
+#define PAD234_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BA4))
+#define PAD235_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BA8))
+#define PAD236_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BAC))
+#define PAD237_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BB0))
+#define PAD238_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BB4))
+#define PAD239_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BB8))
+#define PAD240_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BBC))
+#define PAD241_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BC0))
+#define PAD242_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BC4))
+#define PAD243_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BC8))
+#define PAD244_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BCC))
+#define PAD245_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BD0))
+#define PAD246_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BD4))
+#define PAD247_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BD8))
+#define PAD248_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BDC))
+#define PAD249_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BE0))
+#define PAD250_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BE4))
+#define PAD251_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BE8))
+#define PAD252_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BEC))
+#define PAD253_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BF0))
+#define PAD254_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BF4))
+#define PAD255_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BF8))
+#define PAD256_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BFC))
+#define PAD257_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0C00))
+#define PAD258_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0C04))
+
+	if (instance == 0) {
+		volatile u32 val = 0;
+		val = PAD232_CNTRL;
+		PAD232_CNTRL = (volatile unsigned int) (BIT(18) | BIT(0));
+		val = PAD233_CNTRL;
+		PAD233_CNTRL = (volatile unsigned int) (BIT(19) | BIT(17) | BIT(0));
+		val = PAD234_CNTRL;
+		PAD234_CNTRL = (volatile unsigned int) (BIT(19) | BIT(18) | BIT(17) | BIT(0));
+		val = PAD235_CNTRL;
+		PAD235_CNTRL = (volatile unsigned int) (BIT(19) | BIT(18) | BIT(0));
+		val = PAD236_CNTRL;
+		PAD236_CNTRL = (volatile unsigned int) (BIT(19) | BIT(18) | BIT(0));
+		val = PAD237_CNTRL;
+		PAD237_CNTRL = (volatile unsigned int) (BIT(19) | BIT(18) | BIT(0));
+		val = PAD238_CNTRL;
+		PAD238_CNTRL = (volatile unsigned int) (BIT(19) | BIT(18) | BIT(0));
+		val = PAD239_CNTRL;
+		PAD239_CNTRL = (volatile unsigned int) (BIT(19) | BIT(18) | BIT(0));
+		val = PAD240_CNTRL;
+		PAD240_CNTRL = (volatile unsigned int) (BIT(18) | BIT(0));
+		val = PAD241_CNTRL;
+		PAD241_CNTRL = (volatile unsigned int) (BIT(18) | BIT(0));
+		val = PAD242_CNTRL;
+		PAD242_CNTRL = (volatile unsigned int) (BIT(18) | BIT(0));
+		val = PAD243_CNTRL;
+		PAD243_CNTRL = (volatile unsigned int) (BIT(18) | BIT(0));
+		val = PAD244_CNTRL;
+		PAD244_CNTRL = (volatile unsigned int) (BIT(18) | BIT(0));
+		val = PAD245_CNTRL;
+		PAD245_CNTRL = (volatile unsigned int) (BIT(18) | BIT(0));
+		val = PAD246_CNTRL;
+		PAD246_CNTRL = (volatile unsigned int) (BIT(18) | BIT(0));
+		val = PAD247_CNTRL;
+		PAD247_CNTRL = (volatile unsigned int) (BIT(18) | BIT(0));
+		val = PAD248_CNTRL;
+		PAD248_CNTRL = (volatile unsigned int) (BIT(18) | BIT(0));
+		val = PAD249_CNTRL;
+		PAD249_CNTRL = (volatile unsigned int) (BIT(0));
+		val = PAD250_CNTRL;
+		PAD250_CNTRL = (volatile unsigned int) (BIT(0));
+		val = PAD251_CNTRL;
+		PAD251_CNTRL = (volatile unsigned int) (BIT(0));
+		val = PAD252_CNTRL;
+		PAD252_CNTRL = (volatile unsigned int) (BIT(0));
+		val = PAD253_CNTRL;
+		PAD253_CNTRL = (volatile unsigned int) (BIT(0));
+		val = PAD254_CNTRL;
+		PAD254_CNTRL = (volatile unsigned int) (BIT(0));
+		val = PAD255_CNTRL;
+		PAD255_CNTRL = (volatile unsigned int) (BIT(0));
+		val = PAD256_CNTRL;
+		PAD256_CNTRL = (volatile unsigned int) (BIT(0));
+		val = PAD257_CNTRL;
+		PAD257_CNTRL = (volatile unsigned int) (BIT(0));
+		val = PAD258_CNTRL;
+		PAD258_CNTRL = (volatile unsigned int) (BIT(0));
+	}
+}
+
+
 /*
  * early system init of muxing and clocks.
  */
@@ -561,7 +652,7 @@ void s_init(u32 in_ddr)
 		config_ti814x_ddr();	/* Do DDR settings */
 #endif
 	set_muxconf_regs();
-
+	cpsw_pad_config(0);
 }
 
 /*
@@ -586,6 +677,7 @@ static void phy_init(char *name, int addr)
 	unsigned short val;
 	unsigned int   cntr = 0;
 
+	printf(" Initializing PHY %d\n", addr);
 	/* Enable PHY to clock out TX_CLK */
 	miiphy_read(name, addr, PHY_CONF_REG, &val);
 	val |= PHY_CONF_TXCLKEN;
@@ -639,9 +731,10 @@ static void phy_init(char *name, int addr)
                }
 
        }while(cntr < 250);
+
        if (!miiphy_read(name, addr, PHY_BMSR, &val)) {
                if (!(val & PHY_BMSR_AUTN_COMP))
-                       printf("phy_init: auto negotitation failed!\n");
+                       printf("Auto negotitation failed\n");
        }
 
        return;
