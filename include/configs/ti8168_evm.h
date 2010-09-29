@@ -28,6 +28,7 @@
 /* Display CPU info */
 #define CONFIG_DISPLAY_CPUINFO		1
 
+//#define CONFIG_SETUP_1V
 /*
  * Size of malloc() pool
  */
@@ -37,8 +38,8 @@
 						   initial data */
 
 /* Only one the following two options (DDR3/DDR2) should be enabled */
-//#define CONFIG_TI816X_EVM_DDR3			/* Configure DDR3 in U-Boot */
-#define CONFIG_TI816X_EVM_DDR2				/* Configure DDR2 in U-Boot */
+#define CONFIG_TI816X_EVM_DDR3			/* Configure DDR3 in U-Boot */
+//#define CONFIG_TI816X_EVM_DDR2				/* Configure DDR2 in U-Boot */
 #define CONFIG_TI816X_TWO_EMIF		1
 #define CONFIG_MISC_INIT_R		1
 #define CONFIG_TI816X_ASCIIART		1	/* The eye */
