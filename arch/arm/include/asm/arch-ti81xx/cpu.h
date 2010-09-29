@@ -335,7 +335,6 @@ struct gptimer {
 #define CM_DEFAULT_DMM_CLKCTRL		(PRCM_BASE + 0x0528)
 #define CM_DEFAULT_FW_CLKCTRL		(PRCM_BASE + 0x052C)
 
-
 /* Smartreflex Registers */
 #define TI816X_SMRT_SCALE_ADDR		(CTRL_BASE + 0x06A0)
 #define TI816X_SMRT_OPP_SVT_ADDR	(CTRL_BASE + 0x06A8)

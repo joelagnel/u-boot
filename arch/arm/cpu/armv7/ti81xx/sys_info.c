@@ -29,6 +29,7 @@
 #include <asm/io.h>
 #include <asm/arch/sys_proto.h>
 #include <asm/arch/cpu.h>
+#include <asm/arch/clock.h>
 
 extern omap3_sysinfo sysinfo;
 
@@ -95,6 +96,7 @@ u32 get_sysboot_value(void)
 int print_cpuinfo (void)
 {
 	char *cpu_s, *sec_s;
+	int arm_freq, ddr_freq;
 
 	switch (get_cpu_type()) {
 	case TI8168:
@@ -122,8 +124,22 @@ int print_cpuinfo (void)
 		sec_s = "?";
 	}
 
-	printf("TI%s-%s rev 1.%d\n\n",
+	printf("TI%s-%s rev 1.%d\n",
 			cpu_s, sec_s, get_cpu_rev());
+	printf("\n");
+
+	/* ARM and DDR frequencies */
+
+#ifdef CONFIG_TI816X
+	/* f0 = ((N * K) / (FREQ * P * M)) * fr */
+
+	arm_freq = (((MAIN_N * FAPLL_K * OSC_FREQ)/(MAIN_INTFREQ2 * MAIN_P * MAIN_MDIV2)))/SYSCLK_2_DIV;
+	ddr_freq = ((DDR_N * OSC_FREQ)/DDR_MDIV1);
+
+	printf("ARM clk: %dMHz\n", arm_freq);
+	printf("DDR clk: %dMHz\n", ddr_freq);
+	printf("\n");
+#endif
 
 	return 0;
 }
