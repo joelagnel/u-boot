@@ -56,6 +56,17 @@
 #define CONFIG_SPI			1
 #define CONFIG_I2C			1
 
+/* Minimal image which runs out of internal memory */
+#ifdef CONFIG_MINIMAL
+# undef CONFIG_MMC
+# undef CONFIG_NAND
+# undef CONFIG_SPI
+# undef CONFIG_I2C
+# define CONFIG_NO_ETH
+#endif
+
+
+
 /* Due to size restrictions in RBL while in SD Boot mode, NAND/NOR support
  * cannot co-exist in the same u-boot image that is loaded by the RBL from
  * MMC/SD card.

@@ -917,6 +917,7 @@ ti8168_evm_config	\
 ti8168_evm_config_nand	\
 ti8168_evm_config_nor	\
 ti8168_evm_config_spi	\
+ti8168_evm_min_ocmc	\
 ti8168_evm_min_sd:	unconfig
 	@mkdir -p $(obj)include
 	@echo "#define CONFIG_TI81XX"	>>$(obj)include/config.h
@@ -937,6 +938,11 @@ ti8168_evm_min_sd:	unconfig
 		echo "#define CONFIG_SD_BOOT"    >>$(obj)include/config.h ; \
 		echo "TI_IMAGE = u-boot.min.sd" >>$(obj)board/ti/ti8168/config.tmp; \
 		echo "Setting up TI8168 SD boot minimal build..." ; \
+	elif [ "$(findstring _ocmc,$@)" ] ; then \
+		echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
+		echo "#define CONFIG_MINIMAL"    >>$(obj)include/config.h ; \
+		echo "TEXT_BASE = 0x40410000" >>$(obj)board/ti/ti8168/config.tmp; \
+		echo "Setting up TI8168 minimal build..." ; \
 	else	\
 		echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
 		echo "#define CONFIG_NAND_BOOT"    >>$(obj)include/config.h ; \
