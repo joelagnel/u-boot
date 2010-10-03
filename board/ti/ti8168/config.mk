@@ -17,9 +17,10 @@
 # Output image name. Used only in case of non-xip. For NOR boot u-boot.bin
 # could be used.
 TI_IMAGE = u-boot.noxip.bin
-sinclude $(OBJTREE)/board/$(BOARDDIR)/config.tmp
 # This will be used by mkimage extension to select header for image
 TI_DEVICE = ti81xx
 # ROM code will load u-boot to this address
 TI_LOAD_ADDR = 0x40400000
 CONFIG_SYS_TEXT_BASE = 0x80300000
+# Over-ride the macros if supplied from the Makefile
+sinclude $(OBJTREE)/board/$(BOARDDIR)/config.tmp
