@@ -61,16 +61,15 @@
  * MMC/SD card.
  */
 #ifdef CONFIG_SD_BOOT
-#undef CONFIG_NAND
-#undef CONFIG_TI816X_ASCIIART
-#undef CONFIG_SPI
-#undef CONFIG_I2C
-#define CONFIG_NO_ETH
-#define CONFIG_BOOTDELAY	0
-#define CONFIG_SYS_CONSOLE_INFO_QUIET
-#define CONFIG_SYS_AUTOLOAD	"yes"
-#define CONFIG_BOOTCOMMAND	"mmc init;fatload mmc 1 0x80009000 u-boot.bin;go 0x80009000"
-#define CONFIG_ENV_IS_NOWHERE
+# undef CONFIG_NAND
+# undef CONFIG_TI816X_ASCIIART
+# undef CONFIG_SPI
+# undef CONFIG_I2C
+# define CONFIG_NO_ETH
+# define CONFIG_BOOTDELAY	0
+# define CONFIG_SYS_AUTOLOAD	"yes"
+# define CONFIG_BOOTCOMMAND	"mmc init;fatload mmc 1 0x80009000 u-boot.bin;go 0x80009000"
+# define CONFIG_ENV_IS_NOWHERE
 #else
 #define CONFIG_BOOTDELAY		3	/* set to negative value for no autoboot */
 #define CONFIG_SYS_AUTOLOAD		"no"
@@ -145,6 +144,7 @@
  */
 #define CONFIG_SERIAL1			1
 #define CONFIG_CONS_INDEX		1
+#define CONFIG_SYS_CONSOLE_INFO_QUIET
 
 #if defined(CONFIG_NO_ETH)
 # undef CONFIG_CMD_NET

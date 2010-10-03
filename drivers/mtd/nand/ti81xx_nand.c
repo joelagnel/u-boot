@@ -849,7 +849,9 @@ int board_nand_init(struct nand_chip *nand)
 		/* Check if NAND type is set */
 		if ((readl(&gpmc_cfg->cs[cs].config1) & 0xC00) == 0x800) {
 			/* Found it!! */
+#ifdef NAND_DEBUG
 			printf("Searching for NAND device @ GPMC CS:%1d\n", cs);
+#endif
 			break;
 		}
 		cs++;
