@@ -83,6 +83,10 @@ struct gptimer {
 #define HS_DEVICE			0x2
 #define GP_DEVICE			0x3
 
+/* cpu-id for TI81XX family */
+#define TI8168				0xb81e
+
+#define DEVICE_ID			(CTRL_BASE + 0x0600)
 /* This gives the status of the boot mode pins on the evm */
 #define SYSBOOT_MASK			(BIT(0) | BIT(1) | BIT(2) |BIT(3) |BIT(4))
 
@@ -288,7 +292,7 @@ struct gptimer {
 #define DMM_LISA_MAP__1			(DMM_BASE + 0x44)
 #define DMM_LISA_MAP__2			(DMM_BASE + 0x48)
 #define DMM_LISA_MAP__3			(DMM_BASE + 0x4C)
-#define DMM_PAT_BASE_ADDR 		(DMM_BASE + 0x460)
+#define DMM_PAT_BASE_ADDR		(DMM_BASE + 0x460)
 
 #define EMIF4_0_SDRAM_CONFIG		(EMIF4_0_CFG_BASE + 0x08)
 #define EMIF4_0_SDRAM_CONFIG2		(EMIF4_0_CFG_BASE + 0x0C)
@@ -324,9 +328,9 @@ struct gptimer {
 /*EMIF4 PRCM Defintion*/
 #define CM_DEFAULT_L3_FAST_CLKSTCTRL	(PRCM_BASE + 0x0508)
 #define CM_DEFAULT_EMIF_0_CLKCTRL	(PRCM_BASE + 0x0520)
-#define CM_DEFAULT_EMIF_1_CLKCTRL    	(PRCM_BASE + 0x0524)
-#define CM_DEFAULT_DMM_CLKCTRL 		(PRCM_BASE + 0x0528)
-#define CM_DEFAULT_FW_CLKCTRL 		(PRCM_BASE + 0x052C)
+#define CM_DEFAULT_EMIF_1_CLKCTRL	(PRCM_BASE + 0x0524)
+#define CM_DEFAULT_DMM_CLKCTRL		(PRCM_BASE + 0x0528)
+#define CM_DEFAULT_FW_CLKCTRL		(PRCM_BASE + 0x052C)
 
 
 /* Smartreflex Registers */
@@ -387,20 +391,29 @@ struct gptimer {
 #define SC0_DATA			(CTRL_BASE + 0xafc)	/* a25 */
 #define GPMC_A27			(CTRL_BASE + 0xba0)	/* a27 */
 
-#define GPMC_A12 			TIM7_OUT
-#define GPMC_A13 			UART1_CTSN
-#define GPMC_A14 			UART1_RTSN
-#define GPMC_A15 			UART2_RTSN
-#define GPMC_A16 			UART2_CTSN
-#define GPMC_A17 			UART0_RIN
-#define GPMC_A18 			UART0_DCDN
-#define GPMC_A19 			UART0_DSRN
-#define GPMC_A20 			UART0_DTRN
-#define GPMC_A21 			SPI_SCS3
-#define GPMC_A22 			SPI_SC2
-#define GPMC_A23 			GPO_IO6
-#define GPMC_A24 			TIM6_OUT
-#define GPMC_A25 			SC0_DATA
+/* MMC Pad register offsets */
+#define MMC_POW				(CTRL_BASE + 0xa70)
+#define MMC_CLK				(CTRL_BASE + 0xa74)
+#define MMC_CMD				(CTRL_BASE + 0xa78)
+#define MMC_DAT0			(CTRL_BASE + 0xa7c)
+#define MMC_DAT1_SDIRQ			(CTRL_BASE + 0xa80)
+#define MMC_DAT2_SDRW			(CTRL_BASE + 0xa84)
+#define MMC_DAT3			(CTRL_BASE + 0xa88)
+
+#define GPMC_A12			TIM7_OUT
+#define GPMC_A13			UART1_CTSN
+#define GPMC_A14			UART1_RTSN
+#define GPMC_A15			UART2_RTSN
+#define GPMC_A16			UART2_CTSN
+#define GPMC_A17			UART0_RIN
+#define GPMC_A18			UART0_DCDN
+#define GPMC_A19			UART0_DSRN
+#define GPMC_A20			UART0_DTRN
+#define GPMC_A21			SPI_SCS3
+#define GPMC_A22			SPI_SC2
+#define GPMC_A23			GPO_IO6
+#define GPMC_A24			TIM6_OUT
+#define GPMC_A25			SC0_DATA
 
 #endif
 
@@ -433,7 +446,7 @@ struct gpmc {
 	u32 irqstatus;		/* 0x18 */
 	u32 irqenable;		/* 0x1C */
 	u8 res3[0x20];
-	u32 timeout_control; 	/* 0x40 */
+	u32 timeout_control;	/* 0x40 */
 	u8 res4[0xC];
 	u32 config;		/* 0x50 */
 	u32 status;		/* 0x54 */

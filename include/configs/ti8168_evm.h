@@ -25,6 +25,9 @@
 /* U-Boot default commands */
 #include <config_cmd_default.h>
 
+/* Display CPU info */
+#define CONFIG_DISPLAY_CPUINFO		1
+
 /*
  * Size of malloc() pool
  */

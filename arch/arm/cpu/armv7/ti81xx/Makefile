@@ -22,6 +22,7 @@ SOBJS	:= lowlevel_init.o
 SOBJS	+= cache.o
 
 COBJS	+= mem.o
+COBJS	+= sys_info.o
 
 COBJS-$(CONFIG_NAND_TI81XX)	+= elm.o
 

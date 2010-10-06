@@ -102,26 +102,6 @@ int dram_init(void)
 }
 
 
-/*
- *  tell if GP/HS/EMU/TST
- */
-u32 get_device_type(void)
-{
-	u32 mode;
-	mode = __raw_readl(CONTROL_STATUS) & (DEVICE_MASK);
-	return(mode >>= 8);
-}
-
-/*
- * return SYS_BOOT[4:0]
- */
-u32 get_sysboot_value(void)
-{
-	u32 mode;
-	mode = __raw_readl(CONTROL_STATUS) & (SYSBOOT_MASK);
-	return mode;
-}
-
 int misc_init_r (void)
 {
 	return 0;
@@ -133,7 +113,7 @@ static void config_ti814x_ddr(void)
 	__raw_writel(0x2, CM_DEFAULT_FW_CLKCTRL);			/*Enable the Power Domain Transition of L3 Fast Domain Peripheral*/
 	__raw_writel(0x2, CM_DEFAULT_L3_FAST_CLKSTCTRL);			/*Enable the Power Domain Transition of L3 Fast Domain Peripheral*/
 	__raw_writel(0x2, CM_DEFAULT_EMIF_0_CLKCTRL);				/*Enable EMIF0 Clock*/
-	__raw_writel(0x2, CM_DEFAULT_EMIF_1_CLKCTRL); 				/*Enable EMIF1 Clock*/
+	__raw_writel(0x2, CM_DEFAULT_EMIF_1_CLKCTRL);				/*Enable EMIF1 Clock*/
 	__raw_writel(0x2, CM_DEFAULT_DMM_CLKCTRL);
 
 	while((__raw_readl(CM_DEFAULT_L3_FAST_CLKSTCTRL) & 0x300) != 0x300);	/*Poll for L3_FAST_GCLK  & DDR_GCLK  are active*/

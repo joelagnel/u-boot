@@ -181,27 +181,6 @@ int dram_init(void)
 	return 0;
 }
 
-
-/*************************************************************
- *  get_device_type(): tell if GP/HS/EMU/TST
- *************************************************************/
-u32 get_device_type(void)
-{
-	int mode;
-	mode = __raw_readl(CONTROL_STATUS) & (DEVICE_MASK);
-	return(mode >>= 8);
-}
-
-/************************************************
- * get_sysboot_value(void) - return SYS_BOOT[4:0]
- ************************************************/
-u32 get_sysboot_value(void)
-{
-	int mode;
-	mode = __raw_readl(CONTROL_STATUS) & (SYSBOOT_MASK);
-	return mode;
-}
-
 /* assume delay is aprox at least 1us */
 void ddr_delay(int d)
 {  /*
