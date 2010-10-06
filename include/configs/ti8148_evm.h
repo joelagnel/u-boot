@@ -86,6 +86,8 @@
 #define CONFIG_SYS_AUTOLOAD		"yes"
 
 
+# define CONFIG_CMD_CACHE
+
 /*
  * Miscellaneous configurable options
  */
