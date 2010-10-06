@@ -79,7 +79,7 @@
 # define CONFIG_NO_ETH
 # define CONFIG_BOOTDELAY	0
 # define CONFIG_SYS_AUTOLOAD	"yes"
-# define CONFIG_BOOTCOMMAND	"mmc init;fatload mmc 1 0x80009000 u-boot.bin;go 0x80009000"
+# define CONFIG_BOOTCOMMAND	"mmc init;fatload mmc 1 0x80800000 u-boot.bin;go 0x80800000"
 # define CONFIG_ENV_IS_NOWHERE
 #else
 #define CONFIG_BOOTDELAY		3	/* set to negative value for no autoboot */
