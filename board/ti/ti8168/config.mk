@@ -21,7 +21,7 @@ TI_IMAGE = u-boot.noxip.bin
 TI_DEVICE = ti81xx
 # ROM code will load u-boot to this address
 TI_LOAD_ADDR = 0x40400000
-TEXT_BASE = 0x80300000
+TEXT_BASE = 0x80700000
 CROSS_COMPILE:= arm-none-linux-gnueabi-
 LDSCRIPT:=board/ti/ti8168/u-boot.lds
 # Over-ride the macros if supplied from the Makefile
