@@ -72,8 +72,9 @@
  * MMC/SD card.
  */
 #ifdef CONFIG_SD_BOOT
-# undef CONFIG_NAND
 # undef CONFIG_TI816X_ASCIIART
+# undef CONFIG_DISPLAY_CPUINFO
+# undef CONFIG_NAND
 # undef CONFIG_SPI
 # undef CONFIG_I2C
 # define CONFIG_NO_ETH
