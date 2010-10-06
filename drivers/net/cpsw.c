@@ -527,13 +527,11 @@ static u_int8_t cpsw_eth_mac_addr[] = { 0x00, 0x11, 0x22, 0x33, 0x44, 0x66 };
  */
 void cpsw_eth_set_mac_addr(const u_int8_t *addr)
 {
-#if 0
 	int i;
 
 	for (i = 0; i < sizeof (cpsw_eth_mac_addr); i++) {
 		cpsw_eth_mac_addr[i] = addr[i];
 	}
-#endif
 }
 
 #define mac_hi(mac)	(((mac)[0] << 0) | ((mac)[1] << 8) |	\
@@ -819,8 +817,6 @@ static int cpsw_recv(struct eth_device *dev)
 	struct cpsw_priv	*priv = dev->priv;
 	void *buffer;
 	int len;
-
-	cpsw_update_link(priv);
 
 	while (cpdma_process(priv, &priv->rx_chan, &buffer, &len) >= 0) {
 		NetReceive(buffer, len);
