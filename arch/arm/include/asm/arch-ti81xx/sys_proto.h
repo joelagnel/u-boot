@@ -37,6 +37,7 @@ void set_muxconf_regs(void);
 u32 get_cpu_rev(void);
 u32 get_mem_type(void);
 u32 get_sysboot_value(void);
+int print_cpuinfo (void);
 u32 is_gpmc_muxed(void);
 u32 get_gpmc0_type(void);
 u32 get_gpmc0_width(void);

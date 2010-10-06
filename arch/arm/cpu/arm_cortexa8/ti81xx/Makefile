@@ -24,6 +24,7 @@ SOBJS	+= cache.o
 COBJS	+= mem.o
 COBJS	+= timer.o
 COBJS	+= syslib.o
+COBJS	+= sys_info.o
 
 COBJS-$(CONFIG_NAND_TI81XX)	+= elm.o
 
