@@ -163,6 +163,7 @@
 # define CONFIG_BOOTP_SUBNETMASK
 # define CONFIG_NET_RETRY_COUNT 	10
 # define CONFIG_NET_MULTI
+# define CONFIG_PHY_GIGE
 #endif
 
 #if defined(CONFIG_SYS_NO_FLASH)

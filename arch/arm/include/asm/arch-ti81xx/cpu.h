@@ -477,5 +477,11 @@ extern struct gpmc *gpmc_cfg;
 #endif /* __ASSEMBLY__ */
 #endif /* __KERNEL_STRICT_NAMES */
 
+/* Ethernet MAC ID from EFuse */
+#define MAC_ID0_LO	(CTRL_BASE + 0x630)
+#define MAC_ID0_HI	(CTRL_BASE + 0x634)
+#define MAC_ID1_LO	(CTRL_BASE + 0x638)
+#define MAC_ID1_HI	(CTRL_BASE + 0x63c)
+
 #endif /* _TI816X_CPU_H */
 

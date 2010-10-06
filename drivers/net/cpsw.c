@@ -798,8 +798,6 @@ static int cpsw_recv(struct eth_device *dev)
 	void *buffer;
 	int len;
 
-	cpsw_update_link(priv);
-
 	while (cpdma_process(priv, &priv->rx_chan, &buffer, &len) >= 0) {
 		NetReceive(buffer, len);
 		cpdma_submit(priv, &priv->rx_chan, buffer, PKTSIZE);
