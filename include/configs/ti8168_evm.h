@@ -77,18 +77,42 @@
 # undef CONFIG_NAND
 # undef CONFIG_SPI
 # undef CONFIG_I2C
+# undef CONFIG_SYS_HUSH_PARSER
 # define CONFIG_NO_ETH
 # define CONFIG_BOOTDELAY	0
 # define CONFIG_SYS_AUTOLOAD	"yes"
 # define CONFIG_BOOTCOMMAND	"mmc init;fatload mmc 1 0x80800000 u-boot.bin;go 0x80800000"
 # define CONFIG_ENV_IS_NOWHERE
 #else
-#define CONFIG_BOOTDELAY		3	/* set to negative value for no autoboot */
-#define CONFIG_SYS_AUTOLOAD		"no"
-#define CONFIG_EXTRA_ENV_SETTINGS \
+# define CONFIG_SYS_HUSH_PARSER		/* Use HUSH parser to allow command parsing */
+# define CONFIG_SYS_PROMPT_HUSH_PS2	"> "
+# define CONFIG_BOOTDELAY		3	/* set to negative value for no autoboot */
+# define CONFIG_SYS_AUTOLOAD		"no"
+# define CONFIG_EXTRA_ENV_SETTINGS \
 	"verify=yes\0" \
 	"bootfile=uImage\0" \
-	"ramdisk_file=ramdisk.gz\0"
+	"ramdisk_file=ramdisk.gz\0" \
+	"loadaddr=0x81000000\0" \
+	"script_addr=0x80900000\0" \
+	"loadbootscript=fatload mmc 1 ${script_addr} boot.scr\0" \
+	"bootscript= echo Running bootscript from MMC/SD to set the ENV...; " \
+		"source ${script_addr}\0" \
+
+#define CONFIG_BOOTCOMMAND \
+	"if mmc init; then " \
+		"if run loadbootscript; then " \
+			"run bootscript; " \
+		"else " \
+			"echo In case ENV on MMC/SD is required; "\
+			"echo Please put a valid script named boot.scr on the card; " \
+			"echo Refer to the User Guide on how to generate the image; " \
+		"fi; " \
+	"else " \
+		"echo Please set bootargs and bootcmd before booting the kernel; " \
+		"echo If that has already been done please ignore this message; "\
+	"fi"
+
+
 #endif
 
 /*
