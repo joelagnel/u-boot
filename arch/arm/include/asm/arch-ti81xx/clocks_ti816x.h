@@ -29,7 +29,7 @@
 #define FAPLL_K			8
 #define SYSCLK_2_DIV		1
 #define OSC_FREQ		27
-#define DDR_PLL_796	/* Values supported 400,531,675,796 */
+#define DDR_PLL_400	/* Values supported 400,531,675,796 */
 
 /* Main PLL */
 #define MAIN_N			64
