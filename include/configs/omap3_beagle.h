@@ -191,6 +191,7 @@
 	"usbtty=cdc_acm\0" \
 	"console=ttyS2,115200n8\0" \
 	"mpurate=auto\0" \
+	"buddy=none "\
 	"vram=12M\0" \
 	"dvimode=1024x768MR-16@60\0" \
 	"defaultdisplay=dvi\0" \
@@ -201,6 +202,7 @@
 	"nandrootfstype=jffs2\0" \
 	"mmcargs=setenv bootargs console=${console} " \
 		"mpurate=${mpurate} " \
+		"buddy=${buddy} "\
 		"vram=${vram} " \
 		"omapfb.mode=dvi:${dvimode} " \
 		"omapdss.def_disp=${defaultdisplay} " \
@@ -208,6 +210,7 @@
 		"rootfstype=${mmcrootfstype}\0" \
 	"nandargs=setenv bootargs console=${console} " \
 		"mpurate=${mpurate} " \
+		"buddy=${buddy} "\
 		"vram=${vram} " \
 		"omapfb.mode=dvi:${dvimode} " \
 		"omapdss.def_disp=${defaultdisplay} " \
@@ -216,6 +219,16 @@
 	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} uEnv.txt\0" \
 	"importbootenv=echo Importing environment from mmc ...; " \
 		"env import -t $loadaddr $filesize\0" \
+	"ramargs=setenv bootargs console=${console} " \
+		"${optargs} " \
+		"mpurate=${mpurate} " \
+		"buddy=${buddy} "\
+		"vram=${vram} " \
+		"omapfb.mode=dvi:${dvimode} " \
+		"omapdss.def_disp=${defaultdisplay} " \
+		"root=${ramroot} " \
+		"rootfstype=${ramrootfstype}\0" \
+	"loadramdisk=fatload mmc ${mmcdev} ${rdaddr} ramdisk.gz\0" \
 	"loaduimage=fatload mmc ${mmcdev} ${loadaddr} uImage\0" \
 	"mmcboot=echo Booting from mmc ...; " \
 		"run mmcargs; " \
