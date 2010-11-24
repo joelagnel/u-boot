@@ -37,6 +37,11 @@
 #define DDR_M2		2
 #define DDR_CLKCTRL	0x801
 
+#define ISS_N		19
+#define ISS_M		800
+#define ISS_M2		2
+#define ISS_CLKCTRL	0x801
+
 #define USB_N		19
 #define USB_M		960
 #define USB_M2		1

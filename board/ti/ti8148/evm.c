@@ -45,6 +45,7 @@ static void sata_pll_config(void);
 static void modena_pll_config(void);
 static void l3_pll_config(void);
 static void ddr_pll_config(void);
+static void iss_pll_config(void);
 static void usb_pll_config(void);
 #endif
 
@@ -286,6 +287,20 @@ static void ddr_pll_config()
 			DDR_M2, DDR_CLKCTRL);
 }
 
+static void iss_pll_config()
+{
+	pll_config(ISS_PLL_BASE,
+			ISS_N, ISS_M,
+			ISS_M2, ISS_CLKCTRL);
+}
+
+static void iva_pll_config()
+{
+	pll_config(IVA_PLL_BASE,
+			IVA_N, IVA_M,
+			IVA_M2, IVA_CLKCTRL);
+}
+
 /*
  * configure individual ADPLLJ
  */
@@ -408,6 +423,8 @@ void prcm_init(u32 in_ddr)
 	modena_pll_config();
 	l3_pll_config();
 	ddr_pll_config();
+	iss_pll_config();
+
 	usb_pll_config();
 
 	/*  With clk freqs setup to desired values, enable the required peripherals */
