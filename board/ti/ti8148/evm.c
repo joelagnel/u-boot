@@ -624,8 +624,11 @@ void cpsw_pad_config(u32 instance)
  */
 void s_init(u32 in_ddr)
 {
+	/* TODO: Revisit enabling of I/D-cache in 1st stage */
+#if 0
 	icache_enable();
 	dcache_enable();
+#endif
 	l2_cache_enable();		/* Can be removed as A8 comes up with L2 enabled */
 	unlock_pll_control_mmr();
 	prcm_init(in_ddr);		/* Setup the PLLs and the clocks for the peripherals */
