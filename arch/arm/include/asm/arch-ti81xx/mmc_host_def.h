@@ -24,10 +24,15 @@
 
 #ifndef MMC_HOST_DEF_H
 #define MMC_HOST_DEF_H
+
 /*
  * OMAP HSMMC register definitions
  */
-#define OMAP_HSMMC1_BASE		0x48060100
+#if defined(CONFIG_TI816X)
+# define OMAP_HSMMC1_BASE		0x48060100
+#elif defined(CONFIG_TI814X)
+# define OMAP_HSMMC1_BASE		0x481D8100
+#endif
 
 typedef struct hsmmc {
 	unsigned char res1[0x10];

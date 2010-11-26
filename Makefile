@@ -876,7 +876,9 @@ ti8148_evm_config	\
 ti8148_evm_config_nand	\
 ti8148_evm_config_spi	\
 ti8148_evm_min_spi	\
-ti8148_evm_min_uart:	unconfig
+ti8148_evm_min_uart	\
+ti8148_evm_min_nand	\
+ti8148_evm_min_sd:	unconfig
 	@mkdir -p $(obj)include
 	@echo "#define CONFIG_TI81XX"	>>$(obj)include/config.h
 	@echo "#define CONFIG_TI814X"	>>$(obj)include/config.h
@@ -901,6 +903,9 @@ ti8148_evm_min_uart:	unconfig
 			echo "#define CONFIG_NAND_BOOT"    >>$(obj)include/config.h ; \
 			echo "#define CONFIG_TI814X_PERIPHERAL_BOOT"	>>$(obj)include/config.h; \
 			echo "TI_IMAGE = u-boot.min.uart" >> $(obj)board/ti/ti8148/config.tmp;\
+		elif [ "$(findstring sd,$@)" ] ; then \
+			echo "#define CONFIG_SD"    >>$(obj)include/config.h ; \
+			echo "TI_IMAGE = u-boot.min.sd" >> $(obj)board/ti/ti8148/config.tmp;\
 		else	\
 			echo "#define CONFIG_NAND"	>>$(obj)include/config.h ; \
 			echo "#define CONFIG_NAND_BOOT"    >>$(obj)include/config.h ; \

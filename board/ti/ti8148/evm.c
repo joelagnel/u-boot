@@ -381,6 +381,11 @@ void per_clocks_enable(void)
 	__raw_writel(0x2, CM_ALWON_ETHERNET_0_CLKCTRL);
 	while((__raw_readl(CM_ALWON_ETHERNET_0_CLKCTRL) & 0x30000) != 0);
 
+	/* HSMMC */
+	__raw_writel(0x2, CM_ALWON_HSMMC_CLKCTRL);
+	while(__raw_readl(CM_ALWON_HSMMC_CLKCTRL) != 0x2);
+
+
 }
 
 /*

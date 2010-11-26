@@ -264,7 +264,13 @@ struct gptimer {
 #define CM_ALWON_I2C_0_CLKCTRL		(PRCM_BASE + 0x1564)
 
 /* HSMMC */
+#ifdef CONFIG_TI816X
 #define CM_ALWON_HSMMC_CLKCTRL		(PRCM_BASE + 0x15B0)
+#endif
+
+#ifdef CONFIG_TI814X
+#define CM_ALWON_HSMMC_CLKCTRL		(PRCM_BASE + 0x161C)
+#endif
 
 /* UART2 registers */
 #ifdef CONFIG_TI816X

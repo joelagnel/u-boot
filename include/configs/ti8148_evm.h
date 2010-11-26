@@ -51,6 +51,12 @@
 	"verify=yes\0" \
 	"bootcmd=nand read 0x81000000 0x20000 0x40000; go 0x81000000\0" \
 
+# elif defined(CONFIG_SD)		/* Autoload the 2nd stage from SD */
+#  define CONFIG_MMC			1
+#  define CONFIG_EXTRA_ENV_SETTINGS \
+	"verify=yes\0" \
+	"bootcmd=mmc init; fatload mmc 1 0x80800000 u-boot.bin; go 0x80800000\0" \
+
 # endif
 
 #else
@@ -67,6 +73,7 @@
 # define CONFIG_INITRD_TAG	  	1	/* Required for ramdisk support */
 # define CONFIG_BOOTDELAY		3	/* set to negative value for no autoboot */
 /* By default, 2nd stage will have MMC, NAND, SPI and I2C support */
+# define CONFIG_MMC			1
 # define CONFIG_NAND			1
 # define CONFIG_SPI			1
 # define CONFIG_I2C			1
@@ -270,6 +277,14 @@
 # define CONFIG_SYS_EEPROM_PAGE_WRITE_BITS	6
 # define CONFIG_SYS_EEPROM_PAGE_WRITE_DELAY_MS	20
 
+#endif
+
+/* HSMMC support */
+#ifdef CONFIG_MMC
+# define CONFIG_OMAP3_MMC	1
+# define CONFIG_CMD_MMC		1
+# define CONFIG_DOS_PARTITION	1
+# define CONFIG_CMD_FAT		1
 #endif
 
 /* Unsupported features */
