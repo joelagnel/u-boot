@@ -40,18 +40,19 @@
 # define CONFIG_ENV_SIZE			0x400
 # define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (8 * 1024))
 # define CONFIG_SYS_PROMPT		"TI-MIN#"
-#define CONFIG_BOOTDELAY		3	/* set to negative value for no autoboot */
-#ifdef CONFIG_SPI
-# define CONFIG_EXTRA_ENV_SETTINGS \
+# define CONFIG_BOOTDELAY		3	/* set to negative value for no autoboot */
+# if defined(CONFIG_SPI)		/* Autoload the 2nd stage from SPI */
+#  define CONFIG_EXTRA_ENV_SETTINGS \
 	"verify=yes\0" \
 	"bootcmd=sf probe 0; sf read 0x81000000 0x20000 0x40000; go 0x81000000\0" \
 
-#else
-# define CONFIG_EXTRA_ENV_SETTINGS \
+# elif defined(CONFIG_NAND)		/* Autoload the 2nd stage from NAND */
+#  define CONFIG_EXTRA_ENV_SETTINGS \
 	"verify=yes\0" \
 	"bootcmd=nand read 0x81000000 0x20000 0x40000; go 0x81000000\0" \
 
-#endif
+# endif
+
 #else
 
 # include <config_cmd_default.h>
@@ -64,7 +65,11 @@
 # define CONFIG_CMDLINE_TAG        	1	/* enable passing of ATAGs  */
 # define CONFIG_SETUP_MEMORY_TAGS  	1
 # define CONFIG_INITRD_TAG	  	1	/* Required for ramdisk support */
-#define CONFIG_BOOTDELAY		3	/* set to negative value for no autoboot */
+# define CONFIG_BOOTDELAY		3	/* set to negative value for no autoboot */
+/* By default, 2nd stage will have MMC, NAND, SPI and I2C support */
+# define CONFIG_NAND			1
+# define CONFIG_SPI			1
+# define CONFIG_I2C			1
 
 #endif
 
@@ -72,21 +77,8 @@
 						   initial data */
 
 #define CONFIG_MISC_INIT_R		1
-
 #define CONFIG_SYS_AUTOLOAD		"yes"
-
-#endif
-
-#define CONFIG_SYS_GBL_DATA_SIZE	128	/* size in bytes reserved for
-						   initial data */
-
-#define CONFIG_MISC_INIT_R		1
-
-#define CONFIG_BOOTDELAY		-3	/* set to negative value for no autoboot */
-#define CONFIG_SYS_AUTOLOAD		"yes"
-
-
-# define CONFIG_CMD_CACHE
+#define CONFIG_CMD_CACHE
 
 /*
  * Miscellaneous configurable options
@@ -173,6 +165,7 @@
 #endif
 
 /* NAND support */
+#ifdef CONFIG_NAND
 #define CONFIG_CMD_NAND
 #define CONFIG_NAND_TI81XX
 #define GPMC_NAND_ECC_LP_x16_LAYOUT 	1
@@ -183,7 +176,8 @@
 							/* to access nand at */
 							/* CS0 */
 #define CONFIG_SYS_MAX_NAND_DEVICE	1		/* Max number of NAND */
-							/* devices */
+#endif							/* devices */
+
 /* ENV in NAND */
 #if defined(CONFIG_NAND_BOOT)
 # undef CONFIG_ENV_IS_NOWHERE
@@ -260,7 +254,7 @@
 
 
 /* No I2C support in 1st stage */
-#ifndef CONFIG_TI814X_MIN_CONFIG
+#ifdef CONFIG_I2C
 
 # define CONFIG_CMD_I2C
 # define CONFIG_HARD_I2C			1
