@@ -41,17 +41,19 @@
 # define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (8 * 1024))
 # define CONFIG_SYS_PROMPT		"TI-MIN#"
 # define CONFIG_BOOTDELAY		3	/* set to negative value for no autoboot */
-# if defined(CONFIG_SPI)		/* Autoload the 2nd stage from SPI */
+# if defined(CONFIG_SPI_BOOT)		/* Autoload the 2nd stage from SPI */
+#  define CONFIG_SPI			1
 #  define CONFIG_EXTRA_ENV_SETTINGS \
 	"verify=yes\0" \
 	"bootcmd=sf probe 0; sf read 0x81000000 0x20000 0x40000; go 0x81000000\0" \
 
-# elif defined(CONFIG_NAND)		/* Autoload the 2nd stage from NAND */
+# elif defined(CONFIG_NAND_BOOT)		/* Autoload the 2nd stage from NAND */
+#  define CONFIG_NAND			1
 #  define CONFIG_EXTRA_ENV_SETTINGS \
 	"verify=yes\0" \
 	"bootcmd=nand read 0x81000000 0x20000 0x40000; go 0x81000000\0" \
 
-# elif defined(CONFIG_SD)		/* Autoload the 2nd stage from SD */
+# elif defined(CONFIG_SD_BOOT)		/* Autoload the 2nd stage from SD */
 #  define CONFIG_MMC			1
 #  define CONFIG_EXTRA_ENV_SETTINGS \
 	"verify=yes\0" \

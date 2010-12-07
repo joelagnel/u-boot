@@ -886,29 +886,29 @@ ti8148_evm_min_sd:	unconfig
 		echo "#define CONFIG_TI814X_STACK 0x3000" >>$(obj)include/config.h;\
 		echo "CONFIG_SYS_TEXT_BASE = 0x80700000" >> $(obj)board/ti/ti8148/config.tmp; \
 		echo "#define CONFIG_TI814X_MIN_CONFIG"    >>$(obj)include/config.h ; \
-		echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
 		echo "#define CONFIG_NO_ETH"    >>$(obj)include/config.h ; \
 		echo "Setting up TI8148 minimal build for 1st stage..." ; \
 		if [ "$(findstring nand,$@)" ] ; then \
-			echo "#define CONFIG_NAND"	>>$(obj)include/config.h ; \
-			echo "#define CONFIG_NAND_BOOT"    >>$(obj)include/config.h ; \
+			echo "#define CONFIG_NAND_BOOT"	>>$(obj)include/config.h ; \
+			echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
 			echo "TI_IMAGE = u-boot.min.nand" >> $(obj)board/ti/ti8148/config.tmp;\
 		elif [ "$(findstring spi,$@)" ] ; then \
-			echo "#define CONFIG_SPI " >>$(obj)include/config.h;\
-			echo "#define CONFIG_SPI_BOOT"    >>$(obj)include/config.h ; \
-			echo "#define CONFIG_TI81XX_SPI_IMAGE"	>>$(obj)include/config.h ; \
+			echo "#define CONFIG_SPI_BOOT" >>$(obj)include/config.h;\
+			echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
+			echo "#define CONFIG_TI81XX_SPI_BOOT"	>>$(obj)include/config.h ; \
 			echo "TI_IMAGE = u-boot.min.spi.tmp" >> $(obj)board/ti/ti8148/config.tmp;\
 		elif [ "$(findstring uart,$@)" ] ; then \
-			echo "#define CONFIG_NAND"	>>$(obj)include/config.h ; \
-			echo "#define CONFIG_NAND_BOOT"    >>$(obj)include/config.h ; \
+			echo "#define CONFIG_NAND_BOOT"	>>$(obj)include/config.h ; \
+			echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
 			echo "#define CONFIG_TI814X_PERIPHERAL_BOOT"	>>$(obj)include/config.h; \
 			echo "TI_IMAGE = u-boot.min.uart" >> $(obj)board/ti/ti8148/config.tmp;\
 		elif [ "$(findstring sd,$@)" ] ; then \
-			echo "#define CONFIG_SD"    >>$(obj)include/config.h ; \
+			echo "#define CONFIG_SD_BOOT"    >>$(obj)include/config.h ; \
+			echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
 			echo "TI_IMAGE = u-boot.min.sd" >> $(obj)board/ti/ti8148/config.tmp;\
 		else	\
-			echo "#define CONFIG_NAND"	>>$(obj)include/config.h ; \
-			echo "#define CONFIG_NAND_BOOT"    >>$(obj)include/config.h ; \
+			echo "#define CONFIG_NAND_BOOT"	>>$(obj)include/config.h ; \
+			echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
 			echo "TI_IMAGE = u-boot.min.nand" >> $(obj)board/ti/ti8148/config.tmp;\
 		fi;	\
 	else	\
