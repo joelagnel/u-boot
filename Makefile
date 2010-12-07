@@ -917,15 +917,15 @@ ti8148_evm_min_sd:	unconfig
 		echo "#define CONFIG_TI_DUMMY_HEADER"	>>$(obj)include/config.h; \
 		if [ "$(findstring _nand,$@)" ] ; then \
 			echo "#define CONFIG_SYS_NO_FLASH" >> $(obj)include/config.h ; \
-			echo "#define CONFIG_NAND_BOOT"    >>$(obj)include/config.h ; \
+			echo "#define CONFIG_NAND_ENV"    >>$(obj)include/config.h ; \
 			echo "Setting up TI8148 default build with ENV in NAND..." ; \
 		elif [ "$(findstring spi,$@)" ] ; then \
 			echo "#define CONFIG_SYS_NO_FLASH" >> $(obj)include/config.h ; \
-			echo "#define CONFIG_SPI_BOOT"    >>$(obj)include/config.h ; \
+			echo "#define CONFIG_SPI_ENV"    >>$(obj)include/config.h ; \
 			echo "Setting up TI8148 default build with ENV in SPI..." ; \
 		else	\
 			echo "#define CONFIG_SYS_NO_FLASH" >> $(obj)include/config.h ; \
-			echo "#define CONFIG_NAND_BOOT"    >>$(obj)include/config.h ; \
+			echo "#define CONFIG_NAND_ENV"    >>$(obj)include/config.h ; \
 			echo "Setting up TI8148 default build with ENV in NAND..." ; \
 		fi; \
 	fi;

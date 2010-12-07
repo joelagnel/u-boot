@@ -188,10 +188,9 @@
 #endif							/* devices */
 
 /* ENV in NAND */
-#if defined(CONFIG_NAND_BOOT)
+#if defined(CONFIG_NAND_ENV)
 # undef CONFIG_ENV_IS_NOWHERE
 # define CONFIG_ENV_IS_IN_NAND		1
-
 # ifdef CONFIG_ENV_IS_IN_NAND
 #  define CONFIG_SYS_MAX_FLASH_SECT	520		/* max number of sectors in a chip */
 #  define CONFIG_SYS_MAX_FLASH_BANKS	2		/* max number of flash banks */
@@ -219,7 +218,7 @@
 #endif
 
 /* ENV in SPI */
-#if defined(CONFIG_SPI_BOOT)
+#if defined(CONFIG_SPI_ENV)
 # undef CONFIG_ENV_IS_NOWHERE
 # define CONFIG_ENV_IS_IN_SPI_FLASH	1
 # ifdef CONFIG_ENV_IS_IN_SPI_FLASH
