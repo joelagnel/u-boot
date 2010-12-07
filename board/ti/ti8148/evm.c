@@ -38,7 +38,9 @@ DECLARE_GLOBAL_DATA_PTR;
 
 #ifdef CONFIG_SETUP_PLL
 static void pll_config(u32, u32, u32, u32, u32);
+#if 0
 static void pcie_pll_config(void);
+#endif
 static void sata_pll_config(void);
 static void modena_pll_config(void);
 static void l3_pll_config(void);
@@ -180,6 +182,7 @@ static void config_ti814x_ddr(void)
 #endif
 
 #ifdef CONFIG_SETUP_PLL
+#if 0
 static void pcie_pll_config()
 {
 	/* Powerdown both reclkp/n single ended receiver */
@@ -228,6 +231,7 @@ static void pcie_pll_config()
 	while(__raw_readl(PCIE_PLLSTATUS) != 0x1);
 
 }
+#endif
 
 static void sata_pll_config()
 {
