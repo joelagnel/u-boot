@@ -201,9 +201,6 @@
 #  define CONFIG_SYS_ENV_SECT_SIZE	(128 << 10)	/* 128 KiB */
 #  define CONFIG_ENV_OFFSET		MNAND_ENV_OFFSET
 #  define CONFIG_ENV_ADDR		MNAND_ENV_OFFSET
-#  define CONFIG_CMD_SAVEENV
-#  define CONFIG_NOFLASH
-#  undef CONFIG_ENV_IS_NOWHERE
 # endif
 #endif /* NAND support */
 
@@ -230,7 +227,6 @@
 #  define CONFIG_ENV_ADDR		(CONFIG_ENV_OFFSET)
 #  define CONFIG_SYS_MAX_FLASH_SECT	(1024) /* no of sectors in SPI flash */
 #  define CONFIG_SYS_MAX_FLASH_BANKS	(1)
-#  undef CONFIG_ENV_IS_NOWHERE
 # endif
 #endif /* SPI support */
 
