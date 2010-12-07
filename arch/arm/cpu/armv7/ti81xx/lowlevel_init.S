@@ -405,6 +405,9 @@ cm_alwon_ocmc_1_clkctrl_addr:
 	.word CM_ALWON_OCMC_1_CLKCTRL
 SRAM_STACK:
 	.word (SRAM0_START + SRAM0_SIZE - SRAM_GPMC_STACK_SIZE)
+#else
+SRAM_STACK:
+	.word (SRAM0_START + 0x2800)	/* we'll place stack+heap+gd in top 10 KB */
 #endif
 
 _mark1:
@@ -413,9 +416,4 @@ _lowlevel_init:
 	.word lowlevel_init
 _s_init_start:
 	.word s_init_start
-
-#ifdef CONFIG_TI814X_MIN_CONFIG
-SRAM_STACK:
-	.word (SRAM0_START + 0x2800)	/* we'll place stack+heap+gd in top 10 KB */
-#endif
 

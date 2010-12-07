@@ -946,6 +946,7 @@ ti8168_evm_min_sd:	unconfig
 		echo "Setting up TI8168 NAND build with ENV in NAND..." ; \
 	elif [ "$(findstring _nor,$@)" ] ; then \
 		echo "#define CONFIG_NOR"    >>$(obj)include/config.h ; \
+		echo "#define CONFIG_NOR_BOOT"	>>$(obj)include/config.h ; \
 		echo "Setting up TI8168 NOR build with ENV in NOR..." ; \
 	elif [ "$(findstring _spi,$@)" ] ; then \
 		echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
