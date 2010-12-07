@@ -281,7 +281,7 @@ static void ddr_pll_config()
 			DDR_N, DDR_M,
 			DDR_M2, DDR_CLKCTRL);
 }
-#endif
+
 /*
  * configure individual ADPLLJ
  */
@@ -326,6 +326,7 @@ static void pll_config(u32 base, u32 n, u32 m, u32 m2, u32 clkctrl_val)
 	while((__raw_readl(base + ADPLLJ_STATUS) & 0x00000600) != 0x00000600);
 
 }
+#endif
 
 /*
  * Enable the clks & power for perifs (TIMER1, UART0,...)
@@ -403,8 +404,8 @@ void prcm_init(u32 in_ddr)
 	modena_pll_config();
 	l3_pll_config();
 	ddr_pll_config();
-
 	usb_pll_config();
+
 	/*  With clk freqs setup to desired values, enable the required peripherals */
 	per_clocks_enable();
 #endif
