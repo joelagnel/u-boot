@@ -28,10 +28,10 @@
 # define CONFIG_CMD_MEMORY	/* for mtest */
 # undef CONFIG_GZIP
 # undef CONFIG_ZLIB
-# undef CONFIG_BOOTM_LINUX
-# undef CONFIG_BOOTM_NETBSD
-# undef CONFIG_BOOTM_RTEMS
-# undef CONFIG_SREC
+//# undef CONFIG_BOOTM_LINUX
+//# undef CONFIG_BOOTM_NETBSD
+//# undef CONFIG_BOOTM_RTEMS
+//# undef CONFIG_SREC
 //# undef CONFIG_XYZMODEM
 # define CONFIG_CMD_LOADB	/* loadb			*/
 # define CONFIG_CMD_LOADY	/* loady */
