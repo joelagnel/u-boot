@@ -196,9 +196,6 @@
 #  define CONFIG_SYS_ENV_SECT_SIZE	boot_flash_sec
 #  define CONFIG_ENV_OFFSET		boot_flash_off
 #  define CONFIG_ENV_ADDR		MNAND_ENV_OFFSET
-#  define CONFIG_CMD_SAVEENV
-#  define CONFIG_NOFLASH
-#  undef CONFIG_ENV_IS_NOWHERE
 # endif
 
 # ifndef __ASSEMBLY__
@@ -233,7 +230,6 @@ extern unsigned int boot_flash_type;
 #  define CONFIG_ENV_ADDR		(CONFIG_ENV_OFFSET)
 #  define CONFIG_SYS_MAX_FLASH_SECT	(1024) /* no of sectors in SPI flash */
 #  define CONFIG_SYS_MAX_FLASH_BANKS	(1)
-#  undef CONFIG_ENV_IS_NOWHERE
 # endif
 #endif /* SPI support */
 
