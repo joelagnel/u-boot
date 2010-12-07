@@ -224,9 +224,9 @@
 #endif							/* devices */
 
 /* ENV in NAND */
-#if defined(CONFIG_NAND_BOOT)
+#if defined(CONFIG_NAND_ENV)
+# undef CONFIG_ENV_IS_NOWHERE
 # define CONFIG_ENV_IS_IN_NAND
-
 # ifdef CONFIG_ENV_IS_IN_NAND
 #  define CONFIG_SYS_MAX_FLASH_SECT	520		/* max number of sectors in a chip */
 #  define CONFIG_SYS_MAX_FLASH_BANKS	2		/* max number of flash banks */
@@ -238,9 +238,7 @@
 #  define CONFIG_SYS_ENV_SECT_SIZE	(128 << 10)	/* 128 KiB */
 #  define CONFIG_ENV_OFFSET		MNAND_ENV_OFFSET
 #  define CONFIG_ENV_ADDR		MNAND_ENV_OFFSET
-#  define CONFIG_CMD_SAVEENV
 #  define CONFIG_NOFLASH
-#  undef CONFIG_ENV_IS_NOWHERE
 # endif
 #endif /* NAND support */
 
@@ -255,7 +253,8 @@
 #endif
 
 /* ENV in SPI */
-#if defined(CONFIG_SPI_BOOT)
+#if defined(CONFIG_SPI_ENV)
+# undef CONFIG_ENV_IS_NOWHERE
 # define CONFIG_ENV_IS_IN_SPI_FLASH	1
 # ifdef CONFIG_ENV_IS_IN_SPI_FLASH
 #  define CONFIG_SYS_FLASH_BASE		(0)
@@ -266,12 +265,11 @@
 #  define CONFIG_ENV_ADDR		(CONFIG_ENV_OFFSET)
 #  define CONFIG_SYS_MAX_FLASH_SECT	(1024) /* no of sectors in SPI flash */
 #  define CONFIG_SYS_MAX_FLASH_BANKS	(1)
-#  undef CONFIG_ENV_IS_NOWHERE
 # endif
 #endif /* SPI support */
 
 /* NOR support */
-#if defined(CONFIG_NOR_BOOT)
+#if defined(CONFIG_NOR)
 # undef CONFIG_CMD_NAND			/* Remove NAND support */
 # undef CONFIG_NAND_TI81XX
 # ifdef CONFIG_SYS_MALLOC_LEN

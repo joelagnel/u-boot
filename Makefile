@@ -942,14 +942,15 @@ ti8168_evm_min_sd:	unconfig
 	@echo "#define CONFIG_TI816X"	>>$(obj)include/config.h
 	@if [ "$(findstring _nand,$@)" ] ; then \
 		echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
-		echo "#define CONFIG_NAND_BOOT"    >>$(obj)include/config.h ; \
+		echo "#define CONFIG_NAND_ENV"    >>$(obj)include/config.h ; \
 		echo "Setting up TI8168 NAND build with ENV in NAND..." ; \
 	elif [ "$(findstring _nor,$@)" ] ; then \
-		echo "#define CONFIG_NOR_BOOT"    >>$(obj)include/config.h ; \
+		echo "#define CONFIG_NOR"    >>$(obj)include/config.h ; \
 		echo "Setting up TI8168 NOR build with ENV in NOR..." ; \
 	elif [ "$(findstring _spi,$@)" ] ; then \
 		echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
-		echo "#define CONFIG_SPI_BOOT"    >>$(obj)include/config.h ; \
+		echo "#define CONFIG_SPI_ENV"    >>$(obj)include/config.h ; \
+		echo "#define CONFIG_TI81XX_SPI_BOOT"	>>$(obj)include/config.h ; \
 		echo "Setting up TI8168 SPI build with ENV in SPI..." ; \
 	elif [ "$(findstring _sd,$@)" ] ; then \
 		echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
@@ -963,7 +964,7 @@ ti8168_evm_min_sd:	unconfig
 		echo "Setting up TI8168 minimal build..." ; \
 	else	\
 		echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
-		echo "#define CONFIG_NAND_BOOT"    >>$(obj)include/config.h ; \
+		echo "#define CONFIG_NAND_ENV"    >>$(obj)include/config.h ; \
 		echo "Setting up TI8168 default build with NAND..." ; \
 	fi;
 	@$(MKCONFIG) -a ti8168_evm arm armv7 ti8168 ti ti81xx
