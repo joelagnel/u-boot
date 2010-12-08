@@ -182,9 +182,38 @@ int board_init(void)
 }
 
 #ifdef CONFIG_DRIVER_TI_EMAC
+extern void davinci_eth_set_mac_addr(const u_int8_t *addr);
+
 int board_eth_init(bd_t *bis)
 {
 	/* TODO : read MAC address from EFUSE */
+        u_int8_t mac_addr[6];
+        u_int32_t mac_hi,mac_lo;
+
+	if(!eth_getenv_enetaddr("ethaddr", mac_addr)) {
+		printf("<ethaddr> not set. Reading from E-fuse\n");
+		/* try reading mac address from efuse */
+		mac_lo = __raw_readl(MAC_ID0_LO);
+		mac_hi = __raw_readl(MAC_ID0_HI);
+		mac_addr[0] = mac_hi & 0xFF;
+		mac_addr[1] = (mac_hi & 0xFF00) >> 8;
+		mac_addr[2] = (mac_hi & 0xFF0000) >> 16;
+		mac_addr[3] = (mac_hi & 0xFF000000) >> 24;
+		mac_addr[4] = mac_lo & 0xFF;
+		mac_addr[5] = (mac_lo & 0xFF00) >> 8;
+		/* set the ethaddr variable with MACID detected */
+		eth_setenv_enetaddr("ethaddr", mac_addr);
+	}
+
+        if(is_valid_ether_addr(mac_addr)) {
+                printf("Detected MACID:%x:%x:%x:%x:%x:%x\n",mac_addr[0],
+                        mac_addr[1], mac_addr[2], mac_addr[3],
+                        mac_addr[4], mac_addr[5]);
+                davinci_eth_set_mac_addr(mac_addr);
+        } else {
+		printf("Caution:using static MACID!! Set <ethaddr> variable\n");
+	}
+
 	davinci_emac_initialize();
 	return 0;
 }
