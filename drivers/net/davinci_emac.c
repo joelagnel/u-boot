@@ -300,6 +300,14 @@ static int gen_auto_negotiate(int phy_addr)
 	davinci_eth_phy_write(phy_addr, MII_BMCR, val);
 	davinci_eth_phy_read(phy_addr, MII_BMCR, &val);
 
+#ifdef DAVINCI_EMAC_GIG_ENABLE
+	davinci_eth_phy_read(phy_addr, MII_CTRL1000, &val);
+	val |= PHY_1000BTCR_1000FD;
+	val &= ~PHY_1000BTCR_1000HD;
+	davinci_eth_phy_write(phy_addr, MII_CTRL1000, val);
+	davinci_eth_phy_read(phy_addr, MII_CTRL1000, &val);
+#endif
+
 	/* advertise 100 Full Duplex */
 	davinci_eth_phy_read(phy_addr, MII_ADVERTISE, &val);
 	val |= (LPA_10HALF | LPA_10FULL | LPA_100HALF | LPA_100FULL);
@@ -359,9 +367,10 @@ static void  __attribute__((unused)) davinci_eth_gigabit_enable(void)
 static int davinci_eth_open(struct eth_device *dev, bd_t *bis)
 {
 	dv_reg_p		addr;
-	u_int32_t		clkdiv, cnt, regval;
+	u_int32_t		clkdiv, cnt;
 	volatile emac_desc	*rx_desc;
 	uint16_t 		lpa_val;
+	u_int32_t		mac_control = 0;
 
 	debug_emac("+ emac_open\n");
 
@@ -450,30 +459,26 @@ static int davinci_eth_open(struct eth_device *dev, bd_t *bis)
 
 	if (!phy.auto_negotiate(active_phy_addr))
 		return(0);
+	mac_control |= EMAC_MACCONTROL_MIIEN_ENABLE;
 
+#ifdef DAVINCI_EMAC_GIG_ENABLE
+	davinci_eth_phy_read(active_phy_addr, MII_STAT1000, &lpa_val);
+	if (lpa_val & PHY_1000BTSR_1000FD) {
+		debug_emac("eth_open : gigabit negotiated\n");
+		mac_control |= EMAC_MACCONTROL_FULLDUPLEX_ENABLE;
+		mac_control |= EMAC_MACCONTROL_GIGABIT_ENABLE;
+	}
+#endif
 	davinci_eth_phy_read(active_phy_addr, MII_LPA, &lpa_val);
 	if (lpa_val & (LPA_10FULL | LPA_100FULL) ) {
 		/* set EMAC for Full Duplex  */
-		writel((EMAC_MACCONTROL_MIIEN_ENABLE |
-			EMAC_MACCONTROL_FULLDUPLEX_ENABLE),
-			&adap_emac->MACCONTROL);
-	} else {
-		/*set EMAC for Half Duplex  */
-		writel(EMAC_MACCONTROL_MIIEN_ENABLE, &adap_emac->MACCONTROL);
+		mac_control |= EMAC_MACCONTROL_FULLDUPLEX_ENABLE;
 	}
 
 #ifdef CONFIG_DRIVER_TI_EMAC_USE_RMII
-	regval = readl(&adap_emac->MACCONTROL);
-	if (lpa_val & (LPA_100FULL | LPA_100HALF) ) {
-		writel((regval | EMAC_MACCONTROL_RMIISPEED_100),
-				&adap_emac->MACCONTROL);
-	} else {
-		writel((regval & (~EMAC_MACCONTROL_RMIISPEED_100)),
-			&adap_emac->MACCONTROL);
-	}
+	mac_control |= EMAC_MACCONTROL_RMIISPEED_100;
 #endif
-
-	emac_gigabit_enable();
+	writel(mac_control, &adap_emac->MACCONTROL);
 
 	/* Start receive process */
 	writel((BD_TO_HW((u_int32_t)emac_rx_desc)), &adap_emac->RX0HDP);
@@ -578,8 +583,6 @@ static int davinci_eth_send_packet (struct eth_device *dev,
 		return (ret_status);
 	}
 
-	emac_gigabit_enable();
-
 	/* Check packet size and if < EMAC_MIN_ETHERNET_PKT_SIZE, pad it up */
 	if (length < EMAC_MIN_ETHERNET_PKT_SIZE) {
 		length = EMAC_MIN_ETHERNET_PKT_SIZE;
@@ -602,8 +605,6 @@ static int davinci_eth_send_packet (struct eth_device *dev,
 			davinci_eth_ch_teardown (EMAC_CH_TX);
 			return (ret_status);
 		}
-
-		emac_gigabit_enable();
 
 		if (readl(&adap_emac->TXINTSTATRAW) & 0x01) {
 			ret_status = length;
@@ -785,5 +786,12 @@ int davinci_emac_initialize(void)
 	printf("Ethernet PHY: %s\n", phy.name);
 
 	miiphy_register(phy.name, davinci_mii_phy_read, davinci_mii_phy_write);
+#ifdef DAVINCI_EMAC_GIG_ENABLE
+	/* Enable PHY to clock out TX_CLK */
+	davinci_eth_phy_read(active_phy_addr, PHY_CONF_REG, &tmp);
+	tmp |= PHY_CONF_TXCLKEN;
+	davinci_eth_phy_write(active_phy_addr, PHY_CONF_REG, tmp);
+	davinci_eth_phy_read(active_phy_addr, PHY_CONF_REG, &tmp);
+#endif
 	return(1);
 }
