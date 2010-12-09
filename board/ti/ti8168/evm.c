@@ -70,7 +70,9 @@ DECLARE_GLOBAL_DATA_PTR;
 void walking_one_test(unsigned long start_addr, unsigned long end_addr);
 void data_walking_test(unsigned long addr, unsigned long mask);
 void address_walking_test(unsigned long addr, unsigned long mask);
+#ifdef CONFIG_TI816X_DDR3_SW_LEVELING
 static void ddr3_sw_levelling(int emif);
+#endif
 
 #ifdef CONFIG_TI816X_VOLT_SCALE
 #define NUM_VOLT_DATA 4
