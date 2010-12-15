@@ -1054,6 +1054,20 @@ static void peripheral_enable(void)
 	__raw_writel(0x2, CM_ALWON_HSMMC_CLKCTRL);
 	while(__raw_readl(CM_ALWON_HSMMC_CLKCTRL) != 0x2);
 
+	/* WDT */
+	/* For WDT to be functional, it needs to be first stopped by writing
+	 * the pattern 0xAAAA followed by 0x5555 in the WDT start/stop register.
+	 * After that a write-once register in Control module needs to be configured
+	 * to unfreeze the timer.
+	 * Note: It is important to stop the watchdog before unfreezing it
+	 */
+	__raw_writel(0xAAAA, WDT_WSPR);
+	while(__raw_readl(WDT_WWPS) != 0x0);
+	__raw_writel(0x5555, WDT_WSPR);
+	while(__raw_readl(WDT_WWPS) != 0x0);
+
+	/* Unfreeze WDT */
+	__raw_writel(0x2, WDT_UNFREEZE);
 }
 
 /******************************************************************************
@@ -1082,7 +1096,7 @@ void prcm_init(u32 in_ddr)
 }
 
 /******************************************************************************
- * set_muxconf_regs(void) - Setting up the configuration Mux registers 
+ * set_muxconf_regs(void) - Setting up the configuration Mux registers
  *****************************************************************************/
 void set_muxconf_regs(void)
 {

@@ -491,5 +491,27 @@ extern struct gpmc *gpmc_cfg;
 #define MAC_ID1_LO	(CTRL_BASE + 0x638)
 #define MAC_ID1_HI	(CTRL_BASE + 0x63c)
 
+/* WDT related */
+/* TODO: Move to a new file */
+#define WDT_WDSC	(WDT_BASE + 0x010)
+#define WDT_WDST	(WDT_BASE + 0x014)
+#define WDT_WISR	(WDT_BASE + 0x018)
+#define WDT_WIER	(WDT_BASE + 0x01C)
+#define WDT_WWER	(WDT_BASE + 0x020)
+#define WDT_WCLR	(WDT_BASE + 0x024)
+#define WDT_WCRR	(WDT_BASE + 0x028)
+#define WDT_WLDR	(WDT_BASE + 0x02C)
+#define WDT_WTGR	(WDT_BASE + 0x030)
+#define WDT_WWPS	(WDT_BASE + 0x034)
+#define WDT_WDLY	(WDT_BASE + 0x044)
+#define WDT_WSPR	(WDT_BASE + 0x048)
+#define WDT_WIRQEOI	(WDT_BASE + 0x050)
+#define WDT_WIRQSTATRAW	(WDT_BASE + 0x054)
+#define WDT_WIRQSTAT	(WDT_BASE + 0x058)
+#define WDT_WIRQENSET	(WDT_BASE + 0x05C)
+#define WDT_WIRQENCLR	(WDT_BASE + 0x060)
+
+#define WDT_UNFREEZE	(CTRL_BASE + 0x100)
+
 #endif /* _TI816X_CPU_H */
 
