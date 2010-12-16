@@ -800,8 +800,7 @@ void ti81xx_nand_switch_ecc(nand_ecc_modes_t hardware, int32_t mode)
 	struct mtd_info *mtd;
 
 	if (nand_curr_device < 0 ||
-	    nand_curr_device >= CONFIG_SYS_MAX_NAND_DEVICE ||
-	    !nand_info[nand_curr_device].name) {
+	    nand_curr_device >= CONFIG_SYS_MAX_NAND_DEVICE) {
 		printf("Error: Can't switch ecc, no devices available\n");
 		return;
 	}
@@ -862,13 +861,6 @@ int board_nand_init(struct nand_chip *nand)
 		return -ENODEV;
 	}
 
-#if 0
-	gpmc_config = readl(&gpmc_cfg->config);
-	/* Disable Write protect */
-	gpmc_config = 0x12;
-	writel(gpmc_config, &gpmc_cfg->config);
-#endif
-
 	nand->IO_ADDR_R = (void __iomem *)&gpmc_cfg->cs[cs].nand_dat;
 	nand->IO_ADDR_W = (void __iomem *)&gpmc_cfg->cs[cs].nand_cmd;
 
@@ -881,17 +873,18 @@ int board_nand_init(struct nand_chip *nand)
 
 	nand->chip_delay = 100;
 
-	/* ecc info */
+	/* fallback ecc info, this will be overridden by 
+	 * ti81xx_nand_switch_ecc() below to 1-bit h/w ecc
+	 */
 	nand->priv = &bch_priv;
 	nand->ecc.mode = NAND_ECC_SOFT;
 
 	/* required in case of BCH */
 	elm_init();
 
-#if 0 /* by default get H/W ECC Hamming code */
-	nand->ecc.mode = NAND_ECC_HW;
-	__ti81xx_nand_switch_ecc(nand, NAND_ECC_HW, 2);
-#endif
+	nand_curr_device = 0;
+	ti81xx_nand_switch_ecc(NAND_ECC_HW, 0);
+
 	return 0;
 }
 
