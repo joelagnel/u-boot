@@ -45,6 +45,7 @@ static void sata_pll_config(void);
 static void modena_pll_config(void);
 static void l3_pll_config(void);
 static void ddr_pll_config(void);
+static void dsp_pll_config(void);
 static void dss_pll_config(void);
 static void iss_pll_config(void);
 static void iva_pll_config(void);
@@ -289,6 +290,13 @@ static void ddr_pll_config()
 			DDR_M2, DDR_CLKCTRL);
 }
 
+static void dsp_pll_config()
+{
+	pll_config(DSP_PLL_BASE,
+			DSP_N, DSP_M,
+			DSP_M2, DSP_CLKCTRL);
+}
+
 static void dss_pll_config()
 {
 	pll_config(DSS_PLL_BASE,
@@ -432,6 +440,7 @@ void prcm_init(u32 in_ddr)
 	modena_pll_config();
 	l3_pll_config();
 	ddr_pll_config();
+	dsp_pll_config();
 	dss_pll_config();
 	iva_pll_config();
 	iss_pll_config();
