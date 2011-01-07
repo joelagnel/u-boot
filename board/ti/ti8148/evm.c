@@ -54,7 +54,7 @@ static void usb_pll_config(void);
 #endif
 
 static void unlock_pll_control_mmr(void);
-
+static void cpsw_pad_config(u32 instance);
 /*
  * spinning delay to use before udelay works
  */
@@ -70,6 +70,10 @@ static inline void delay(unsigned long loops)
 int board_init(void)
 {
 	u32 regVal;
+
+	/* Do the required pin-muxing before modules are setup */
+	set_muxconf_regs();
+	cpsw_pad_config(0);
 
 	/* Get Timer and UART out of reset */
 
@@ -461,7 +465,7 @@ void prcm_init(u32 in_ddr)
 #endif
 }
 
-void cpsw_pad_config(u32 instance)
+static void cpsw_pad_config(u32 instance)
 {
 #define PADCTRL_BASE 0x48140000
 #define PAD232_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B9C))
@@ -600,8 +604,6 @@ void s_init(u32 in_ddr)
 	if (!in_ddr)
 		config_ti814x_ddr();	/* Do DDR settings */
 #endif
-	set_muxconf_regs();
-	cpsw_pad_config(0);
 }
 
 /*
