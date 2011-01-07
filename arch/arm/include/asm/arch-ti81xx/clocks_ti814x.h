@@ -27,7 +27,7 @@
 #define AUDIO_M2	4
 #define AUDIO_CLKCTRL	0x801
 
-#define MODENA_N	1
+#define MODENA_N	0x10001
 #define MODENA_M	0x3C
 #define MODENA_M2	1
 #define MODENA_CLKCTRL	0x1
