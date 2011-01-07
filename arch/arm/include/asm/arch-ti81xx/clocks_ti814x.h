@@ -22,6 +22,11 @@
 #define _CLOCKS_TI814X_H_
 
 /* Put the pll config values over here */
+#define AUDIO_N		19
+#define AUDIO_M		800
+#define AUDIO_M2	4
+#define AUDIO_CLKCTRL	0x801
+
 #define MODENA_N	1
 #define MODENA_M	0x3C
 #define MODENA_M2	1
