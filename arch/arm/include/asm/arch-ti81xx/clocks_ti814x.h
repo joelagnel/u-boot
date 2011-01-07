@@ -37,6 +37,11 @@
 #define DDR_M2		2
 #define DDR_CLKCTRL	0x801
 
+#define DSP_N		19
+#define DSP_M		500
+#define DSP_M2		1
+#define DSP_CLKCTRL	0x801
+
 #define DSS_N		19
 #define DSS_M		666
 #define DSS_M2		4
