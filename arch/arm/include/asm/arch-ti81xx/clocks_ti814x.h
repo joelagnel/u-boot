@@ -33,7 +33,7 @@
 #define MODENA_CLKCTRL	0x1
 
 #define L3_N		19
-#define L3_M		800
+#define L3_M		880
 #define L3_M2		4
 #define L3_CLKCTRL	0x801
 
