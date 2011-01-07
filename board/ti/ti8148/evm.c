@@ -41,6 +41,7 @@ static void pll_config(u32, u32, u32, u32, u32);
 #if 0
 static void pcie_pll_config(void);
 #endif
+static void audio_pll_config(void);
 static void sata_pll_config(void);
 static void modena_pll_config(void);
 static void l3_pll_config(void);
@@ -186,6 +187,13 @@ static void config_ti814x_ddr(void)
 #endif
 
 #ifdef CONFIG_SETUP_PLL
+static void audio_pll_config()
+{
+	pll_config(AUDIO_PLL_BASE,
+			AUDIO_N, AUDIO_M,
+			AUDIO_M2, AUDIO_CLKCTRL);
+}
+
 #if 0
 static void pcie_pll_config()
 {
@@ -435,6 +443,7 @@ void prcm_init(u32 in_ddr)
 
 #ifdef CONFIG_SETUP_PLL
 	/* Setup the various plls */
+	audio_pll_config();
 	sata_pll_config();
 //	pcie_pll_config();
 	modena_pll_config();
