@@ -37,6 +37,11 @@
 #define DDR_M2		2
 #define DDR_CLKCTRL	0x801
 
+#define DSS_N		19
+#define DSS_M		666
+#define DSS_M2		4
+#define DSS_CLKCTRL	0x801
+
 #define IVA_N		19
 #define IVA_M		850
 #define IVA_M2		2
