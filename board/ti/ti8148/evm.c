@@ -115,6 +115,11 @@ int dram_init(void)
 
 int misc_init_r (void)
 {
+	#ifdef CONFIG_TI814X_MIN_CONFIG
+	printf("The 2nd stage U-Boot will now be auto-loaded\n");
+	printf("Please do not interrupt the countdown till TI8148_EVM prompt if 2nd stage is already flashed\n");
+	#endif
+
 	#ifdef CONFIG_TI814X_ASCIIART
 	int i = 0, j = 0;
 	char ti814x[28][54] = {
