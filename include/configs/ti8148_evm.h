@@ -33,6 +33,7 @@
 //# undef CONFIG_BOOTM_RTEMS
 //# undef CONFIG_SREC
 //# undef CONFIG_XYZMODEM
+# undef CONFIG_SYS_HUSH_PARSER
 # define CONFIG_CMD_LOADB	/* loadb			*/
 # define CONFIG_CMD_LOADY	/* loady */
 # define CONFIG_SETUP_PLL
@@ -70,6 +71,8 @@
 # define CONFIG_ENV_OVERWRITE
 # define CONFIG_SYS_LONGHELP
 # define CONFIG_SYS_PROMPT		"TI8148_EVM#"
+# define CONFIG_SYS_HUSH_PARSER		/* Use HUSH parser to allow command parsing */
+# define CONFIG_SYS_PROMPT_HUSH_PS2	"> "
 # define CONFIG_CMDLINE_TAG        	1	/* enable passing of ATAGs  */
 # define CONFIG_SETUP_MEMORY_TAGS  	1
 # define CONFIG_INITRD_TAG	  	1	/* Required for ramdisk support */
@@ -147,6 +150,7 @@
  */
 #define CONFIG_SERIAL1			1
 #define CONFIG_CONS_INDEX		1
+#define CONFIG_SYS_CONSOLE_INFO_QUIET
 
 #if defined(CONFIG_NO_ETH)
 # undef CONFIG_CMD_NET
