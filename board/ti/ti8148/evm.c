@@ -115,6 +115,46 @@ int dram_init(void)
 
 int misc_init_r (void)
 {
+	#ifdef CONFIG_TI814X_ASCIIART
+	int i = 0, j = 0;
+	char ti814x[28][54] = {
+"                          .:;rrr;;.                   ",
+"                    ,5#@@@@#####@@@@@@#2,             ",
+"                 ,A@@@hi;;;r5;;;;r;rrSG@@@A,          ",
+"               r@@#i;:;s222hG;rrsrrrrrr;ri#@@r        ",
+"             :@@hr:r;SG3ssrr2r;rrsrsrsrsrr;rh@@:      ",
+"            B@H;;rr;3Hs;rrr;sr;;rrsrsrsrsrsr;;H@B     ",
+"           @@s:rrs;5#;;rrrr;r#@H:;;rrsrsrsrsrr:s@@    ",
+"          @@;;srs&X#9;r;r;;,2@@@rrr:;;rrsrsrsrr;;@@   ",
+"         @@;;rrsrrs@MB#@@@@@###@@@@@@#rsrsrsrsrr;;@@  ",
+"        G@r;rrsrsr;#X;SX25Ss#@@#M@#9H9rrsrsrsrsrs;r@G ",
+"        @9:srsrsrs;2@;:;;:.X@@@@@H::;rrsrsrsrsrsrr:3@ ",
+"       X@;rrsrsrsrr;XAi;;:&@@#@Bs:rrsrsrsrsrsrsrsrr;@X",
+"       @#;rsrsrsrsrr;r2ir@@@###::rrsrsrsrsrsrsrsrsr:@@",
+"       @A:rrsrsrsrr;:2@29@@M@@@;:;rrrrsrsrsrsrsrsrs;H@",
+"       @&;rsrsrsrr;A@@@@@@###@@@s::;:;;rrsrsrsrsrsr;G@",
+"       @#:rrsrsrsr;G@5Hr25@@@#@@@#9XG9s:rrrrsrsrsrs:#@",
+"       M@;rsrsrsrs;r@&#;::S@@@@@@@M@@@@Grr:;rsrsrsr;@#",
+"       :@s;rsrsrsrr:M#Msrr;;&#@@@@@@@@@@H@@5;rsrsr;s@,",
+"        @@:rrsrsrsr;S@rrrsr;:;r3MH@@#@M5,S@@irrsrr:@@ ",
+"         @A:rrsrsrsrrrrrsrsrrr;::;@##@r:;rH@h;srr:H@  ",
+"         ;@9:rrsrsrsrrrsrsrsrsr;,S@Hi@i:;s;MX;rr:h@;  ",
+"          r@B:rrrrsrsrsrsrsrr;;sA@#i,i@h;r;S5;r:H@r   ",
+"           ,@@r;rrrsrsrsrsrr;2BM3r:;r:G@:rrr;;r@@,    ",
+"             B@Mr;rrrrsrsrsr@@S;;;rrr:5M;rr;rM@H      ",
+"              .@@@i;;rrrrsrs2i;rrrrr;r@M:;i@@@.       ",
+"                .A@@#5r;;;r;;;rrr;r:r#AsM@@H.         ",
+"                   ;&@@@@MhXS5i5SX9B@@@@G;            ",
+"                       :ihM#@@@@@##hs,                "};
+
+	for (i = 0; i<28; i++)
+	{
+		for(j = 0; j<54; j++)
+			printf("%c",ti814x[i][j]);
+			printf("\n");
+	}
+	printf("\n");
+	#endif
 	return 0;
 }
 
