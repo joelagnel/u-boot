@@ -241,7 +241,7 @@
 #endif
 
 #ifdef CONFIG_TI814X
-#define CM_ALWON_HSMMC_CLKCTRL		(PRCM_BASE + 0x161C)
+#define CM_ALWON_HSMMC_CLKCTRL		(PRCM_BASE + 0x1620)
 #endif
 
 /* UART2 registers */
