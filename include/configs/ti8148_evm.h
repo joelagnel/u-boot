@@ -89,6 +89,9 @@
 						   initial data */
 
 #define CONFIG_MISC_INIT_R		1
+#ifndef CONFIG_TI814X_MIN_CONFIG
+# define CONFIG_TI814X_ASCIIART		1	/* The centaur */
+#endif
 #define CONFIG_SYS_AUTOLOAD		"yes"
 #define CONFIG_CMD_CACHE
 
