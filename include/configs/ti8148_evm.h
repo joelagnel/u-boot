@@ -89,6 +89,7 @@
 #endif
 #define CONFIG_SYS_AUTOLOAD		"yes"
 #define CONFIG_CMD_CACHE
+#define CONFIG_CMD_ECHO
 
 /*
  * Miscellaneous configurable options
