@@ -50,6 +50,7 @@
 
 #define CONFIG_CMD_ASKENV
 #define CONFIG_VERSION_VARIABLE
+#define CONFIG_CMD_ECHO
 
 /* By default, any image built will have MMC, NAND, SPI and I2C support */
 #define CONFIG_MMC			1
