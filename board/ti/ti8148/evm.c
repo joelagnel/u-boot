@@ -618,6 +618,8 @@ void set_muxconf_regs(void)
 		val |= pad_conf[i];
 		__raw_writel(val, add);
 	}
+	/* MMC/SD pull-down enable */
+	__raw_writel(0x000C0040, 0x48140928);
 }
 
 void unlock_pll_control_mmr()
