@@ -56,6 +56,16 @@
 		{.offset = 14,\
 		 .length = 50 } } \
 }
+/* NAND device layout in synch with the kernel */
+#define GPMC_NAND_HW_ECC_LAYOUT_KERNEL {\
+       .eccbytes = 12,\
+       .eccpos = {\
+                  40, 41, 42, 43, 44, 45, 46, 47,\
+                  48, 49, 50, 51},\
+       .oobfree = {\
+               {.offset = 2,\
+                .length = 38} } \
+}
 #endif
 
 /* Small Page x8 NAND device Layout */

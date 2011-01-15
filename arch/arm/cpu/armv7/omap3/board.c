@@ -292,10 +292,14 @@ void abort(void)
  *****************************************************************************/
 static int do_switch_ecc(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
 {
-	if (argc != 2)
+	if (argc < 2)
 		goto usage;
-	if (strncmp(argv[1], "hw", 2) == 0)
-		omap_nand_switch_ecc(NAND_ECC_HW);
+	if (strncmp(argv[1], "hw", 2) == 0) {
+		int type = 1;
+                if (argc == 3)
+                        type = simple_strtoul(argv[2], NULL, 10);
+		omap_nand_switch_ecc(type);
+	}
 	else if (strncmp(argv[1], "sw", 2) == 0)
 		omap_nand_switch_ecc(NAND_ECC_SOFT);
 	else if (strncmp(argv[1], "bch4_sw", 7) == 0)
@@ -313,9 +317,10 @@ usage:
 }
 
 U_BOOT_CMD(
-	nandecc, 2, 1,	do_switch_ecc,
+	nandecc, 3, 1,	do_switch_ecc,
 	"switch OMAP3 NAND ECC calculation algorithm",
-	"[hw/sw/bch4_sw/bch8_sw] - Switch between NAND hardware (hw), \
+	"[hw 1/hw 2/sw/bch4_sw/bch8_sw] - Switch between NAND hardware for \
+uboot/kernel/FS layout (hw 1), hardware for xloader layout (hw 2), \
 1-bit software (sw), 4-bit software (bch4_sw), or 8-bit software \
 (bch8_sw) ecc algorithm"
 );

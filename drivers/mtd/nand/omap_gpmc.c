@@ -32,6 +32,9 @@
 
 uint8_t cs;
 static struct nand_ecclayout hw_nand_oob = GPMC_NAND_HW_ECC_LAYOUT;
+#if defined(GPMC_NAND_ECC_LP_x16_LAYOUT) && !defined(CONFIG_SPL_BUILD)
+static struct nand_ecclayout hw_nand_oob_kernel = GPMC_NAND_HW_ECC_LAYOUT_KERNEL;
+#endif
 
 /*
  * omap_nand_hwcontrol - Set the address pointers corretly for the
@@ -274,14 +277,22 @@ void omap_nand_switch_ecc(nand_ecc_modes_t mode)
 	  {
 	  case NAND_ECC_HW:
 		nand->ecc.mode = NAND_ECC_HW;
-		nand->ecc.layout = &hw_nand_oob;	
+#ifdef GPMC_NAND_ECC_LP_x16_LAYOUT
+		nand->ecc.layout = &hw_nand_oob_kernel;
+#else
+		nand->ecc.layout = &hw_nand_oob;
+#endif
 		nand->ecc.hwctl = omap_enable_hwecc;
 		nand->ecc.size = 512;
 		nand->ecc.bytes = 3;
 		nand->ecc.correct = omap_correct_data;
 		nand->ecc.calculate = omap_calculate_ecc;
 		omap_hwecc_init(nand);
+#ifdef GPMC_NAND_ECC_LP_x16_LAYOUT
+		printf("HW ECC [Uboot/Kernel/FS layout] selected\n");
+#else
 		printf("HW ECC selected\n");
+#endif
 		break;
 	  case NAND_ECC_SOFT:
 		nand->ecc.mode = NAND_ECC_SOFT;
