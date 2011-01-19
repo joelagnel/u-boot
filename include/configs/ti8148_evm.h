@@ -82,6 +82,30 @@
 # define CONFIG_NAND			1
 # define CONFIG_SPI			1
 # define CONFIG_I2C			1
+# define CONFIG_EXTRA_ENV_SETTINGS \
+	"verify=yes\0" \
+	"bootfile=uImage\0" \
+	"ramdisk_file=ramdisk.gz\0" \
+	"loadaddr=0x81000000\0" \
+	"script_addr=0x80900000\0" \
+	"loadbootscript=fatload mmc 1 ${script_addr} boot.scr\0" \
+	"bootscript= echo Running bootscript from MMC/SD to set the ENV...; " \
+		"source ${script_addr}\0" \
+
+# define CONFIG_BOOTCOMMAND \
+	"if mmc init; then " \
+		"if run loadbootscript; then " \
+			"run bootscript; " \
+		"else " \
+			"echo In case ENV on MMC/SD is required; "\
+			"echo Please put a valid script named boot.scr on the card; " \
+			"echo Refer to the User Guide on how to generate the image; " \
+		"fi; " \
+	"else " \
+		"echo Please set bootargs and bootcmd before booting the kernel; " \
+		"echo If that has already been done please ignore this message; "\
+	"fi"
+
 
 #endif
 
