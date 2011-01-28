@@ -437,7 +437,7 @@ void per_clocks_enable(void)
 #endif
 	/* Selects OSC0 (20MHz) for DMTIMER1 */
 	temp = __raw_readl(DMTIMER_CLKSRC);
-	temp &= (0x7 << 3);
+	temp &= ~(0x7 << 3);
 	temp |= (0x4 << 3);
 	__raw_writel(temp, DMTIMER_CLKSRC);
 
