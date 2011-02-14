@@ -133,7 +133,22 @@ int print_cpuinfo (void)
 #ifdef CONFIG_TI816X
 	/* f0 = ((N * K) / (FREQ * P * M)) * fr */
 
-	arm_freq = (((MAIN_N * FAPLL_K * OSC_FREQ)/(MAIN_INTFREQ2 * MAIN_P * MAIN_MDIV2)))/SYSCLK_2_DIV;
+	arm_freq = (((MAIN_N * FAPLL_K * OSC_FREQ)/
+			( MAIN_P * MAIN_MDIV2 )))/SYSCLK_2_DIV;
+
+	/*
+	 * If the fractional part (MAIN_FRACFREQ2i) in non zero then the formula
+	 * is : fo = ((N * K) / ( (INTFREQ + FRACFREQ) * p * M)) * fr
+	 *
+	 * For 13.824, INTFREQ = 0xD and FRACFREQ = 0xD2F1A9
+	 * We are supposed to divide FRACFREQ by 0x1000000
+	 *
+	 * Due to overflow of values on multiplying by 0x1000000
+	 * we discard the least 8 bits
+	 */
+	arm_freq = (arm_freq * (0x1000000 >> 8));
+	arm_freq=arm_freq/((MAIN_INTFREQ2 * 0x1000000 + MAIN_FRACFREQ2)>>8);
+
 	ddr_freq = ((DDR_N * OSC_FREQ)/DDR_MDIV1);
 
 	printf("ARM clk: %dMHz\n", arm_freq);
