@@ -25,7 +25,7 @@
 
 #ifdef CONFIG_TI816X_EVM_DDR3
 
-#define CONFIG_TI816X_DDR3_796 /* Values supported 400,531,675,796 */
+#define CONFIG_TI816X_DDR3_400 /* Values supported 400,531,675,796 */
 #define CONFIG_TI816X_DDR3_SW_LEVELING	/* Enable software leveling as part of DDR3 init*/
 
 
