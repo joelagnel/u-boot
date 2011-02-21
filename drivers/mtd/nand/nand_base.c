@@ -44,6 +44,8 @@
 #include <linux/mtd/nand.h>
 #include <linux/mtd/nand_ecc.h>
 
+#include <asm/arch/omap_bch_soft.h>
+
 #ifdef CONFIG_MTD_PARTITIONS
 #include <linux/mtd/partitions.h>
 #endif
@@ -2749,6 +2751,7 @@ int nand_scan_ident(struct mtd_info *mtd, int maxchips,
  */
 int nand_scan_tail(struct mtd_info *mtd)
 {
+	uint32_t dev_width;
 	int i;
 	struct nand_chip *chip = mtd->priv;
 
@@ -2759,6 +2762,8 @@ int nand_scan_tail(struct mtd_info *mtd)
 
 	/* Set the internal oob buffer location, just after the page data */
 	chip->oob_poi = chip->buffers->databuf + mtd->writesize;
+
+	dev_width = (chip->options & NAND_BUSWIDTH_16) >> 1;
 
 	/*
 	 * If no default placement scheme is given, select an appropriate one
@@ -2863,6 +2868,45 @@ int nand_scan_tail(struct mtd_info *mtd)
 		chip->ecc.size = 256;
 		chip->ecc.bytes = 3;
 		break;
+
+	case NAND_ECC_4BIT_SOFT:
+        /* Use standard hwecc read page function */
+		if (!chip->ecc.read_page)
+			chip->ecc.read_page = nand_read_page_hwecc;
+		if (!chip->ecc.write_page)
+			chip->ecc.write_page = nand_write_page_hwecc;
+		if (!chip->ecc.read_oob)
+			chip->ecc.read_oob = nand_read_oob_std;
+		if (!chip->ecc.write_oob)
+			chip->ecc.write_oob = nand_write_oob_std;
+		chip->ecc.size = 2048;
+		chip->ecc.bytes = 28;
+		chip->ecc.hwctl = omap_enable_hwecc_bch4;
+                chip->ecc.calculate = omap_calculate_ecc_bch4;
+                chip->ecc.correct = omap_correct_data_bch4;
+                chip->ecc.layout = omap_get_ecc_layout_bch(dev_width, 4);
+		omap_hwecc_init_bch(chip);
+                break;
+
+	case NAND_ECC_8BIT_SOFT:
+        /* Use standard hwecc read page function */
+		if (!chip->ecc.read_page)
+			chip->ecc.read_page = nand_read_page_hwecc;
+		if (!chip->ecc.write_page)
+			chip->ecc.write_page = nand_write_page_hwecc;
+		if (!chip->ecc.read_oob)
+			chip->ecc.read_oob = nand_read_oob_std;
+		if (!chip->ecc.write_oob)
+			chip->ecc.write_oob = nand_write_oob_std;
+		chip->ecc.size = 2048;
+		chip->ecc.bytes = 52;
+		chip->ecc.hwctl = omap_enable_hwecc_bch8;
+                chip->ecc.calculate = omap_calculate_ecc_bch8;
+                chip->ecc.correct = omap_correct_data_bch8;
+                chip->ecc.layout = omap_get_ecc_layout_bch(dev_width, 8);
+		omap_hwecc_init_bch(chip);
+	        
+	        break;
 
 	case NAND_ECC_NONE:
 		printk(KERN_WARNING "NAND_ECC_NONE selected by board driver. "

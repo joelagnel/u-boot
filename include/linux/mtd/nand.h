@@ -132,6 +132,8 @@ typedef enum {
 	NAND_ECC_HW,
 	NAND_ECC_HW_SYNDROME,
 	NAND_ECC_HW_OOB_FIRST,
+	NAND_ECC_4BIT_SOFT,
+	NAND_ECC_8BIT_SOFT
 } nand_ecc_modes_t;
 
 /*
