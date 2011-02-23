@@ -103,6 +103,11 @@ int misc_init_r(void)
 	struct gpio *gpio5_base = (struct gpio *)OMAP34XX_GPIO5_BASE;
 	struct gpio *gpio6_base = (struct gpio *)OMAP34XX_GPIO6_BASE;
 
+	/*
+	 * Configure drive strength for IO cells
+	 */
+	*(ulong *)(CONTROL_PROG_IO1) &= ~(PRG_I2C2_PULLUPRESX);
+
 	beagle_identify();
 
 	twl4030_power_init();
