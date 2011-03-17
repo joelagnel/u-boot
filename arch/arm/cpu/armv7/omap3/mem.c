@@ -51,6 +51,18 @@ static const u32 gpmc_m_nand[GPMC_MAX_REG] = {
 
 #endif
 
+#if defined (CONFIG_CMD_FLASH)
+static const u32 gpmc_nor[GPMC_MAX_REG] = {
+	STNOR_GPMC_CONFIG1,
+	STNOR_GPMC_CONFIG2,
+	STNOR_GPMC_CONFIG3,
+	STNOR_GPMC_CONFIG4,
+	STNOR_GPMC_CONFIG5,
+	STNOR_GPMC_CONFIG6, 0
+};
+#endif
+
+
 #if defined(CONFIG_CMD_ONENAND)
 static const u32 gpmc_onenand[GPMC_MAX_REG] = {
 	ONENAND_GPMC_CONFIG1,
@@ -126,34 +138,64 @@ void gpmc_init(void)
 	u32 size = 0;
 #endif
 	u32 config = 0;
-
-	/* global settings */
-	writel(0, &gpmc_cfg->irqenable); /* isr's sources masked */
-	writel(0, &gpmc_cfg->timeout_control);/* timeout disable */
-
-	config = readl(&gpmc_cfg->config);
-	config &= (~0xf00);
-	writel(config, &gpmc_cfg->config);
+	u32 order, mem_type;
 
 	/*
-	 * Disable the GPMC0 config set by ROM code
-	 * It conflicts with our MPDB (both at 0x08000000)
+	 * Detect the boot device
+	 *
+	 * 0x0D => NOR Flash boot
+	 * 0x0C => NAND Flash boot
+	 * 0x2D => MMC/SD boot
 	 */
-	writel(0, &gpmc_cfg->cs[0].config7);
-	sdelay(1000);
+	mem_type = get_boot_type();
+	order = mem_type & (1<<5);
+	mem_type &= ~(1<<5);
+
+	if (order || (mem_type != 0xD)) {
+		/* global settings */
+		writel(0, &gpmc_cfg->irqenable); /* isr's sources masked */
+		writel(0, &gpmc_cfg->timeout_control);/* timeout disable */
+
+		config = readl(&gpmc_cfg->config);
+		config &= (~0xf00);
+		writel(config, &gpmc_cfg->config);
+
+		/*
+		 * Disable the GPMC0 config set by ROM code
+		 * It conflicts with our MPDB (both at 0x08000000)
+		 */
+		writel(0, &gpmc_cfg->cs[0].config7);
+		sdelay(1000);
+	}
 
 #if defined(CONFIG_CMD_NAND)	/* CS 0 */
 	gpmc_config = gpmc_m_nand;
 
 	base = PISMO1_NAND_BASE;
 	size = PISMO1_NAND_SIZE;
-	enable_gpmc_cs_config(gpmc_config, &gpmc_cfg->cs[0], base, size);
+	if (order || (get_boot_type() != 0xD))
+		enable_gpmc_cs_config(gpmc_config, &gpmc_cfg->cs[0], base, size);
+	else
+		enable_gpmc_cs_config(gpmc_config, &gpmc_cfg->cs[2], base, size);
+
 #endif
 
 #if defined(CONFIG_CMD_ONENAND)
 	gpmc_config = gpmc_onenand;
 	base = PISMO1_ONEN_BASE;
 	size = PISMO1_ONEN_SIZE;
-	enable_gpmc_cs_config(gpmc_config, &gpmc_cfg->cs[0], base, size);
+	if (order || (get_boot_type() != 0xD))
+		enable_gpmc_cs_config(gpmc_config, &gpmc_cfg->cs[0], base, size);
+	else
+		enable_gpmc_cs_config(gpmc_config, &gpmc_cfg->cs[2], base, size);
+
+#endif
+
+#if defined (CONFIG_CMD_FLASH) && defined (CONFIG_OMAP3_AM3517EVM)
+	/* NOR - CS2 */
+	if (order || (get_boot_type() != 0xD))
+		enable_gpmc_cs_config(gpmc_nor,
+				(struct gpmc_cs *)GPMC_CONFIG_CS2_BASE,
+				DEBUG_BASE, GPMC_SIZE_64M);
 #endif
 }

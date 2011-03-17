@@ -78,7 +78,7 @@ struct ctrl_id {
 
 /* device type */
 #define DEVICE_MASK		(0x7 << 8)
-#define SYSBOOT_MASK		0x1F
+#define SYSBOOT_MASK		0x3F
 #define TST_DEVICE		0x0
 #define EMU_DEVICE		0x1
 #define HS_DEVICE		0x2
@@ -92,6 +92,8 @@ struct ctrl_id {
 #define GPMC_BASE		(OMAP34XX_GPMC_BASE)
 #define GPMC_CONFIG_CS0		0x60
 #define GPMC_CONFIG_CS0_BASE	(GPMC_BASE + GPMC_CONFIG_CS0)
+#define GPMC_CONFIG_CS1_BASE	(GPMC_BASE + GPMC_CONFIG_CS0 + (0x30 * 1))
+#define GPMC_CONFIG_CS2_BASE	(GPMC_BASE + GPMC_CONFIG_CS0 + (0x30 * 2))
 
 #ifndef __KERNEL_STRICT_NAMES
 #ifndef __ASSEMBLY__
