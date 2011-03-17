@@ -151,22 +151,22 @@ void gpmc_init(void)
 	order = mem_type & (1<<5);
 	mem_type &= ~(1<<5);
 
-	if (order || (mem_type != 0xD)) {
-		/* global settings */
-		writel(0, &gpmc_cfg->irqenable); /* isr's sources masked */
-		writel(0, &gpmc_cfg->timeout_control);/* timeout disable */
+	/* global settings */
+	writel(0, &gpmc_cfg->irqenable); /* isr's sources masked */
+	writel(0, &gpmc_cfg->timeout_control);/* timeout disable */
 
-		config = readl(&gpmc_cfg->config);
-		config &= (~0xf00);
-		writel(config, &gpmc_cfg->config);
+	config = readl(&gpmc_cfg->config);
+	config &= (~0xf00);
+	writel(config, &gpmc_cfg->config);
 
-		/*
-		 * Disable the GPMC0 config set by ROM code
-		 * It conflicts with our MPDB (both at 0x08000000)
-		 */
+	/*
+	 * Disable the GPMC0 config set by ROM code
+	 * It conflicts with our MPDB (both at 0x08000000)
+	 */
+	if (order || (get_boot_type() != 0xD))
 		writel(0, &gpmc_cfg->cs[0].config7);
-		sdelay(1000);
-	}
+
+	sdelay(1000);
 
 #if defined(CONFIG_CMD_NAND)	/* CS 0 */
 	gpmc_config = gpmc_m_nand;
