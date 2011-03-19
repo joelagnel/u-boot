@@ -147,7 +147,9 @@
 #define CONFIG_CMD_NAND		/* NAND support			*/
 #define CONFIG_CMD_DHCP
 #define CONFIG_CMD_PING
-#define CONFIG_CMD_FLASH	/* flinfo, erase, protect	*/
+
+#undef CONFIG_CMD_FLASH
+#define CONFIG_SYS_NO_FLASH
 
 #undef CONFIG_CMD_FPGA		/* FPGA configuration Support	*/
 #undef CONFIG_CMD_IMI		/* iminfo			*/
@@ -309,15 +311,21 @@
 #define CONFIG_SYS_FLASH_PROTECTION	1	/* hardware sector protection */
 #define CONFIG_SYS_FLASH_EMPTY_INFO	1	/* flinfo 'E' for empty */
 #define CONFIG_SYS_FLASH_BANKS_LIST	{CONFIG_SYS_FLASH_BASE}
-#define CONFIG_SYS_MAX_FLASH_BANKS	1	/* max number of flash banks */
-
 #define CONFIG_SYS_FLASH_CFI_WIDTH	2
 #define PHYS_FLASH_SIZE			(8 << 20)
-#define CONFIG_SYS_MAX_FLASH_SECT	512	/* max sectors on one chip */
 
+#define CONFIG_SYS_MAX_FLASH_BANKS	1	/* max number of flash banks */
+
+#else /* CONFIG_CMD_FLASH */
+
+#define CONFIG_SYS_MAX_FLASH_BANKS	2	/* max number of flash banks */
+#define CONFIG_SYS_FLASH_BASE		boot_flash_base
+
+#endif /* CONFIG_CMD_FLASH */
+
+#define CONFIG_SYS_MAX_FLASH_SECT	512	/* max sectors on one chip */
 /* Monitor at start of flash */
 #define CONFIG_SYS_MONITOR_BASE		CONFIG_SYS_FLASH_BASE
-#endif
 
 /* timeout values are in ticks */
 #define CONFIG_SYS_FLASH_ERASE_TOUT	(100 * CONFIG_SYS_HZ)
