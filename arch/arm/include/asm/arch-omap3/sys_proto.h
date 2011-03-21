@@ -63,7 +63,7 @@ void sr32(void *, u32, u32, u32);
 u32 wait_on_value(u32, u32, void *, u32);
 void sdelay(unsigned long);
 void make_cs1_contiguous(void);
-void omap_nand_switch_ecc(int);
+void omap_nand_switch_ecc(int, int);
 void power_init_r(void);
 void dieid_num_r(void);
 

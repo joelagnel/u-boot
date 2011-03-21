@@ -235,7 +235,7 @@ static void omap_enable_hwecc(struct mtd_info *mtd, int32_t mode)
  * @hardware - 1 -switch to h/w ecc, 0 - s/w ecc
  *
  */
-void omap_nand_switch_ecc(nand_ecc_modes_t mode)
+void omap_nand_switch_ecc(nand_ecc_modes_t mode, int32_t hardware)
 {
 	struct nand_chip *nand;
 	struct mtd_info *mtd;
