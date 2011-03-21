@@ -244,7 +244,7 @@ static void omap_enable_hwecc(struct mtd_info *mtd, int32_t mode)
  * @hardware - 1 -switch to h/w ecc, 0 - s/w ecc
  *
  */
-void omap_nand_switch_ecc(nand_ecc_modes_t mode)
+void omap_nand_switch_ecc(nand_ecc_modes_t mode, int32_t hardware)
 {
 	struct nand_chip *nand;
 	struct mtd_info *mtd;
@@ -278,7 +278,7 @@ void omap_nand_switch_ecc(nand_ecc_modes_t mode)
 	  case NAND_ECC_HW:
 		nand->ecc.mode = NAND_ECC_HW;
 #ifdef GPMC_NAND_ECC_LP_x16_LAYOUT
-		nand->ecc.layout = &hw_nand_oob_kernel;
+		nand->ecc.layout = (hardware == 1) ? &hw_nand_oob_kernel : &hw_nand_oob;
 #else
 		nand->ecc.layout = &hw_nand_oob;
 #endif
@@ -289,7 +289,7 @@ void omap_nand_switch_ecc(nand_ecc_modes_t mode)
 		nand->ecc.calculate = omap_calculate_ecc;
 		omap_hwecc_init(nand);
 #ifdef GPMC_NAND_ECC_LP_x16_LAYOUT
-		printf("HW ECC [Uboot/Kernel/FS layout] selected\n");
+		printf("HW ECC [%s layout] selected\n",(hardware == 1) ? "Uboot/Kernel/FS" : "X-loader");
 #else
 		printf("HW ECC selected\n");
 #endif

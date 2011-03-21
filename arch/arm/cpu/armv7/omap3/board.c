@@ -298,14 +298,14 @@ static int do_switch_ecc(cmd_tbl_t * cmdtp, int flag, int argc, char * const arg
 		int type = 1;
                 if (argc == 3)
                         type = simple_strtoul(argv[2], NULL, 10);
-		omap_nand_switch_ecc(type);
+		omap_nand_switch_ecc(NAND_ECC_HW, type);
 	}
 	else if (strncmp(argv[1], "sw", 2) == 0)
-		omap_nand_switch_ecc(NAND_ECC_SOFT);
+		omap_nand_switch_ecc(NAND_ECC_SOFT, 0);
 	else if (strncmp(argv[1], "bch4_sw", 7) == 0)
-		omap_nand_switch_ecc(NAND_ECC_4BIT_SOFT);
+		omap_nand_switch_ecc(NAND_ECC_4BIT_SOFT, 0);
 	else if (strncmp(argv[1], "bch8_sw", 7) == 0)
-		omap_nand_switch_ecc(NAND_ECC_8BIT_SOFT);
+		omap_nand_switch_ecc(NAND_ECC_8BIT_SOFT, 0);
 	else
 		goto usage;
 
