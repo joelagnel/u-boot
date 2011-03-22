@@ -44,7 +44,9 @@
 #include <linux/mtd/nand.h>
 #include <linux/mtd/nand_ecc.h>
 
+#if !defined(CONFIG_TI81XX)
 #include <asm/arch/omap_bch_soft.h>
+#endif
 
 #ifdef CONFIG_MTD_PARTITIONS
 #include <linux/mtd/partitions.h>
@@ -2869,6 +2871,7 @@ int nand_scan_tail(struct mtd_info *mtd)
 		chip->ecc.bytes = 3;
 		break;
 
+#if !defined(CONFIG_TI81XX)
 	case NAND_ECC_4BIT_SOFT:
         /* Use standard hwecc read page function */
 		if (!chip->ecc.read_page)
@@ -2907,6 +2910,7 @@ int nand_scan_tail(struct mtd_info *mtd)
 		omap_hwecc_init_bch(chip);
 	        
 	        break;
+#endif
 
 	case NAND_ECC_NONE:
 		printk(KERN_WARNING "NAND_ECC_NONE selected by board driver. "
