@@ -313,6 +313,8 @@ void omap_nand_switch_ecc(nand_ecc_modes_t mode, int32_t hardware)
 		omap_hwecc_init_bch(nand);
 		printf("8 BIT SW ECC selected\n");
 		break;
+	  default:
+		break;	
 	  }
 
 	/* Update NAND handling after ECC mode switch */
