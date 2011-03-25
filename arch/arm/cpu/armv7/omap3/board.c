@@ -320,7 +320,7 @@ U_BOOT_CMD(
 	nandecc, 3, 1,	do_switch_ecc,
 	"switch OMAP3 NAND ECC calculation algorithm",
 	"[hw 1/hw 2/sw/bch4_sw/bch8_sw] - Switch between NAND hardware for \
-kernel/FS layout (hw 1), hardware for xloader layout (hw 2), \
+kernel/FS layout (hw 1), hardware for xloader/uboot layout (hw 2), \
 1-bit software (sw), 4-bit software (bch4_sw), or 8-bit software \
 (bch8_sw) ecc algorithm"
 );

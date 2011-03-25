@@ -289,7 +289,7 @@ void omap_nand_switch_ecc(nand_ecc_modes_t mode, int32_t hardware)
 		nand->ecc.calculate = omap_calculate_ecc;
 		omap_hwecc_init(nand);
 #ifdef GPMC_NAND_ECC_LP_x16_LAYOUT
-		printf("HW ECC [%s layout] selected\n",(hardware == 1) ? "Kernel/FS" : "X-loader");
+		printf("HW ECC [%s layout] selected\n",(hardware == 1) ? "Kernel/FS" : "X-loader/U-boot");
 #else
 		printf("HW ECC selected\n");
 #endif
