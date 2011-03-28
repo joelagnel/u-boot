@@ -241,8 +241,9 @@ static void omap_enable_hwecc(struct mtd_info *mtd, int32_t mode)
  * omap_nand_switch_ecc - switch the ECC operation b/w h/w ecc and s/w ecc.
  * The default is to come up on s/w ecc
  *
- * @hardware - 1 -switch to h/w ecc, 0 - s/w ecc
- *
+ * @hardware - 1 -switch to 1-bit h/w ecc (kernel/FS layout), 
+ *			   2 -switch to 1-bit h/w ecc (xloader/uboot layout)
+ *			   (0 -default value)
  */
 void omap_nand_switch_ecc(nand_ecc_modes_t mode, int32_t hardware)
 {
@@ -251,10 +252,9 @@ void omap_nand_switch_ecc(nand_ecc_modes_t mode, int32_t hardware)
 	uint32_t dev_width;
 
 	if (nand_curr_device < 0 ||
-		nand_curr_device >= CONFIG_SYS_MAX_NAND_DEVICE ||
-		!nand_info[nand_curr_device].name) {
-	printf("Error: Can't switch ecc, no devices available\n");
-	return;
+		nand_curr_device >= CONFIG_SYS_MAX_NAND_DEVICE) {
+			printf("Error: Can't switch ecc, no devices available\n");
+			return;
 	}
 
 	mtd = &nand_info[nand_curr_device];
@@ -389,10 +389,17 @@ int board_nand_init(struct nand_chip *nand)
 	if ((readl(&gpmc_cfg->cs[cs].config1) & 0x3000) == 0x1000)
 	  nand->options |= NAND_BUSWIDTH_16;
 
+	/* fallback ecc info, this will be overridden by
+	 * ti81xx_nand_switch_ecc() below to 1-bit h/w ecc
+	 */
 	nand->chip_delay = 100;
 	/* Default ECC mode */
 #ifndef CONFIG_SPL_BUILD
 	nand->ecc.mode = NAND_ECC_4BIT_SOFT;
+
+	/* Making 1-bit hw ecc (kernel/FS layout) as default ecc scheme */
+	nand_curr_device = 0;
+	omap_nand_switch_ecc(NAND_ECC_HW, 1);
 #else
 	nand->ecc.mode = NAND_ECC_HW;
 	nand->ecc.layout = &hw_nand_oob;
