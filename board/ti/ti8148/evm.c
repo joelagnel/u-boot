@@ -73,6 +73,7 @@ int board_init(void)
 	/* Do the required pin-muxing before modules are setup */
 	set_muxconf_regs();
 	cpsw_pad_config(0);
+	cpsw_pad_config(1);
 
 	/* Get Timer and UART out of reset */
 
@@ -521,6 +522,32 @@ void prcm_init(u32 in_ddr)
 static void cpsw_pad_config(u32 instance)
 {
 #define PADCTRL_BASE 0x48140000
+
+#define PAD204_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B2c))
+#define PAD205_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B30))
+#define PAD206_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B34))
+#define PAD207_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B38))
+#define PAD208_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B3c))
+#define PAD209_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B40))
+#define PAD210_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B44))
+#define PAD211_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B48))
+#define PAD212_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B4c))
+#define PAD213_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B50))
+#define PAD214_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B54))
+#define PAD215_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B58))
+#define PAD216_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B5c))
+#define PAD217_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B60))
+#define PAD218_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B64))
+#define PAD219_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B68))
+#define PAD220_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B6c))
+#define PAD221_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B70))
+#define PAD222_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B74))
+#define PAD223_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B78))
+#define PAD224_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B7c))
+#define PAD225_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B80))
+#define PAD226_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B84))
+#define PAD227_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B88))
+
 #define PAD232_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B9C))
 #define PAD233_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BA0))
 #define PAD234_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BA4))
@@ -605,6 +632,62 @@ static void cpsw_pad_config(u32 instance)
 		PAD257_CNTRL = (volatile unsigned int) (BIT(0));
 		val = PAD258_CNTRL;
 		PAD258_CNTRL = (volatile unsigned int) (BIT(0));
+	} else 	if (instance == 1) {
+		volatile u32 val = 0;
+		val = PAD232_CNTRL;
+		PAD232_CNTRL = (volatile unsigned int) (BIT(18) | BIT(0));
+		val = PAD233_CNTRL;
+		PAD233_CNTRL = (volatile unsigned int) (BIT(19) | BIT(17) | BIT(0));
+		val = PAD234_CNTRL;
+		PAD234_CNTRL = (volatile unsigned int) (BIT(19) | BIT(18) | BIT(17) | BIT(0));
+		val = PAD204_CNTRL;
+		PAD204_CNTRL = (volatile unsigned int) (BIT(19) | BIT(18) | BIT(1));
+		val = PAD205_CNTRL;
+		PAD205_CNTRL = (volatile unsigned int) (BIT(19) | BIT(18) | BIT(1));
+		val = PAD206_CNTRL;
+		PAD206_CNTRL = (volatile unsigned int) (BIT(19) | BIT(18) | BIT(1));
+		val = PAD207_CNTRL;
+		PAD207_CNTRL = (volatile unsigned int) (BIT(19) | BIT(18) | BIT(1));
+		val = PAD208_CNTRL;
+		PAD208_CNTRL = (volatile unsigned int) (BIT(19) | BIT(18) | BIT(1));
+		val = PAD209_CNTRL;
+		PAD209_CNTRL = (volatile unsigned int) (BIT(18) | BIT(1));
+		val = PAD210_CNTRL;
+		PAD210_CNTRL = (volatile unsigned int) (BIT(18) | BIT(1));
+		val = PAD211_CNTRL;
+		PAD211_CNTRL = (volatile unsigned int) (BIT(18) | BIT(1));
+		val = PAD212_CNTRL;
+		PAD212_CNTRL = (volatile unsigned int) (BIT(18) | BIT(1));
+		val = PAD213_CNTRL;
+		PAD213_CNTRL = (volatile unsigned int) (BIT(18) | BIT(1));
+		val = PAD214_CNTRL;
+		PAD214_CNTRL = (volatile unsigned int) (BIT(18) | BIT(1));
+		val = PAD215_CNTRL;
+		PAD215_CNTRL = (volatile unsigned int) (BIT(18) | BIT(1));
+		val = PAD216_CNTRL;
+		PAD216_CNTRL = (volatile unsigned int) (BIT(18) | BIT(1));
+		val = PAD217_CNTRL;
+		PAD217_CNTRL = (volatile unsigned int) (BIT(18) | BIT(1));
+		val = PAD218_CNTRL;
+		PAD218_CNTRL = (volatile unsigned int) (BIT(1));
+		val = PAD219_CNTRL;
+		PAD219_CNTRL = (volatile unsigned int) (BIT(1));
+		val = PAD220_CNTRL;
+		PAD220_CNTRL = (volatile unsigned int) (BIT(1));
+		val = PAD221_CNTRL;
+		PAD221_CNTRL = (volatile unsigned int) (BIT(1));
+		val = PAD222_CNTRL;
+		PAD222_CNTRL = (volatile unsigned int) (BIT(1));
+		val = PAD223_CNTRL;
+		PAD223_CNTRL = (volatile unsigned int) (BIT(1));
+		val = PAD224_CNTRL;
+		PAD224_CNTRL = (volatile unsigned int) (BIT(1));
+		val = PAD225_CNTRL;
+		PAD225_CNTRL = (volatile unsigned int) (BIT(1));
+		val = PAD226_CNTRL;
+		PAD226_CNTRL = (volatile unsigned int) (BIT(1));
+		val = PAD227_CNTRL;
+		PAD227_CNTRL = (volatile unsigned int) (BIT(1));
 	}
 }
 
