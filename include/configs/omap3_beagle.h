@@ -236,7 +236,7 @@
 	"rdaddr=0x81000000\0" \
 	"usbtty=cdc_acm\0" \
 	"bootfile=uImage.beagle\0" \
-	"console=ttyS2,115200n8\0" \
+	"console=ttyO2,115200n8\0" \
 	"mpurate=auto\0" \
 	"buddy=none "\
 	"optargs=\0" \
