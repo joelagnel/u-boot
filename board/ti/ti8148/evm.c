@@ -193,15 +193,15 @@ static void config_ti814x_ddr(void)
 	while( (__raw_readl(VTP1_CTRL_REG) & 0x00000020) != 0x20);
 
 	/*Program the DMM to Access EMIF0 and EMIF1*/
-	__raw_writel(0x80600100, DMM_LISA_MAP__0);
-	__raw_writel(0x80600100, DMM_LISA_MAP__1);
-	__raw_writel(0xC0600200, DMM_LISA_MAP__2);
-	__raw_writel(0xC0600200, DMM_LISA_MAP__3);
+	__raw_writel(0x80440300, DMM_LISA_MAP__0);
+	__raw_writel(0x80440300, DMM_LISA_MAP__1);
+	__raw_writel(0xC0440308, DMM_LISA_MAP__2);
+	__raw_writel(0xC0440308, DMM_LISA_MAP__3);
 
-	while(__raw_readl(DMM_LISA_MAP__0)!=0x80600100);
-	while(__raw_readl(DMM_LISA_MAP__1)!=0x80600100);
-	while(__raw_readl(DMM_LISA_MAP__2)!=0xC0600200);
-	while(__raw_readl(DMM_LISA_MAP__3)!=0xC0600200);
+	while(__raw_readl(DMM_LISA_MAP__0)!=0x80440300);
+	while(__raw_readl(DMM_LISA_MAP__1)!=0x80440300);
+	while(__raw_readl(DMM_LISA_MAP__2)!=0xC0440308);
+	while(__raw_readl(DMM_LISA_MAP__3)!=0xC0440308);
 
 	__raw_writel(0x80000000, DMM_PAT_BASE_ADDR);
 
