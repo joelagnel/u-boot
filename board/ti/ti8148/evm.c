@@ -47,7 +47,6 @@ static void modena_pll_config(void);
 static void l3_pll_config(void);
 static void ddr_pll_config(void);
 static void dsp_pll_config(void);
-static void dss_pll_config(void);
 static void iss_pll_config(void);
 static void iva_pll_config(void);
 static void usb_pll_config(void);
@@ -354,13 +353,6 @@ static void dsp_pll_config()
 			DSP_M2, DSP_CLKCTRL);
 }
 
-static void dss_pll_config()
-{
-	pll_config(DSS_PLL_BASE,
-			DSS_N, DSS_M,
-			DSS_M2, DSS_CLKCTRL);
-}
-
 static void iss_pll_config()
 {
 	pll_config(ISS_PLL_BASE,
@@ -499,7 +491,6 @@ void prcm_init(u32 in_ddr)
 	l3_pll_config();
 	ddr_pll_config();
 	dsp_pll_config();
-	dss_pll_config();
 	iva_pll_config();
 	iss_pll_config();
 
