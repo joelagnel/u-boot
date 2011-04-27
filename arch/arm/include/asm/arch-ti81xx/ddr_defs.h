@@ -178,7 +178,7 @@
 #define EMIF_TIM3    0x009F82CF
 #define EMIF_SDREF   0x10000C30
 #define EMIF_SDCFG   0x62A41032
-#define EMIF_PHYCFG  0x0000030B
+#define EMIF_PHYCFG  0x0000010B
 
 #if defined(CONFIG_TI816X_DDR3_SW_LEVELING)
 /* These values are obtained from the CCS app */
@@ -196,7 +196,7 @@
 #define EMIF_TIM3    0x009F83AF
 #define EMIF_SDREF   0x1000102E
 #define EMIF_SDCFG   0x62A51832
-#define EMIF_PHYCFG  0x0000030C
+#define EMIF_PHYCFG  0x0000010C
 
 #if defined(CONFIG_TI816X_DDR3_SW_LEVELING)
 /* These values are obtained from the CCS app */
@@ -214,7 +214,7 @@
 #define EMIF_TIM3    0x009F84AF
 #define EMIF_SDREF   0x10001491
 #define EMIF_SDCFG   0x62A63032
-#define EMIF_PHYCFG  0x0000030F
+#define EMIF_PHYCFG  0x0000010F
 
 #if defined(CONFIG_TI816X_DDR3_SW_LEVELING)
 /* These values are obtained from the CCS app */
@@ -233,7 +233,7 @@
 #define EMIF_TIM3   0x009F857F
 #define EMIF_SDREF  0x10001841
 #define EMIF_SDCFG  0x62A73832
-#define EMIF_PHYCFG 0x00000310
+#define EMIF_PHYCFG 0x00000110
 
 #if defined(CONFIG_TI816X_DDR3_SW_LEVELING)
 /* These values are obtained from the CCS app */
@@ -304,7 +304,7 @@
 #define EMIF_TIM3    0x80032F
 #define EMIF_SDREF   0x10000C30
 #define EMIF_SDCFG   0x43801A3A  /* 32 bit ddr2, CL=6, CWL=5, 13 rows, 8 banks, 10 bit column, 2 CS */
-#define EMIF_PHYCFG  0x0000030B  /* local odt = 3, read latency = 11 (max = 12, min=6) */
+#define EMIF_PHYCFG  0x0000010B  /* local odt = 1, read latency = 11 (max = 12, min=6) */
 
 #endif	/* CONFIG_TI816X_EVM_DDR2 */
 
