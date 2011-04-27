@@ -48,7 +48,7 @@
 #define DSP_CLKCTRL	0x801
 
 #define IVA_N		19
-#define IVA_M		850
+#define IVA_M		640
 #define IVA_M2		2
 #define IVA_CLKCTRL	0x801
 
