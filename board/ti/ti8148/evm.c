@@ -237,6 +237,16 @@ static void config_ti814x_ddr(void)
 #ifdef CONFIG_SETUP_PLL
 static void audio_pll_config()
 {
+	u32 audio_osc_src, rd_osc_src = 0;
+
+	audio_osc_src = AUDIO_OSC_SRC;
+	rd_osc_src = __raw_readl(OSC_SRC_CTRL);
+
+	if(OSC_SRC0 == audio_osc_src)
+		__raw_writel((rd_osc_src & 0xfeffffff)|0x0, OSC_SRC_CTRL);
+	else
+		__raw_writel((rd_osc_src & 0xfeffffff)|0x01000000, OSC_SRC_CTRL);
+
 	pll_config(AUDIO_PLL_BASE,
 			AUDIO_N, AUDIO_M,
 			AUDIO_M2, AUDIO_CLKCTRL);
@@ -334,6 +344,16 @@ static void modena_pll_config()
 
 static void l3_pll_config()
 {
+	u32 l3_osc_src, rd_osc_src = 0;
+
+	l3_osc_src = L3_OSC_SRC;
+	rd_osc_src = __raw_readl(OSC_SRC_CTRL);
+
+	if(OSC_SRC0 == l3_osc_src)
+		__raw_writel((rd_osc_src & 0xfffffffe)|0x0, OSC_SRC_CTRL);
+	else
+		__raw_writel((rd_osc_src & 0xfffffffe)|0x1, OSC_SRC_CTRL);
+
 	pll_config(L3_PLL_BASE,
 			L3_N, L3_M,
 			L3_M2, L3_CLKCTRL);
