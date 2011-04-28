@@ -21,6 +21,13 @@
 #ifndef _CLOCKS_TI814X_H_
 #define _CLOCKS_TI814X_H_
 
+/* CLK_SRC */
+#define OSC_SRC0	0
+#define OSC_SRC1	1
+
+#define L3_OSC_SRC	OSC_SRC0
+#define AUDIO_OSC_SRC	OSC_SRC0
+
 /* Put the pll config values over here */
 #define AUDIO_N		19
 #define AUDIO_M		800
