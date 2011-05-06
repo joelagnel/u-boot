@@ -339,7 +339,7 @@ static void modena_pll_config()
 {
 	pll_config(MODENA_PLL_BASE,
 			MODENA_N, MODENA_M,
-			0, MODENA_CLKCTRL);
+			MODENA_M2, MODENA_CLKCTRL);
 }
 
 static void l3_pll_config()
@@ -393,11 +393,8 @@ static void iva_pll_config()
 static void pll_config(u32 base, u32 n, u32 m, u32 m2, u32 clkctrl_val)
 {
 	u32 m2nval, mn2val, read_clkctrl = 0;
-	if (m2 == 0)
-		m2nval = n;
-	else
-		m2nval = (m2 << 16) | n;
 
+	m2nval = (m2 << 16) | n;
 	mn2val = m;
 
 	/*
@@ -419,7 +416,7 @@ static void pll_config(u32 base, u32 n, u32 m, u32 m2, u32 clkctrl_val)
 
 	read_clkctrl = __raw_readl(base + ADPLLJ_CLKCTRL);
 
-	if (m2 == 0)
+	if (MODENA_PLL_BASE == base)
 		__raw_writel((read_clkctrl & 0xff7fffff) | clkctrl_val,
 			base + ADPLLJ_CLKCTRL);
 	else
