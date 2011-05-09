@@ -29,6 +29,7 @@ SOBJS	+= lowlevel_init.o
 
 COBJS	+= board.o
 COBJS	+= mem.o
+COBJS	+= gpio.o
 COBJS	+= sys_info.o
 
 SRCS	:= $(SOBJS:.o=.S) $(COBJS:.o=.c)
