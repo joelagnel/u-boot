@@ -25,7 +25,9 @@ include $(TOPDIR)/config.mk
 
 LIB	= $(obj)lib$(BOARD).o
 
-COBJS	:= panda.o
+COBJS-$(CONFIG_USB_EHCI) += ehci-panda.o
+
+COBJS	:= $(COBJS-y) panda.o
 
 SRCS	:= $(COBJS:.o=.c)
 OBJS	:= $(addprefix $(obj),$(COBJS))
