@@ -120,6 +120,19 @@
 #define CONFIG_USB_DEVICE		1
 #define CONFIG_USB_TTY			1
 #define CONFIG_SYS_CONSOLE_IS_IN_ENV	1
+#define CONFIG_CMD_USB			1
+#define CONFIG_USB_STORAGE		1
+#define CONFIG_USB_HOST_ETHER		1
+#define CONFIG_USB_EHCI			1
+#define CONFIG_USB_EHCI_OMAP4		1
+#define CONFIG_USB_HOST			1
+#define CONFIG_USB_ETHER_SMSC95XX	1
+
+/* Ethernet */
+#define CONFIG_NET_MULTI		1
+#define CONFIG_CMD_PING			1
+#define CONFIG_CMD_DHCP			1
+#define CONFIG_BOOTFILE			"uImage"
 
 /* Flash */
 #define CONFIG_SYS_NO_FLASH	1
@@ -134,7 +147,6 @@
 #define CONFIG_CMD_MMC		/* MMC support                  */
 
 /* Disabled commands */
-#undef CONFIG_CMD_NET
 #undef CONFIG_CMD_NFS
 #undef CONFIG_CMD_FPGA		/* FPGA configuration Support   */
 #undef CONFIG_CMD_IMLS		/* List all found images        */
@@ -152,6 +164,8 @@
 	"console=ttyS2,115200n8\0" \
 	"usbtty=cdc_acm\0" \
 	"vram=16M\0" \
+	"usbethaddr=00:02:03:04:05:06\0" \
+	"hostname=panda\0" \
 	"mmcdev=0\0" \
 	"mmcroot=/dev/mmcblk0p2 rw\0" \
 	"mmcrootfstype=ext3 rootwait\0" \
@@ -176,6 +190,10 @@
 				"run mmcboot; " \
 			"fi; " \
 		"fi; " \
+	"fi; " \
+	"if usb start; then " \
+		"bootp; "\
+		"source ${loadaddr};" \
 	"fi"
 
 #define CONFIG_AUTO_COMPLETE		1
