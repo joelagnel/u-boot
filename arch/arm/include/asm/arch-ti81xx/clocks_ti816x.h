@@ -96,12 +96,12 @@
 #define DDR_N			50
 #define DDR_P			0x1
 #define DDR_MDIV1		0x2
-#define DDR_INTFREQ2		0x7
-#define DDR_FRACFREQ2		0x800000
-#define DDR_MDIV2		0x1E
-#define DDR_INTFREQ3		0x6
-#define DDR_FRACFREQ3		0xC00000
-#define DDR_MDIV3		0x4
+#define DDR_INTFREQ2		0x9
+#define DDR_FRACFREQ2		0x0
+#define DDR_MDIV2		0x19
+#define DDR_INTFREQ3		0x13
+#define DDR_FRACFREQ3		0x800000
+#define DDR_MDIV3		0x2
 #define DDR_INTFREQ4		0xE /* Expansion DDR clk */
 #define DDR_FRACFREQ4		0x0
 #define DDR_MDIV4		0x4
