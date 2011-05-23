@@ -683,6 +683,8 @@ mck_return:
 
 /* Cache functions.
 */
+.globl flush_icache
+flush_icache:
 .globl invalidate_icache
 invalidate_icache:
 	mfspr	r0,L1CSR1
