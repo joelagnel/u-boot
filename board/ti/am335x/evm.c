@@ -27,6 +27,7 @@
 #include <net.h>
 #include <miiphy.h>
 #include <netdev.h>
+#include <spi_flash.h>
 #include "common_def.h"
 #include <i2c.h>
 
@@ -246,6 +247,9 @@ int board_min_init(void)
 	u32 regVal;
 
 	enable_uart0_pin_mux();
+#ifdef CONFIG_SPI
+	enable_spi_pinmux(daughter_board_id, daughter_board_profile);
+#endif
 
 	/* UART softreset */
 	regVal = __raw_readl(UART_SYSCFG);
@@ -299,6 +303,22 @@ int board_init(void)
 
 	return 0;
 }
+
+#ifdef BOARD_LATE_INIT
+/*
+ * SPI bus number is switched to in case Industrial Automation
+ * motor control EVM.
+ */
+void set_spi_bus_on_board_detect(void){
+	if (daughter_board_id == IA_DAUGHTER_BOARD)
+		setenv("spi_bus_no", "1");
+}
+
+int board_late_init(void){
+		set_spi_bus_on_board_detect();
+		return 0;
+}
+#endif
 
 /* Display the board info */
 int checkboard(void)

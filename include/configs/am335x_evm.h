@@ -42,7 +42,16 @@
 /* set to negative value for no autoboot */
 #define CONFIG_BOOTDELAY		3
 
-#if defined(CONFIG_NAND_BOOT)
+# if defined(CONFIG_SPI_BOOT)
+#  define CONFIG_SPI			1
+#  define BOARD_LATE_INIT               1
+#  define CONFIG_EXTRA_ENV_SETTINGS \
+	"verify=yes\0" \
+	"spi_bus_no=0\0" \
+	"bootcmd=sf probe ${spi_bus_no};sf read 0x81000000 0x20000 0x40000; \
+	go 0x81000000\0" \
+
+# elif defined(CONFIG_NAND_BOOT)
 #define CONFIG_NAND		1
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"verify=yes\0" \
@@ -90,6 +99,8 @@
 #ifndef CONFIG_NOR
 #define CONFIG_NAND
 #endif
+
+#define CONFIG_SPI			1
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"verify=yes\0" \
@@ -270,6 +281,30 @@
 	 CONFIG_ENV_OFFSET)
 # define CONFIG_MTD_DEVICE
 #endif	/* NOR support */
+
+/* SPI support */
+#ifdef CONFIG_SPI
+#define CONFIG_OMAP3_SPI
+#define CONFIG_MTD_DEVICE
+#define CONFIG_SPI_FLASH
+#define CONFIG_SPI_FLASH_WINBOND
+#define CONFIG_CMD_SF
+#define CONFIG_SF_DEFAULT_SPEED	(75000000)
+#endif
+
+/* ENV in SPI */
+#if defined(CONFIG_SPI_ENV)
+# undef CONFIG_ENV_IS_NOWHERE
+# define CONFIG_ENV_IS_IN_SPI_FLASH   1
+# define CONFIG_SYS_FLASH_BASE       (0)
+# define SPI_FLASH_ERASE_SIZE        (4 * 1024) /* sector size of SPI flash */
+# define CONFIG_SYS_ENV_SECT_SIZE    (2 * SPI_FLASH_ERASE_SIZE) /* env size */
+# define CONFIG_ENV_SECT_SIZE        (CONFIG_SYS_ENV_SECT_SIZE)
+# define CONFIG_ENV_OFFSET           (96 * SPI_FLASH_ERASE_SIZE)
+# define CONFIG_ENV_ADDR             (CONFIG_ENV_OFFSET)
+# define CONFIG_SYS_MAX_FLASH_SECT   (1024) /* no of sectors in SPI flash */
+# define CONFIG_SYS_MAX_FLASH_BANKS  (1)
+#endif /* SPI support */
 
 /* I2C */
 # define CONFIG_I2C

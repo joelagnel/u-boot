@@ -86,7 +86,7 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
 	case 0:
 		ds->regs = (struct mcspi *)OMAP3_MCSPI1_BASE;
 		break;
-#ifndef CONFIG_TI81XX
+#if !defined CONFIG_TI81XX || defined CONFIG_AM335X
 	case 1:
 		ds->regs = (struct mcspi *)OMAP3_MCSPI2_BASE;
 		break;
@@ -105,7 +105,12 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
 	ds->slave.bus = bus;
 
 #ifdef CONFIG_TI81XX
+#ifndef CONFIG_AM335X
 	if ((bus == 0) && (cs > 3)) {
+#else
+	if ((bus == 0) && (cs > 1)
+			|| (bus == 1) && (cs > 1)) {
+#endif
 #else
 	if (((bus == 0) && (cs > 3)) ||
 			((bus == 1) && (cs > 1)) ||

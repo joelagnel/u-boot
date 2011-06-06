@@ -453,6 +453,33 @@ static struct module_pin_mux mmc1_pin_mux[] = {
 	{-1},
 };
 
+static struct module_pin_mux spi0_pin_mux[] = {
+	{OFFSET(spi0_sclk), MODE(0) | RXACTIVE},  /*SPI0_SCLK */
+	{OFFSET(spi0_d0), MODE(0) | RXACTIVE},    /*SPI0_D0 */
+	{OFFSET(spi0_d1), MODE(0) | RXACTIVE},    /*SPI0_D1 */
+	{OFFSET(spi0_cs0), MODE(0) | RXACTIVE},   /*SPI0_CS0 */
+	{-1},
+};
+
+static struct module_pin_mux spi1_pin_mux[] = {
+	{OFFSET(mcasp0_aclkx), MODE(3) | RXACTIVE | PULLUDEN},  /*SPI1_SCLK */
+	{OFFSET(mcasp0_fsx), MODE(3) | RXACTIVE | PULLUDEN},    /*SPI1_D0 */
+	{OFFSET(mcasp0_axr0), MODE(3) | RXACTIVE | PULLUDEN},   /*SPI1_D1 */
+	{OFFSET(mcasp0_ahclkr), MODE(3) | RXACTIVE | PULLUDEN}, /*SPI1_CS0 */
+	{-1},
+};
+
+#if defined(CONFIG_AM335X_MIN_CONFIG) && defined(CONFIG_SPI)
+/*
+ * initialization of SPI pinmuxing in min U-boot
+ */
+static struct evm_pin_mux spi_pin_mux[] = {
+	{spi0_pin_mux, PROFILE_2},
+	{spi1_pin_mux, PROFILE_ALL},
+	{0},
+};
+#endif
+
 /*
  * Update the structure with the modules present in the general purpose
  * board and the profiles in which the modules are present.
@@ -470,6 +497,7 @@ static struct evm_pin_mux general_purpose_evm_pin_mux[] = {
 	{nor_pin_mux, PROFILE_3},
 	{mmc0_pin_mux, PROFILE_ALL},
 	{mmc1_pin_mux, PROFILE_2},
+	{spi0_pin_mux, PROFILE_2},
 	{0},
 };
 
@@ -482,6 +510,7 @@ static struct evm_pin_mux ia_motor_control_evm_pin_mux[] = {
 	{emif_pin_mux, PROFILE_ALL},
 	{nand_pin_mux, PROFILE_ALL},
 	{mmc0_pin_mux, PROFILE_ALL},
+	{spi1_pin_mux, PROFILE_ALL},
 	{0},
 };
 
@@ -564,3 +593,11 @@ void enable_uart0_pin_mux(void)
 {
 	configure_module_pin_mux(uart0_pin_mux);
 }
+
+#if defined(CONFIG_AM335X_MIN_CONFIG) && defined(CONFIG_SPI)
+void enable_spi_pinmux(unsigned char board_id, unsigned short profile)
+{
+	if (spi_pin_mux[board_id].profile == profile)
+		configure_module_pin_mux(spi_pin_mux[board_id].mod_pin_mux);
+}
+#endif

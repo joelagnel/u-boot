@@ -291,6 +291,8 @@ struct gptimer {
 #define CM_PER_EMIF_FW_CLKCTRL		(CM_PER + 0xD0)	/* EMIF FW */
 #define CM_PER_GPMC_CLKCTRL		(CM_PER + 0x30)	/* GPMC */
 #define CM_PER_ELM_CLKCTRL		(CM_PER + 0x40)	/* ELM */
+#define CM_PER_SPI0_CLKCTRL		(CM_PER + 0x4c) /* SPI0 */
+#define CM_PER_SPI1_CLKCTRL		(CM_PER + 0x50) /* SPI1 */
 #define CM_WKUP_I2C0_CLKCTRL		(CM_WKUP + 0xB8) /* I2C0 */
 #define CM_PER_CPGMAC0_CLKCTRL		(CM_PER + 0x14)	/* Ethernet */
 #define CM_PER_CPSW_CLKSTCTRL		(CM_PER + 0x144)/* Ethernet */

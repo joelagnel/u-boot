@@ -111,6 +111,13 @@ void per_clocks_enable(void)
 	/* Enable the control module though RBL would have done it*/
 	__raw_writel(PRCM_MOD_EN, CM_WKUP_CONTROL_CLKCTRL);
 	while (__raw_readl(CM_WKUP_CONTROL_CLKCTRL) != PRCM_MOD_EN);
+
+	/* SPI 0 & 1 */
+	__raw_writel(PRCM_MOD_EN, CM_PER_SPI0_CLKCTRL);
+	while (__raw_readl(CM_PER_SPI0_CLKCTRL) != PRCM_MOD_EN);
+
+	__raw_writel(PRCM_MOD_EN, CM_PER_SPI1_CLKCTRL);
+	while (__raw_readl(CM_PER_SPI1_CLKCTRL) != PRCM_MOD_EN);
 }
 
 void core_pll_config(void)
