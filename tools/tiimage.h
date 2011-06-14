@@ -47,8 +47,10 @@ struct ti_header {
 };
 #else
 struct ti_header {
+	#ifndef CONFIG_AM335X
 	uint32_t image_size;
 	uint32_t load_addr;
+	#endif
 };
 #endif
 
