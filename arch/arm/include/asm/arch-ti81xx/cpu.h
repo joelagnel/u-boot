@@ -85,13 +85,18 @@ struct gptimer {
 
 /* cpu-id for TI81XX family */
 #define TI8168				0xb81e
+#define AM335X				0xB944
 
 #define DEVICE_ID			(CTRL_BASE + 0x0600)
 /* This gives the status of the boot mode pins on the evm */
 #define SYSBOOT_MASK			(BIT(0) | BIT(1) | BIT(2) |BIT(3) |BIT(4))
 
 /* Reset control */
+#ifdef CONFIG_AM335X
+#define PRM_RSTCTRL			(PRCM_BASE + 0x0F00)
+#else
 #define PRM_RSTCTRL			(PRCM_BASE + 0x00A0)
+#endif
 #define PRM_RSTCTRL_RESET		0x01
 
 /* TI816X specific bits for PRM_DEVICE module */
@@ -219,6 +224,74 @@ struct gptimer {
 
 #endif
 
+#ifdef CONFIG_AM335X
+/* Module Offsets */
+#define CM_PER				(PRCM_BASE + 0x0)
+#define CM_WKUP				(PRCM_BASE + 0x400)
+#define CM_DPLL				(PRCM_BASE + 0x500)
+#define CM_DEVICE			(PRCM_BASE + 0x0700)
+#define CM_CEFUSE			(PRCM_BASE + 0x0A00)
+#define PRM_DEVICE			(PRCM_BASE + 0x0F00)
+
+/* Register Offsets */
+/* Core PLL ADPLLS */
+#define CM_CLKSEL_DPLL_CORE		(CM_WKUP + 0x68)
+#define CM_CLKMODE_DPLL_CORE		(CM_WKUP + 0x90)
+
+/* Core HSDIV */
+#define CM_DIV_M4_DPLL_CORE		(CM_WKUP + 0x80)
+#define CM_DIV_M5_DPLL_CORE		(CM_WKUP + 0x84)
+#define CM_DIV_M6_DPLL_CORE		(CM_WKUP + 0xD8)
+
+/* Peripheral PLL */
+#define CM_CLKSEL_DPLL_PER		(CM_WKUP + 0x9c)
+#define CM_CLKMODE_DPLL_PER		(CM_WKUP + 0x8c)
+#define CM_DIV_M2_DPLL_PER		(CM_WKUP + 0xAC)
+
+/* Display PLL */
+#define CM_CLKSEL_DPLL_DISP		(CM_WKUP + 0x54)
+#define CM_CLKMODE_DPLL_DISP		(CM_WKUP + 0x98)
+#define CM_DIV_M2_DPLL_DISP		(CM_WKUP + 0xA4)
+
+/* DDR PLL */
+#define CM_CLKSEL_DPLL_DDR		(CM_WKUP + 0x40)
+#define CM_CLKMODE_DPLL_DDR		(CM_WKUP + 0x94)
+#define CM_DIV_M2_DPLL_DDR		(CM_WKUP + 0xA0)
+
+/* MPU PLL */
+#define CM_CLKSEL_DPLL_MPU		(CM_WKUP + 0x2c)
+#define CM_CLKMODE_DPLL_MPU		(CM_WKUP + 0x88)
+#define CM_DIV_M2_DPLL_MPU		(CM_WKUP + 0xA8)
+
+/* TIMER Clock Source Select */
+#define CLKSEL_TIMER2_CLK		(CM_DPLL + 0x8)
+
+/* Interconnect clocks */
+#define CM_PER_L4LS_CLKCTRL		(CM_PER + 0x60)	/* EMIF */
+#define CM_PER_L4FW_CLKCTRL		(CM_PER + 0x64)	/* EMIF FW */
+#define CM_PER_L3_CLKCTRL		(CM_PER + 0xE0)	/* OCMC RAM */
+#define CM_PER_L3_INSTR_CLKCTRL		(CM_PER + 0xDC)
+#define CM_PER_L4HS_CLKCTRL		(CM_PER + 0x120)
+#define CM_WKUP_L4WKUP_CLKCTRL		(CM_WKUP + 0x0c)/* UART0 */
+
+/* Domain Wake UP */
+#define CM_WKUP_CLKSTCTRL		(CM_WKUP + 0)	 /* UART0 */
+#define CM_PER_L4LS_CLKSTCTRL		(CM_PER + 0x0)	 /* TIMER2 */
+#define CM_PER_L3_CLKSTCTRL		(CM_PER + 0x0c)	 /* EMIF */
+#define CM_PER_L4FW_CLKSTCTRL		(CM_PER + 0x08)	 /* EMIF FW */
+#define CM_PER_L3S_CLKSTCTRL		(CM_PER + 0x4)
+#define CM_PER_L4HS_CLKSTCTRL		(CM_PER + 0x011c)
+#define CM_CEFUSE_CLKSTCTRL		(CM_CEFUSE + 0x0)
+
+/* Module Enable Registers */
+#define CM_PER_TIMER2_CLKCTRL		(CM_PER + 0x80)	 /* Timer2 */
+#define CM_WKUP_UART0_CLKCTRL		(CM_WKUP + 0xB4) /* UART0 */
+#define CM_WKUP_CONTROL_CLKCTRL		(CM_WKUP + 0x4)	 /* Control Module */
+#define CM_PER_EMIF_CLKCTRL		(CM_PER + 0x28)	 /* EMIF */
+#define CM_PER_EMIF_FW_CLKCTRL		(CM_PER + 0xD0)	 /* EMIF FW */
+
+#endif /* CONFIG_AM335X */
+
 /* PRCM */
 #define CM_DPLL_OFFSET			(PRCM_BASE + 0x0300)
 
@@ -281,6 +354,9 @@ struct gptimer {
 #define DEFAULT_UART_BASE		UART0_BASE
 #endif
 
+#ifdef CONFIG_AM335X
+#define DEFAULT_UART_BASE		UART0_BASE
+#endif
 /* UART registers */
 /*TODO:Move to a new file */
 #define UART_SYSCFG			(DEFAULT_UART_BASE + 0x54)
@@ -303,6 +379,26 @@ struct gptimer {
 #define DMM_LISA_MAP__3			(DMM_BASE + 0x4C)
 #define DMM_PAT_BASE_ADDR		(DMM_BASE + 0x460)
 
+#ifdef CONFIG_AM335X
+#define EMIF_MOD_ID_REV			(EMIF4_0_CFG_BASE + 0x0)
+#define EMIF4_0_SDRAM_STATUS            (EMIF4_0_CFG_BASE + 0x04)
+#define EMIF4_0_SDRAM_CONFIG            (EMIF4_0_CFG_BASE + 0x08)
+#define EMIF4_0_SDRAM_CONFIG2           (EMIF4_0_CFG_BASE + 0x0C)
+#define EMIF4_0_SDRAM_REF_CTRL          (EMIF4_0_CFG_BASE + 0x10)
+#define EMIF4_0_SDRAM_REF_CTRL_SHADOW   (EMIF4_0_CFG_BASE + 0x14)
+#define EMIF4_0_SDRAM_TIM_1             (EMIF4_0_CFG_BASE + 0x18)
+#define EMIF4_0_SDRAM_TIM_1_SHADOW      (EMIF4_0_CFG_BASE + 0x1C)
+#define EMIF4_0_SDRAM_TIM_2             (EMIF4_0_CFG_BASE + 0x20)
+#define EMIF4_0_SDRAM_TIM_2_SHADOW      (EMIF4_0_CFG_BASE + 0x24)
+#define EMIF4_0_SDRAM_TIM_3             (EMIF4_0_CFG_BASE + 0x28)
+#define EMIF4_0_SDRAM_TIM_3_SHADOW      (EMIF4_0_CFG_BASE + 0x2C)
+#define EMIF0_0_SDRAM_MGMT_CTRL         (EMIF4_0_CFG_BASE + 0x38)
+#define EMIF0_0_SDRAM_MGMT_CTRL_SHD     (EMIF4_0_CFG_BASE + 0x3C)
+#define EMIF4_0_DDR_PHY_CTRL_1          (EMIF4_0_CFG_BASE + 0xE4)
+#define EMIF4_0_DDR_PHY_CTRL_1_SHADOW   (EMIF4_0_CFG_BASE + 0xE8)
+#define EMIF4_0_DDR_PHY_CTRL_2          (EMIF4_0_CFG_BASE + 0xEC)
+#define EMIF4_0_IODFT_TLGC              (EMIF4_0_CFG_BASE + 0x60)
+#else
 #define EMIF4_0_SDRAM_CONFIG		(EMIF4_0_CFG_BASE + 0x08)
 #define EMIF4_0_SDRAM_CONFIG2		(EMIF4_0_CFG_BASE + 0x0C)
 #define EMIF4_0_SDRAM_REF_CTRL		(EMIF4_0_CFG_BASE + 0x10)
@@ -316,6 +412,7 @@ struct gptimer {
 #define EMIF4_0_DDR_PHY_CTRL_1		(EMIF4_0_CFG_BASE + 0xE4)
 #define EMIF4_0_DDR_PHY_CTRL_1_SHADOW	(EMIF4_0_CFG_BASE + 0xE8)
 #define EMIF4_0_IODFT_TLGC		(EMIF4_0_CFG_BASE + 0x60)
+#endif
 
 #define EMIF4_1_SDRAM_CONFIG		(EMIF4_1_CFG_BASE + 0x08)
 #define EMIF4_1_SDRAM_CONFIG2		(EMIF4_1_CFG_BASE + 0x0C)
@@ -348,8 +445,13 @@ struct gptimer {
 
 
 /* ALWON PRCM */
+#ifdef CONFIG_AM335X
+#define CM_ALWON_OCMC_0_CLKSTCTRL	CM_PER_L3_CLKSTCTRL
+#define CM_ALWON_OCMC_0_CLKCTRL		CM_PER_OCMCRAM_CLKCTRL
+#else
 #define CM_ALWON_OCMC_0_CLKSTCTRL	(PRCM_BASE + 0x1414)
 #define CM_ALWON_OCMC_0_CLKCTRL		(PRCM_BASE + 0x15B4)
+#endif
 
 #ifdef CONFIG_TI816X
 #define CM_ALWON_OCMC_1_CLKSTCTRL	(PRCM_BASE + 0x1418)

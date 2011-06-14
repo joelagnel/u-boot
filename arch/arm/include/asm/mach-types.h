@@ -3312,6 +3312,7 @@ extern unsigned int __machine_arch_type;
 #define MACH_TYPE_T5388P               3336
 #define MACH_TYPE_DINGO                3337
 #define MACH_TYPE_GOFLEXHOME           3338
+#define MACH_TYPE_AM335XEVM            3339
 
 #ifdef CONFIG_ARCH_EBSA110
 # ifdef machine_arch_type
@@ -42911,6 +42912,18 @@ extern unsigned int __machine_arch_type;
 # define machine_is_goflexhome()	(machine_arch_type == MACH_TYPE_GOFLEXHOME)
 #else
 # define machine_is_goflexhome()	(0)
+#endif
+
+#ifdef CONFIG_MACH_AM335XEVM
+# ifdef machine_arch_type
+#  undef machine_arch_type
+#  define machine_arch_type     __machine_arch_type
+# else
+#  define machine_arch_type     MACH_TYPE_AM335XEVM
+# endif
+# define machine_is_am335xevm() (machine_arch_type == MACH_TYPE_AM335XEVM)
+#else
+# define machine_is_am335xevm() (0)
 #endif
 
 /*

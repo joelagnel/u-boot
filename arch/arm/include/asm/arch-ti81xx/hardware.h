@@ -24,7 +24,11 @@
  */
 #define SRAM0_START			0x40300000
 
+#ifdef CONFIG_AM335X
+#define UART0_BASE			0x44E09000
+#else
 #define UART0_BASE			0x48020000
+#endif
 #define UART1_BASE			0x48022000
 #define UART2_BASE			0x48024000
 
@@ -49,10 +53,18 @@
 #define WDT_BASE			0x480C2000
 
 /* Control Module Base Address */
+#ifdef CONFIG_AM335X
+#define CTRL_BASE			0x44E10000
+#else
 #define CTRL_BASE			0x48140000
+#endif
 
 /* PRCM Base Address */
+#ifdef CONFIG_AM335X
+#define PRCM_BASE			0x44E00000
+#else
 #define PRCM_BASE			0x48180000
+#endif
 
 /* PLL Subsystem Base Address */
 #ifdef CONFIG_TI814X
@@ -76,6 +88,10 @@
 #define DDRPHY_CONFIG_BASE 		((emif == 0) ? DDRPHY_0_CONFIG_BASE:DDRPHY_1_CONFIG_BASE)
 #endif
 
+#ifdef CONFIG_AM335X
+#define DDRPHY_0_CONFIG_BASE		(CTRL_BASE + 0x1400)
+#define DDRPHY_CONFIG_BASE		DDRPHY_0_CONFIG_BASE
+#endif
 
 /* GPMC Base address */
 #define GPMC_BASE			0x50000000
