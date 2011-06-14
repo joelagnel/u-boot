@@ -29,5 +29,8 @@
 #include <asm/arch/clocks_ti814x.h>
 #endif
 
+#ifdef CONFIG_AM335X
+#include <asm/arch/clocks_am335x.h>
+#endif
 #endif
 

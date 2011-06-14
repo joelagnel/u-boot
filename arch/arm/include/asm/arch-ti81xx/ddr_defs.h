@@ -312,5 +312,23 @@
 /* ti814x specific settings to be added */
 #endif
 
+/* AM335X EMIF Register values */
+#ifdef CONFIG_AM335X
+#define EMIF_TIM1		0x6668292
+#define EMIF_TIM2		0x201C320A
+#define EMIF_TIM3		0x257
+#define EMIF_SDREF		0x50F
+#define EMIF_SDCFG		0x40804DC2
+#define EMIF_SDMGT		0x80000000
+#define EMIF_PHYCFG		0x2
+#define DDR_PHY_RESET		(0x1 << 10)
+#define DDR_FUNCTIONAL_MODE_EN	0x1
+#define DDR_PHY_READY		(0x1 << 2)
+#define	VTP_CTRL_READY		(0x1 << 5)
+#define VTP_CTRL_ENABLE		(0x1 << 6)
+#define VTP_CTRL_LOCK_EN	(0x1 << 4)
+#define VTP_CTRL_START_EN	(0x1)
+#endif
+
 #endif  /* _DDR_DEFS_H */
 
