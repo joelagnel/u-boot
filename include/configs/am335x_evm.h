@@ -1,0 +1,93 @@
+/*
+ * Copyright (C) 2011 Texas Instruments Incorporated - http://www.ti.com/
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation version 2.
+ *
+ * This program is distributed "as is" WITHOUT ANY WARRANTY of any
+ * kind, whether express or implied; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#ifndef __CONFIG_AM335X_EVM_H
+#define __CONFIG_AM335X_EVM_H
+
+# define CONFIG_CMD_MEMORY	/* for mtest */
+# undef CONFIG_GZIP
+# undef CONFIG_ZLIB
+
+# undef CONFIG_SYS_HUSH_PARSER
+# define CONFIG_CMD_LOADB	/* loadb			*/
+# define CONFIG_CMD_LOADY	/* loady */
+# define CONFIG_SETUP_PLL
+# define CONFIG_AM335X_CONFIG_DDR
+# define CONFIG_ENV_SIZE			0x400
+# define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (8 * 1024))
+# define CONFIG_SYS_PROMPT		"TI-MIN#"
+
+#define CONFIG_SYS_GBL_DATA_SIZE	128	/* size in bytes reserved for
+						   initial data */
+
+#define CONFIG_MISC_INIT_R		1
+#define CONFIG_SYS_AUTOLOAD		"yes"
+#define CONFIG_CMD_CACHE
+#define CONFIG_CMD_ECHO
+
+/* max number of command args */
+#define CONFIG_SYS_MAXARGS		32
+/* Console I/O Buffer Size */
+#define CONFIG_SYS_CBSIZE		512
+/* Print Buffer Size */
+#define CONFIG_SYS_PBSIZE		(CONFIG_SYS_CBSIZE \
+					+ sizeof(CONFIG_SYS_PROMPT) + 16)
+/* Boot Argument Buffer Size */
+#define CONFIG_SYS_BARGSIZE		CONFIG_SYS_CBSIZE
+/*
+ * memtest works on 8 MB in DRAM after skipping 32MB from
+ * start addr of ram disk
+ */
+#define CONFIG_SYS_MEMTEST_START	(PHYS_DRAM_1 + (64 * 1024 * 1024))
+#define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_MEMTEST_START \
+					+ (8 * 1024 * 1024))
+
+#undef  CONFIG_SYS_CLKS_IN_HZ		/* everything, incl board info, in Hz */
+#define CONFIG_SYS_LOAD_ADDR		0x81000000 /* Default load address */
+#define CONFIG_SYS_HZ			1000 /* 1ms clock */
+
+ /* Physical Memory Map */
+#define CONFIG_NR_DRAM_BANKS		1		/*  1 bank of DRAM */
+#define PHYS_DRAM_1			0x80000000	/* DRAM Bank #1 */
+#define PHYS_DRAM_1_SIZE		0x10000000 /*(0x80000000 / 8) 256 MB */
+
+ /* Platform/Board specific defs */
+#define CONFIG_SYS_CLK_FREQ		24000000
+#define CONFIG_SYS_TIMERBASE		0x48040000	/* Use Timer2 */
+
+/* NS16550 Configuration */
+#define CONFIG_SYS_NS16550
+#define CONFIG_SYS_NS16550_SERIAL
+#define CONFIG_SYS_NS16550_REG_SIZE	(-4)
+#define CONFIG_SYS_NS16550_CLK		(48000000)
+#define CONFIG_SYS_NS16550_COM1		0x44e09000	/* Base EVM has UART0 */
+
+#define CONFIG_BAUDRATE		115200
+#define CONFIG_SYS_BAUDRATE_TABLE	{ 110, 300, 600, 1200, 2400, \
+4800, 9600, 14400, 19200, 28800, 38400, 56000, 57600, 115200 }
+
+/*
+ * select serial console configuration
+ */
+#define CONFIG_SERIAL1			1
+#define CONFIG_CONS_INDEX		1
+#define CONFIG_SYS_CONSOLE_INFO_QUIET
+
+#if defined(CONFIG_SYS_NO_FLASH)
+# define CONFIG_ENV_IS_NOWHERE
+#endif
+
+/* Unsupported features */
+#undef CONFIG_USE_IRQ
+
+ #endif	/* ! __CONFIG_AM335X_EVM_H */
