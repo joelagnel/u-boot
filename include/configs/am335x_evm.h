@@ -14,6 +14,8 @@
 #ifndef __CONFIG_AM335X_EVM_H
 #define __CONFIG_AM335X_EVM_H
 
+/* In the 1st stage we have just 110K, so cut down wherever possible */
+#ifdef CONFIG_AM335X_MIN_CONFIG
 # define CONFIG_CMD_MEMORY	/* for mtest */
 # undef CONFIG_GZIP
 # undef CONFIG_ZLIB
@@ -27,9 +29,30 @@
 # define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (8 * 1024))
 # define CONFIG_SYS_PROMPT		"TI-MIN#"
 
+/* set to negative value for no autoboot */
+# define CONFIG_BOOTDELAY		3
+
+#else /* u-boot Full / Second stage u-boot */
+
+/* 1st stage would have done the basic init */
+# define CONFIG_SKIP_LOWLEVEL_INIT
+
+# define CONFIG_ENV_SIZE			0x2000
+# define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (32 * 1024))
+# define CONFIG_ENV_OVERWRITE
+# define CONFIG_SYS_LONGHELP
+# define CONFIG_SYS_PROMPT		"AM335X_EVM#"
+/* Use HUSH parser to allow command parsing */
+# define CONFIG_SYS_HUSH_PARSER
+# define CONFIG_SYS_PROMPT_HUSH_PS2	"> "
+# define CONFIG_CMDLINE_TAG		1 /* enable passing of ATAGs  */
+# define CONFIG_SETUP_MEMORY_TAGS	1
+# define CONFIG_INITRD_TAG		1 /* Required for ramdisk support */
+
+#endif /* CONFIG_AM335X_MIN_CONFIG */
+
 #define CONFIG_SYS_GBL_DATA_SIZE	128	/* size in bytes reserved for
 						   initial data */
-
 #define CONFIG_MISC_INIT_R		1
 #define CONFIG_SYS_AUTOLOAD		"yes"
 #define CONFIG_CMD_CACHE
