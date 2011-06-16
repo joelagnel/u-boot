@@ -111,7 +111,9 @@ static int tiimage_verify_header(uint8_t *ptr, int image_size,
 
 static void ti81xximage_print_header(const void *ptr)
 {
-#if !defined(CONFIG_TI814X_PERIPHERAL_BOOT) && !defined(CONFIG_TI_DUMMY_HEADER)
+#if !defined(CONFIG_TI814X_PERIPHERAL_BOOT) && \
+	!defined(CONFIG_AM335X_PERIPHERAL_BOOT) && \
+	!defined(CONFIG_TI_DUMMY_HEADER)
 	struct ti_header *ti_hdr = (struct ti_header *) ptr;
 	printf("Image Type:   Texas Instruments ti81xx Boot Image\n");
 	printf("Image Size:   ");
@@ -200,6 +202,38 @@ static void ti814ximage_set_header(void *ptr, struct stat *sbuf, int ifd,
 	}
 #endif
 }
+#elif defined(CONFIG_AM335X) && defined(CONFIG_AM335X_MIN_CONFIG)
+static void am335ximage_set_header(void *ptr, struct stat *sbuf, int ifd,
+				struct mkimage_params *params)
+{
+	struct ti_header *hdr = (struct ti_header *)ptr;
+#if !defined(CONFIG_AM335X_PERIPHERAL_BOOT)
+	FILE *data_fp = NULL;
+	uint32_t data_size = 0;
+
+	/* Set default offset */
+	hdr->load_addr = params->ep;
+
+	if ((data_fp = fopen(params->datafile, "r")) == NULL) {
+		printf("Data FILE [%s] open error.\n", params->datafile);
+		return;
+	}
+
+	/* calculate image size */
+	fseek(data_fp, 0, SEEK_END);
+	data_size = ftell(data_fp);
+	hdr->image_size = data_size;
+	fclose(data_fp);
+#endif
+	/* spi image has to be endian swapped */
+#if defined(CONFIG_TI81XX_SPI_BOOT)
+	if (strstr(params->imagefile, "min.spi") != NULL) {
+		/* generate spi image */
+		ti81xximage_spi(hdr, sizeof(struct ti_header),
+			params->datafile, "u-boot.min.spi");
+	}
+#endif
+}
 #else
 static void ti_dummy_set_header(void *ptr, struct stat *sbuf, int ifd,
 				struct mkimage_params *params)
@@ -236,6 +270,8 @@ static struct image_type_params tiimage_params = {
 	.set_header		= ti816ximage_set_header,
 #elif defined(CONFIG_TI814X) && defined(CONFIG_TI814X_MIN_CONFIG)
 	.set_header		= ti814ximage_set_header,
+#elif defined(CONFIG_AM335X) && defined(CONFIG_AM335X_MIN_CONFIG)
+	.set_header		= am335ximage_set_header,
 #else
 	.set_header		= ti_dummy_set_header,
 #endif

@@ -45,12 +45,17 @@ struct ti_header {
 	/* - 2 is for above 2 instructions */
 	uint32_t reserved[(CONFIG_TI814X_STACK/4) - 2];
 };
-#else
+#elif defined(CONFIG_AM335X)
 struct ti_header {
-	#ifndef CONFIG_AM335X
+#if !defined(CONFIG_AM335X_PERIPHERAL_BOOT) && defined(CONFIG_AM335X_MIN_CONFIG)
 	uint32_t image_size;
 	uint32_t load_addr;
-	#endif
+#endif
+};
+#else
+struct ti_header {
+	uint32_t image_size;
+	uint32_t load_addr;
 };
 #endif
 
