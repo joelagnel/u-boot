@@ -275,21 +275,22 @@ struct gptimer {
 #define CM_WKUP_L4WKUP_CLKCTRL		(CM_WKUP + 0x0c)/* UART0 */
 
 /* Domain Wake UP */
-#define CM_WKUP_CLKSTCTRL		(CM_WKUP + 0)	 /* UART0 */
-#define CM_PER_L4LS_CLKSTCTRL		(CM_PER + 0x0)	 /* TIMER2 */
-#define CM_PER_L3_CLKSTCTRL		(CM_PER + 0x0c)	 /* EMIF */
-#define CM_PER_L4FW_CLKSTCTRL		(CM_PER + 0x08)	 /* EMIF FW */
+#define CM_WKUP_CLKSTCTRL		(CM_WKUP + 0)	/* UART0 */
+#define CM_PER_L4LS_CLKSTCTRL		(CM_PER + 0x0)	/* TIMER2 */
+#define CM_PER_L3_CLKSTCTRL		(CM_PER + 0x0c)	/* EMIF */
+#define CM_PER_L4FW_CLKSTCTRL		(CM_PER + 0x08)	/* EMIF FW */
 #define CM_PER_L3S_CLKSTCTRL		(CM_PER + 0x4)
 #define CM_PER_L4HS_CLKSTCTRL		(CM_PER + 0x011c)
 #define CM_CEFUSE_CLKSTCTRL		(CM_CEFUSE + 0x0)
 
 /* Module Enable Registers */
-#define CM_PER_TIMER2_CLKCTRL		(CM_PER + 0x80)	 /* Timer2 */
-#define CM_WKUP_UART0_CLKCTRL		(CM_WKUP + 0xB4) /* UART0 */
-#define CM_WKUP_CONTROL_CLKCTRL		(CM_WKUP + 0x4)	 /* Control Module */
-#define CM_PER_EMIF_CLKCTRL		(CM_PER + 0x28)	 /* EMIF */
-#define CM_PER_EMIF_FW_CLKCTRL		(CM_PER + 0xD0)	 /* EMIF FW */
-
+#define CM_PER_TIMER2_CLKCTRL		(CM_PER + 0x80)	/* Timer2 */
+#define CM_WKUP_UART0_CLKCTRL		(CM_WKUP + 0xB4)/* UART0 */
+#define CM_WKUP_CONTROL_CLKCTRL		(CM_WKUP + 0x4)	/* Control Module */
+#define CM_PER_EMIF_CLKCTRL		(CM_PER + 0x28)	/* EMIF */
+#define CM_PER_EMIF_FW_CLKCTRL		(CM_PER + 0xD0)	/* EMIF FW */
+#define CM_PER_GPMC_CLKCTRL		(CM_PER + 0x30)	/* GPMC */
+#define CM_PER_ELM_CLKCTRL		(CM_PER + 0x40)	/* ELM */
 #endif /* CONFIG_AM335X */
 
 /* PRCM */

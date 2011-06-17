@@ -10,7 +10,6 @@
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-
 #ifndef __CONFIG_AM335X_EVM_H
 #define __CONFIG_AM335X_EVM_H
 
@@ -25,38 +24,65 @@
 
 /* In the 1st stage we have just 110K, so cut down wherever possible */
 #ifdef CONFIG_AM335X_MIN_CONFIG
-# define CONFIG_CMD_MEMORY	/* for mtest */
-# undef CONFIG_GZIP
-# undef CONFIG_ZLIB
+#define CONFIG_CMD_MEMORY	/* for mtest */
+#undef CONFIG_GZIP
+#undef CONFIG_ZLIB
 
-# undef CONFIG_SYS_HUSH_PARSER
-# define CONFIG_CMD_LOADB	/* loadb			*/
-# define CONFIG_CMD_LOADY	/* loady */
-# define CONFIG_SETUP_PLL
-# define CONFIG_AM335X_CONFIG_DDR
-# define CONFIG_ENV_SIZE			0x400
-# define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (8 * 1024))
-# define CONFIG_SYS_PROMPT		"TI-MIN#"
+#undef CONFIG_SYS_HUSH_PARSER
+#define CONFIG_CMD_LOADB	/* loadb			*/
+#define CONFIG_CMD_LOADY	/* loady */
+#define CONFIG_SETUP_PLL
+#define CONFIG_AM335X_CONFIG_DDR
+#define CONFIG_ENV_SIZE			0x400
+#define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (8 * 1024))
+#define CONFIG_SYS_PROMPT		"TI-MIN#"
 
 /* set to negative value for no autoboot */
-# define CONFIG_BOOTDELAY		3
+#define CONFIG_BOOTDELAY		3
+
+#if defined(CONFIG_NAND_BOOT)
+#define CONFIG_NAND		1
+#define CONFIG_EXTRA_ENV_SETTINGS \
+	"verify=yes\0" \
+	"bootcmd=nand read 0x81000000 0x20000 0x40000; go 0x81000000\0"
+#endif
 
 #else /* u-boot Full / Second stage u-boot */
 
-/* 1st stage would have done the basic init */
-# define CONFIG_SKIP_LOWLEVEL_INIT
+#include <config_cmd_default.h>
 
-# define CONFIG_ENV_SIZE			0x2000
-# define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (32 * 1024))
-# define CONFIG_ENV_OVERWRITE
-# define CONFIG_SYS_LONGHELP
-# define CONFIG_SYS_PROMPT		"U-Boot# "
+#undef CONFIG_CMD_NET
+/* 1st stage would have done the basic init */
+#define CONFIG_SKIP_LOWLEVEL_INIT
+
+#define CONFIG_ENV_SIZE			0x2000
+#define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (32 * 1024))
+#define CONFIG_ENV_OVERWRITE
+#define CONFIG_SYS_LONGHELP
+#define CONFIG_SYS_PROMPT		"U-Boot# "
 /* Use HUSH parser to allow command parsing */
-# define CONFIG_SYS_HUSH_PARSER
-# define CONFIG_SYS_PROMPT_HUSH_PS2	"> "
-# define CONFIG_CMDLINE_TAG		/* enable passing of ATAGs  */
-# define CONFIG_SETUP_MEMORY_TAGS
-# define CONFIG_INITRD_TAG
+#define CONFIG_SYS_HUSH_PARSER
+#define CONFIG_SYS_PROMPT_HUSH_PS2	"> "
+#define CONFIG_CMDLINE_TAG		/* enable passing of ATAGs  */
+#define CONFIG_SETUP_MEMORY_TAGS
+#define CONFIG_INITRD_TAG		/* Required for ramdisk support */
+
+/* set to negative value for no autoboot */
+#define CONFIG_BOOTDELAY		3
+
+#define CONFIG_NAND
+
+#define CONFIG_EXTRA_ENV_SETTINGS \
+	"verify=yes\0" \
+	"bootfile=uImage\0" \
+	"ramdisk_file=ramdisk.gz\0" \
+	"loadaddr=0x81000000\0" \
+
+#define CONFIG_BOOTCOMMAND \
+		"echo Please set bootargs and bootcmd before \
+			booting the kernel; " \
+		"echo If that has already been done please \
+			ignore this message; "\
 
 #endif /* CONFIG_AM335X_MIN_CONFIG */
 
@@ -128,6 +154,35 @@
 #if defined(CONFIG_SYS_NO_FLASH)
 # define CONFIG_ENV_IS_NOWHERE
 #endif
+
+/* NAND support */
+#ifdef CONFIG_NAND
+#define CONFIG_CMD_NAND
+#define CONFIG_NAND_TI81XX
+#define GPMC_NAND_ECC_LP_x8_LAYOUT	1
+#define NAND_BASE			(0x08000000)
+#define CONFIG_SYS_NAND_ADDR		NAND_BASE	/* physical address */
+							/* to access nand */
+#define CONFIG_SYS_NAND_BASE		NAND_BASE	/* physical address */
+							/* to access nand at */
+							/* CS0 */
+#define CONFIG_SYS_MAX_NAND_DEVICE	1		/* Max number of NAND */
+#endif							/* devices */
+
+/* ENV in NAND */
+#if defined(CONFIG_NAND_ENV)
+#undef CONFIG_ENV_IS_NOWHERE
+#define CONFIG_ENV_IS_IN_NAND
+#define CONFIG_SYS_MAX_FLASH_SECT	520 /* max no of sectors in a chip */
+#define CONFIG_SYS_MAX_FLASH_BANKS	2 /* max no of flash banks */
+#define CONFIG_SYS_MONITOR_LEN		(256 << 10) /* Reserve 2 sectors */
+#define CONFIG_SYS_FLASH_BASE		PISMO1_NAND_BASE
+#define CONFIG_SYS_MONITOR_BASE		CONFIG_SYS_FLASH_BASE
+#define MNAND_ENV_OFFSET		0x260000 /* environment starts here */
+#define CONFIG_SYS_ENV_SECT_SIZE	(128 << 10)	/* 128 KiB */
+#define CONFIG_ENV_OFFSET		MNAND_ENV_OFFSET
+#define CONFIG_ENV_ADDR			MNAND_ENV_OFFSET
+#endif /* NAND support */
 
 /* Unsupported features */
 #undef CONFIG_USE_IRQ

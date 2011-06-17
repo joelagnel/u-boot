@@ -20,5 +20,5 @@ extern void enable_ddr_clocks(void);
 
 extern void enable_uart_pin_mux(void);
 extern void enable_emif_pin_mux(void);
-
+extern void enable_nand_pin_mux(void);
 #endif/*__COMMON_DEF_H__ */

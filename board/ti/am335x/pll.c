@@ -84,6 +84,14 @@ void per_clocks_enable(void)
 	/* UART0 */
 	__raw_writel(PRCM_MOD_EN, CM_WKUP_UART0_CLKCTRL);
 	while (__raw_readl(CM_WKUP_UART0_CLKCTRL) != PRCM_MOD_EN);
+
+	/* GPMC */
+	__raw_writel(PRCM_MOD_EN, CM_PER_GPMC_CLKCTRL);
+	while (__raw_readl(CM_PER_GPMC_CLKCTRL) != PRCM_MOD_EN);
+
+	/* ELM */
+	__raw_writel(PRCM_MOD_EN, CM_PER_ELM_CLKCTRL);
+	while (__raw_readl(CM_PER_ELM_CLKCTRL) != PRCM_MOD_EN);
 }
 
 void core_pll_config(void)
@@ -150,6 +158,7 @@ void enable_ddr_clocks(void)
 		PRCM_L3_GCLK_ACTIVITY));
 	/* Poll if module is functional */
 	while ((__raw_readl(CM_PER_EMIF_CLKCTRL)) != PRCM_MOD_EN);
+
 }
 
 /*
