@@ -21,7 +21,7 @@
 #define MUX_CFG(offset, value)	\
 	__raw_writel(value, PAD_CONTROL_BASE + offset);
 
-void enable_uart_pin_mux(void)
+void enable_uart0_pin_mux(void)
 {
 	MUX_CFG(UART0_CTSN_PAD_CTRL_OFFSET, MODE(0) | PULLUDEN);
 	MUX_CFG(UART0_RTSN_PAD_CTRL_OFFSET, MODE(0) | RXACTIVE | PULLUDEN);

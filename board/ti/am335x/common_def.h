@@ -34,7 +34,7 @@
 extern void pll_init(void);
 extern void enable_ddr_clocks(void);
 
-extern void enable_uart_pin_mux(void);
+extern void enable_uart0_pin_mux(void);
 extern void enable_emif_pin_mux(void);
 extern void enable_nand_pin_mux(void);
 

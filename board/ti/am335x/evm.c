@@ -195,6 +195,12 @@ void configure_bb_gp_board(unsigned short profile)
 	* Based on selected profile, configure Pin Mux, Clock setup,
 	* read data from eeprom & register devices.
 	*/
+	if (profile == PROFILE_0 || profile == PROFILE_1)
+		enable_nand_pin_mux();
+
+	enable_uart0_pin_mux();
+
+	enable_emif_pin_mux();
 }
 
 void configure_bb_ia_board(unsigned short profile)
@@ -204,6 +210,9 @@ void configure_bb_ia_board(unsigned short profile)
 	* Based on selected profile, configure Pin Mux, Clock setup,
 	* read data from eeprom & register devices.
 	*/
+	enable_nand_pin_mux();
+
+	enable_emif_pin_mux();
 }
 
 void configure_bb_ipp_board(void)
@@ -222,6 +231,11 @@ void configure_bb_only_board(void)
 	* Configure Pin Mux, Clock setup,
 	* read data from eeprom & register devices.
 	*/
+	enable_uart0_pin_mux();
+
+	enable_emif_pin_mux();
+
+	enable_nand_pin_mux();
 }
 
 /*
@@ -253,18 +267,6 @@ int board_init(void)
 		configure_bb_only_board();
 		break;
 	};
-
-	/* Enable UART0 Pin Mux */
-	enable_uart_pin_mux();
-
-	/* Enable EMIF DDR Mux */
-	enable_emif_pin_mux();
-
-	/* Enable nand Pin Mux */
-	enable_nand_pin_mux();
-
-	/* Enable I2C0 Pin Mux */
-	enable_i2c0_pin_mux();
 
 	/* Initialize the Timer */
 	init_timer();
