@@ -149,6 +149,9 @@ int board_init(void)
 	/* Enable nand Pin Mux */
 	enable_nand_pin_mux();
 
+	/* Enable I2C0 Pin Mux */
+	enable_i2c0_pin_mux();
+
 	/* Initialize the Timer */
 	init_timer();
 

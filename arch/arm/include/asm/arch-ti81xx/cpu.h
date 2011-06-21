@@ -291,6 +291,7 @@ struct gptimer {
 #define CM_PER_EMIF_FW_CLKCTRL		(CM_PER + 0xD0)	/* EMIF FW */
 #define CM_PER_GPMC_CLKCTRL		(CM_PER + 0x30)	/* GPMC */
 #define CM_PER_ELM_CLKCTRL		(CM_PER + 0x40)	/* ELM */
+#define CM_WKUP_I2C0_CLKCTRL		(CM_WKUP + 0xB8) /* I2C0 */
 #endif /* CONFIG_AM335X */
 
 /* PRCM */

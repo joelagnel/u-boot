@@ -92,6 +92,10 @@ void per_clocks_enable(void)
 	/* ELM */
 	__raw_writel(PRCM_MOD_EN, CM_PER_ELM_CLKCTRL);
 	while (__raw_readl(CM_PER_ELM_CLKCTRL) != PRCM_MOD_EN);
+
+	/* i2c0 */
+	__raw_writel(PRCM_MOD_EN, CM_WKUP_I2C0_CLKCTRL);
+	while (__raw_readl(CM_WKUP_I2C0_CLKCTRL) != PRCM_MOD_EN);
 }
 
 void core_pll_config(void)

@@ -102,6 +102,9 @@
 #define	GPMC_WEN_ALE_PAD_CTRL_OFFSET			0x898
 #define	GPMC_BE0N_CLE_PAD_CTRL_OFFSET			0x89C
 
+#define I2C0_SDA_PAD_CTRL_OFFSET	0x988
+#define I2C0_CLK_PAD_CTRL_OFFSET	0x98c
+
 static char ddr_mux_val[] = {
 	MODE(0),		/* reset */
 	MODE(0) | PULLUP_EN,	/* csn0 */
