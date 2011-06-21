@@ -38,6 +38,16 @@ DECLARE_GLOBAL_DATA_PTR;
 #define TIOCP_CFG_REG		0x10
 #define TCLR_REG		0x38
 
+/*
+ * I2C Address of eeprom on Daughter cards
+ * I2C Addresses are not confirmed yet and
+ * will be modifed later
+ */
+#define I2C_GP_DB_EEPROM_ADDR	0x51
+#define I2C_IA_DB_EEPROM_ADDR	0x52
+#define I2C_IPP_DB_EEPROM_ADDR	0x52
+#define I2C_BB_EEPROM_ADDR	0x50
+
 void init_timer(void)
 {
 	/* Reset the Timer */
@@ -133,12 +143,116 @@ void s_init(u32 in_ddr)
 #endif
 }
 
+
+static unsigned char daughter_board_id = BASE_BOARD_ONLY;
+/*
+ * Daughter board detection: All daughter boards have I2C EEPROM in all the
+ * profiles. Hence, We probe for the EEPROM to find the daughter board type.
+ */
+static void detect_daughter_board(void)
+{
+	/* Configure the i2c0 pin mux */
+	enable_i2c0_pin_mux();
+
+	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
+
+	/* Probe for EEPROM on DBs starting from GP Daughter Board */
+	if (i2c_probe(I2C_GP_DB_EEPROM_ADDR) == 0)
+		daughter_board_id = GP_DAUGHTER_BOARD;
+	else if (i2c_probe(I2C_IA_DB_EEPROM_ADDR) == 0)
+		daughter_board_id = IA_DAUGHTER_BOARD;
+	else if (i2c_probe(I2C_IPP_DB_EEPROM_ADDR) == 0)
+		daughter_board_id = IPP_DAUGHTER_BOARD;
+}
+
+unsigned char get_daughter_board_id(void)
+{
+	return daughter_board_id;
+}
+
+unsigned short get_gp_profile(void)
+{
+	/*
+	* TODO : update with CPLD/DIN switch read and profile
+	* detection logic
+	*/
+	return PROFILE_0;
+}
+
+unsigned short get_ia_profile(void)
+{
+	/*
+	* TODO : update with CPLD/DIN switch read and profile
+	* detection logic
+	*/
+	return PROFILE_0;
+}
+
+void configure_bb_gp_board(unsigned short profile)
+{
+	/*
+	* TODO/REVIST -
+	* Based on selected profile, configure Pin Mux, Clock setup,
+	* read data from eeprom & register devices.
+	*/
+}
+
+void configure_bb_ia_board(unsigned short profile)
+{
+	/*
+	* TODO/REVIST -
+	* Based on selected profile, configure Pin Mux, Clock setup,
+	* read data from eeprom & register devices.
+	*/
+}
+
+void configure_bb_ipp_board(void)
+{
+	/*
+	* TODO/REVIST -
+	* Configure Pin Mux, Clock setup,
+	* read data from eeprom & register devices.
+	*/
+}
+
+void configure_bb_only_board(void)
+{
+	/*
+	* TODO/REVIST -
+	* Configure Pin Mux, Clock setup,
+	* read data from eeprom & register devices.
+	*/
+}
+
 /*
  * Basic board specific setup
  */
 int board_init(void)
 {
 	u32 regVal;
+	unsigned short profile;
+
+	detect_daughter_board();
+
+	switch (daughter_board_id) {
+	case GP_DAUGHTER_BOARD:
+		profile = get_gp_profile();
+		configure_bb_gp_board(profile);
+		break;
+
+	case IA_DAUGHTER_BOARD:
+		profile = get_ia_profile();
+		configure_bb_ia_board(profile);
+		break;
+
+	case IPP_DAUGHTER_BOARD:
+		configure_bb_ipp_board();
+		break;
+
+	case BASE_BOARD_ONLY:
+		configure_bb_only_board();
+		break;
+	};
 
 	/* Enable UART0 Pin Mux */
 	enable_uart_pin_mux();
