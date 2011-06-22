@@ -287,6 +287,19 @@ int board_init(void)
 	return 0;
 }
 
+/* Display the board info */
+int checkboard(void)
+{
+	if (daughter_board_id == GP_DAUGHTER_BOARD)
+		printf("board: General purpose daughter card connected");
+	else if (daughter_board_id == IA_DAUGHTER_BOARD)
+		printf("board: IA motor control daughter card connected");
+	else if (daughter_board_id == IPP_DAUGHTER_BOARD)
+		printf("board: IPP daughter card connected");
+	else
+		printf("board: No daughter card connected");
+}
+
 /*
  * Reset the CPU
  */

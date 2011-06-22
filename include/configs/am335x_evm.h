@@ -77,6 +77,7 @@
 
 #endif /* CONFIG_AM335X_MIN_CONFIG */
 
+#define CONFIG_DISPLAY_BOARDINFO
 #define CONFIG_SYS_GBL_DATA_SIZE	128	/* size in bytes reserved for
 						   initial data */
 #define CONFIG_MISC_INIT_R		1
