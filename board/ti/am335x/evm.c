@@ -194,6 +194,11 @@ void configure_bb_gp_board(unsigned short profile)
 	enable_uart0_pin_mux();
 
 	enable_emif_pin_mux();
+
+	if (profile == PROFILE_1)
+		enable_ethernet1_pin_mux();
+
+	enable_ethernet0_pin_mux();
 }
 
 void configure_bb_ia_board(unsigned short profile)
@@ -229,6 +234,8 @@ void configure_bb_only_board(void)
 	enable_emif_pin_mux();
 
 	enable_nand_pin_mux();
+
+	enable_ethernet0_pin_mux();
 }
 
 /*
