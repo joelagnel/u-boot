@@ -952,6 +952,11 @@ int board_eth_init(bd_t *bis)
 	else
 		printf("Caution:using static MACID!! Set <ethaddr> variable\n");
 
+	if (PG1_0 != get_cpu_rev()) {
+		cpsw_slaves[0].phy_id = 0;
+		cpsw_slaves[1].phy_id = 1;
+	}
+
 	return cpsw_register(&cpsw_data);
 }
 #endif
