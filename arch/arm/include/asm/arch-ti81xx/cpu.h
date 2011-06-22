@@ -564,6 +564,7 @@ extern struct gpmc *gpmc_cfg;
 #define MAC_ID0_HI	(CTRL_BASE + 0x634)
 #define MAC_ID1_LO	(CTRL_BASE + 0x638)
 #define MAC_ID1_HI	(CTRL_BASE + 0x63c)
+#define MAC_MII_SEL	(CTRL_BASE + 0x650)
 
 /* WDT related */
 /* TODO: Move to a new file */
