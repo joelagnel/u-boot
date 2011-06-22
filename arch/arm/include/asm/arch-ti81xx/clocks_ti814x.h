@@ -30,8 +30,8 @@
 
 /* Put the pll config values over here */
 #define AUDIO_N		19
-#define AUDIO_M		800
-#define AUDIO_M2	4
+#define AUDIO_M		500
+#define AUDIO_M2	2
 #define AUDIO_CLKCTRL	0x801
 
 #define MODENA_N	0x10001
