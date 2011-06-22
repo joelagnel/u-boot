@@ -129,6 +129,8 @@
 
 #ifdef CONFIG_TI814X
 
+#define GMII_SEL			(CTRL_BASE + 0x650)
+
 #define PCIE_PLLCFG0			(CTRL_BASE + 0x6D8)
 #define PCIE_PLLCFG1			(CTRL_BASE + 0x6DC)
 #define PCIE_PLLCFG2			(CTRL_BASE + 0x6E0)
