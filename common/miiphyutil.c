@@ -456,7 +456,9 @@ int miiphy_is_1000base_x (char *devname, unsigned char addr)
 			"1000BASE-X\n");
 		return 0;
 	}
-	return 0 != (exsr & (PHY_EXSR_1000XF | PHY_EXSR_1000XH));
+	/*temporary hack*/
+	return 0;
+	/*return 0 != (exsr & (PHY_EXSR_1000XF | PHY_EXSR_1000XH));*/
 #else
 	return 0;
 #endif
