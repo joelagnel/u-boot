@@ -24,6 +24,9 @@
 #include <asm/arch/nand.h>
 #include <linux/mtd/nand.h>
 #include <nand.h>
+#include <net.h>
+#include <miiphy.h>
+#include <netdev.h>
 #include "common_def.h"
 
 DECLARE_GLOBAL_DATA_PTR;
@@ -102,7 +105,7 @@ static void config_am335x_ddr(void)
 
 	__raw_writel(__raw_readl(EMIF4_0_IODFT_TLGC) | DDR_PHY_RESET,
 			EMIF4_0_IODFT_TLGC); /* Reset DDRr PHY */
-	/* Wait while PHY is ready  */
+	/* Wait while PHY is ready */
 	while ((__raw_readl(EMIF4_0_SDRAM_STATUS) & DDR_PHY_READY) == 0);
 
 	__raw_writel(__raw_readl(EMIF4_0_IODFT_TLGC) | DDR_FUNCTIONAL_MODE_EN,
@@ -201,6 +204,12 @@ void configure_bb_gp_board(unsigned short profile)
 	enable_uart0_pin_mux();
 
 	enable_emif_pin_mux();
+
+	if (profile == PROFILE_1 || profile == PROFILE_2 ||
+		profile == PROFILE_4 || profile == PROFILE_6)
+		enable_ethernet1_pin_mux();
+
+	enable_ethernet0_pin_mux();
 }
 
 void configure_bb_ia_board(unsigned short profile)
@@ -236,6 +245,8 @@ void configure_bb_only_board(void)
 	enable_emif_pin_mux();
 
 	enable_nand_pin_mux();
+
+	enable_ethernet0_pin_mux();
 }
 
 /*
@@ -306,6 +317,137 @@ int checkboard(void)
 	else
 		printf("board: No daughter card connected");
 }
+
+#ifdef CONFIG_DRIVER_TI_CPSW
+/* TODO : Check for the board specific PHY */
+static void evm_phy_init(char *name, int addr)
+{
+	unsigned short val;
+	unsigned int cntr = 0;
+
+	/* Enable PHY to clock out TX_CLK */
+	/* TODO: PHY config register is not present need to check for TX_CLK
+	 * behavior */
+
+	/* Enable Autonegotiation */
+	if (miiphy_read(name, addr, MII_BMCR, &val) != 0) {
+		printf("failed to read bmcr\n");
+		return;
+	}
+	val |= BMCR_FULLDPLX | BMCR_ANENABLE | BMCR_SPEED100;
+	if (miiphy_write(name, addr, MII_BMCR, val) != 0) {
+		printf("failed to write bmcr\n");
+		return;
+	}
+	miiphy_read(name, addr, MII_BMCR, &val);
+
+	/* Setup GIG advertisement */
+	miiphy_read(name, addr, MII_CTRL1000, &val);
+	val |= PHY_1000BTCR_1000FD;
+	val &= ~PHY_1000BTCR_1000HD;
+	miiphy_write(name, addr, MII_CTRL1000, val);
+	miiphy_read(name, addr, MII_CTRL1000, &val);
+
+	/* Setup general advertisement */
+	if (miiphy_read(name, addr, MII_ADVERTISE, &val) != 0) {
+		printf("failed to read anar\n");
+		return;
+	}
+	val |= (LPA_10HALF | LPA_10FULL | LPA_100HALF | LPA_100FULL);
+	if (miiphy_write(name, addr, MII_ADVERTISE, val) != 0) {
+		printf("failed to write anar\n");
+		return;
+	}
+	miiphy_read(name, addr, MII_ADVERTISE, &val);
+
+	/* Restart auto negotiation*/
+	miiphy_read(name, addr, MII_BMCR, &val);
+	val |= BMCR_ANRESTART;
+	miiphy_write(name, addr, MII_BMCR, val);
+
+	/*check AutoNegotiate complete - it can take upto 3 secs*/
+	do {
+		udelay(40000);
+		cntr++;
+		if (!miiphy_read(name, addr, MII_BMSR, &val)) {
+			if (val & BMSR_ANEGCOMPLETE)
+				break;
+		}
+	} while (cntr < 250);
+
+	if (cntr >= 250)
+		printf("Auto negotitation failed\n");
+
+	return;
+}
+
+static void cpsw_control(int enabled)
+{
+	/* nothing for now */
+	/* TODO : VTP was here before */
+	return;
+}
+
+static struct cpsw_slave_data cpsw_slaves[] = {
+	{
+		.slave_reg_ofs	= 0x208,
+		.sliver_reg_ofs	= 0xd80,
+		.phy_id		= 0,
+	},
+	{
+		.slave_reg_ofs	= 0x308,
+		.sliver_reg_ofs	= 0xdc0,
+		.phy_id		= 1,
+	},
+};
+
+static struct cpsw_platform_data cpsw_data = {
+	.mdio_base		= AM335X_CPSW_MDIO_BASE,
+	.cpsw_base		= AM335X_CPSW_BASE,
+	.mdio_div		= 0xff,
+	.channels		= 8,
+	.cpdma_reg_ofs		= 0x800,
+	.slaves			= 2,
+	.slave_data		= cpsw_slaves,
+	.ale_reg_ofs		= 0xd00,
+	.ale_entries		= 1024,
+	.host_port_reg_ofs	= 0x108,
+	.hw_stats_reg_ofs	= 0x900,
+	.mac_control		= (1 << 5) /* MIIEN */,
+	.control		= cpsw_control,
+	.phy_init		= evm_phy_init,
+	.host_port_num		= 0,
+	.version		= CPSW_CTRL_VERSION_2,
+};
+
+int board_eth_init(bd_t *bis)
+{
+	uint8_t mac_addr[6];
+	uint32_t mac_hi, mac_lo;
+
+	if (!eth_getenv_enetaddr("ethaddr", mac_addr)) {
+		printf("<ethaddr> not set. Reading from E-fuse\n");
+		/* try reading mac address from efuse */
+		mac_lo = __raw_readl(MAC_ID0_LO);
+		mac_hi = __raw_readl(MAC_ID0_HI);
+		mac_addr[0] = mac_hi & 0xFF;
+		mac_addr[1] = (mac_hi & 0xFF00) >> 8;
+		mac_addr[2] = (mac_hi & 0xFF0000) >> 16;
+		mac_addr[3] = (mac_hi & 0xFF000000) >> 24;
+		mac_addr[4] = mac_lo & 0xFF;
+		mac_addr[5] = (mac_lo & 0xFF00) >> 8;
+		/* set the ethaddr variable with MACID detected */
+		eth_setenv_enetaddr("ethaddr", mac_addr);
+	} else {
+		printf("Caution:using static MACID!! Set <ethaddr> variable\n");
+	}
+
+	/* set mii mode to rgmii in in device configure register */
+	__raw_writel(0x2, MAC_MII_SEL);
+
+	return cpsw_register(&cpsw_data);
+}
+#endif
 
 #ifdef CONFIG_NAND_TI81XX
 /******************************************************************************

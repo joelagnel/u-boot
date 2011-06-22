@@ -292,6 +292,8 @@ struct gptimer {
 #define CM_PER_GPMC_CLKCTRL		(CM_PER + 0x30)	/* GPMC */
 #define CM_PER_ELM_CLKCTRL		(CM_PER + 0x40)	/* ELM */
 #define CM_WKUP_I2C0_CLKCTRL		(CM_WKUP + 0xB8) /* I2C0 */
+#define CM_PER_CPGMAC0_CLKCTRL		(CM_PER + 0x14)	/* Ethernet */
+#define CM_PER_CPSW_CLKSTCTRL		(CM_PER + 0x144)/* Ethernet */
 #endif /* CONFIG_AM335X */
 
 /* PRCM */
@@ -594,6 +596,7 @@ extern struct gpmc *gpmc_cfg;
 #define MAC_ID0_HI	(CTRL_BASE + 0x634)
 #define MAC_ID1_LO	(CTRL_BASE + 0x638)
 #define MAC_ID1_HI	(CTRL_BASE + 0x63c)
+#define MAC_MII_SEL	(CTRL_BASE + 0x650)
 
 /* WDT related */
 /* TODO: Move to a new file */
