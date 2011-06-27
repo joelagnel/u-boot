@@ -195,7 +195,8 @@ void configure_bb_gp_board(unsigned short profile)
 
 	enable_emif_pin_mux();
 
-	if (profile == PROFILE_1)
+	if (profile == PROFILE_1 || profile == PROFILE_2 ||
+		profile == PROFILE_4 || profile == PROFILE_6)
 		enable_ethernet1_pin_mux();
 
 	enable_ethernet0_pin_mux();
