@@ -380,10 +380,8 @@ static void phy_init(char *name, int addr)
 		}
 	} while (cntr < 250);
 
-	if (!miiphy_read(name, addr, PHY_BMSR, &val)) {
-		if (!(val & PHY_BMSR_AUTN_COMP))
-			printf("Auto negotitation failed\n");
-	}
+	if (cntr >= 250)
+		printf("Auto negotitation failed\n");
 
 	return;
 }
@@ -400,7 +398,7 @@ static struct cpsw_slave_data cpsw_slaves[] = {
 		.slave_reg_ofs  = 0x208,
 		.sliver_reg_ofs = 0xd80,
 		.phy_id		= 0,
-},
+	},
 	{
 		.slave_reg_ofs  = 0x308,
 		.sliver_reg_ofs = 0xdc0,
