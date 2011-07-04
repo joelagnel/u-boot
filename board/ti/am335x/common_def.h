@@ -27,6 +27,7 @@
 #define BASE_BOARD_ONLY		3
 
 /* Profiles */
+#define PROFILE_NONE	0x0
 #define PROFILE_0	(0x1 << 0)
 #define PROFILE_1	(0x1 << 1)
 #define PROFILE_2	(0x1 << 2)
@@ -35,6 +36,7 @@
 #define PROFILE_5	(0x1 << 5)
 #define PROFILE_6	(0x1 << 6)
 #define PROFILE_7	(0x1 << 7)
+#define PROFILE_ALL	0xFF
 
 extern void pll_init(void);
 extern void enable_ddr_clocks(void);
@@ -42,6 +44,9 @@ extern void enable_ddr_clocks(void);
 extern void enable_uart0_pin_mux(void);
 extern void enable_emif_pin_mux(void);
 extern void enable_nand_pin_mux(void);
+extern void enable_i2c0_pin_mux(void);
+extern void configure_evm_pin_mux(unsigned char daughter_board_id,
+	unsigned short profile);
 
 extern unsigned char get_daughter_board_id(void);
 #endif/*__COMMON_DEF_H__ */
