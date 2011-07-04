@@ -191,93 +191,31 @@ unsigned short get_ia_profile(void)
 	return PROFILE_0;
 }
 
-void configure_bb_gp_board(unsigned short profile)
-{
-	/*
-	* TODO/REVIST -
-	* Based on selected profile, configure Pin Mux, Clock setup,
-	* read data from eeprom & register devices.
-	*/
-	if (profile == PROFILE_0 || profile == PROFILE_1)
-		enable_nand_pin_mux();
-
-	enable_uart0_pin_mux();
-
-	enable_emif_pin_mux();
-
-	if (profile == PROFILE_1 || profile == PROFILE_2 ||
-		profile == PROFILE_4 || profile == PROFILE_6)
-		enable_ethernet1_pin_mux();
-
-	enable_ethernet0_pin_mux();
-}
-
-void configure_bb_ia_board(unsigned short profile)
-{
-	/*
-	* TODO/REVIST -
-	* Based on selected profile, configure Pin Mux, Clock setup,
-	* read data from eeprom & register devices.
-	*/
-	enable_nand_pin_mux();
-
-	enable_emif_pin_mux();
-}
-
-void configure_bb_ipp_board(void)
-{
-	/*
-	* TODO/REVIST -
-	* Configure Pin Mux, Clock setup,
-	* read data from eeprom & register devices.
-	*/
-}
-
-void configure_bb_only_board(void)
-{
-	/*
-	* TODO/REVIST -
-	* Configure Pin Mux, Clock setup,
-	* read data from eeprom & register devices.
-	*/
-	enable_uart0_pin_mux();
-
-	enable_emif_pin_mux();
-
-	enable_nand_pin_mux();
-
-	enable_ethernet0_pin_mux();
-}
-
 /*
  * Basic board specific setup
  */
 int board_init(void)
 {
 	u32 regVal;
-	unsigned short profile;
+	unsigned short profile = PROFILE_NONE;
 
 	detect_daughter_board();
 
 	switch (daughter_board_id) {
 	case GP_DAUGHTER_BOARD:
 		profile = get_gp_profile();
-		configure_bb_gp_board(profile);
 		break;
 
 	case IA_DAUGHTER_BOARD:
 		profile = get_ia_profile();
-		configure_bb_ia_board(profile);
 		break;
 
 	case IPP_DAUGHTER_BOARD:
-		configure_bb_ipp_board();
-		break;
-
-	case BASE_BOARD_ONLY:
-		configure_bb_only_board();
+		profile = PROFILE_0;
 		break;
 	};
+
+	configure_evm_pin_mux(daughter_board_id, profile);
 
 	/* Initialize the Timer */
 	init_timer();
