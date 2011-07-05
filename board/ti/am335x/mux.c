@@ -381,6 +381,53 @@ static struct module_pin_mux ethernet1_pin_mux[] = {
 	{-1},
 };
 
+static struct module_pin_mux nor_pin_mux[] = {
+	{OFFSET(lcd_data0), MODE(1) | PULLUDEN},	/* NOR_A0 */
+	{OFFSET(lcd_data1), MODE(1) | PULLUDEN},	/* NOR_A1 */
+	{OFFSET(lcd_data2), MODE(1) | PULLUDEN},	/* NOR_A2 */
+	{OFFSET(lcd_data3), MODE(1) | PULLUDEN},	/* NOR_A3 */
+	{OFFSET(lcd_data4), MODE(1) | PULLUDEN},	/* NOR_A4 */
+	{OFFSET(lcd_data5), MODE(1) | PULLUDEN},	/* NOR_A5 */
+	{OFFSET(lcd_data6), MODE(1) | PULLUDEN},	/* NOR_A6 */
+	{OFFSET(lcd_data7), MODE(1) | PULLUDEN},	/* NOR_A7 */
+	{OFFSET(gpmc_a8), MODE(0)},			/* NOR_A8 */
+	{OFFSET(gpmc_a9), MODE(0)},			/* NOR_A9 */
+	{OFFSET(gpmc_a10), MODE(0)},			/* NOR_A10 */
+	{OFFSET(gpmc_a11), MODE(0)},			/* NOR_A11 */
+	{OFFSET(lcd_data8), MODE(1) | PULLUDEN},	/* NOR_A12 */
+	{OFFSET(lcd_data9), MODE(1) | PULLUDEN},	/* NOR_A13 */
+	{OFFSET(lcd_data10), MODE(1) | PULLUDEN},	/* NOR_A14 */
+	{OFFSET(lcd_data11), MODE(1) | PULLUDEN},	/* NOR_A15 */
+	{OFFSET(lcd_data12), MODE(1) | PULLUDEN},	/* NOR_A16 */
+	{OFFSET(lcd_data13), MODE(1) | PULLUDEN},	/* NOR_A17 */
+	{OFFSET(lcd_data14), MODE(1) | PULLUDEN},	/* NOR_A18 */
+	{OFFSET(lcd_data15), MODE(1) | PULLUDEN},	/* NOR_A19 */
+	{OFFSET(gpmc_a4), MODE(4)},			/* NOR_A20 */
+	{OFFSET(gpmc_a5), MODE(4)},			/* NOR_A21 */
+	{OFFSET(gpmc_a6), MODE(4)},			/* NOR_A22 */
+	{OFFSET(gpmc_ad0), MODE(0) | RXACTIVE},		/* NOR_AD0 */
+	{OFFSET(gpmc_ad1), MODE(0) | RXACTIVE},		/* NOR_AD1 */
+	{OFFSET(gpmc_ad2), MODE(0) | RXACTIVE},		/* NOR_AD2 */
+	{OFFSET(gpmc_ad3), MODE(0) | RXACTIVE},		/* NOR_AD3 */
+	{OFFSET(gpmc_ad4), MODE(0) | RXACTIVE},		/* NOR_AD4 */
+	{OFFSET(gpmc_ad5), MODE(0) | RXACTIVE},		/* NOR_AD5 */
+	{OFFSET(gpmc_ad6), MODE(0) | RXACTIVE},		/* NOR_AD6 */
+	{OFFSET(gpmc_ad7), MODE(0) | RXACTIVE},		/* NOR_AD7 */
+	{OFFSET(gpmc_ad8), MODE(0) | RXACTIVE},		/* NOR_AD8 */
+	{OFFSET(gpmc_ad9), MODE(0) | RXACTIVE},		/* NOR_AD9 */
+	{OFFSET(gpmc_ad10), MODE(0) | RXACTIVE},	/* NOR_AD10 */
+	{OFFSET(gpmc_ad11), MODE(0) | RXACTIVE},	/* NOR_AD11 */
+	{OFFSET(gpmc_ad12), MODE(0) | RXACTIVE},	/* NOR_AD12 */
+	{OFFSET(gpmc_ad13), MODE(0) | RXACTIVE},	/* NOR_AD13 */
+	{OFFSET(gpmc_ad14), MODE(0) | RXACTIVE},	/* NOR_AD14 */
+	{OFFSET(gpmc_ad15), MODE(0) | RXACTIVE},	/* NOR_AD15 */
+	{OFFSET(gpmc_csn0), (MODE(0) | PULLUP_EN)},	/* NOR_CE */
+	{OFFSET(gpmc_oen_ren), (MODE(0) | PULLUP_EN)},	/* NOR_OE */
+	{OFFSET(gpmc_wen), (MODE(0) | PULLUP_EN)},	/* NOR_WEN */
+	{OFFSET(gpmc_wait0), (MODE(0) | RXACTIVE | PULLUP_EN)}, /* NOR WAIT */
+	{OFFSET(lcd_ac_bias_en), MODE(7) | RXACTIVE | PULLUDEN}, /* NOR RESET */
+};
+
 /*
  * Update the structure with the modules present in the general purpose
  * board and the profiles in which the modules are present.
@@ -395,6 +442,7 @@ static struct evm_pin_mux general_purpose_evm_pin_mux[] = {
 	{nand_pin_mux, PROFILE_ALL & ~PROFILE_2 & ~PROFILE_3},
 	{ethernet0_pin_mux, PROFILE_ALL},
 	{ethernet1_pin_mux, PROFILE_1 | PROFILE_2 | PROFILE_4 | PROFILE_6},
+	{nor_pin_mux, PROFILE_3},
 	{0},
 };
 

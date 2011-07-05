@@ -47,6 +47,13 @@
 	"bootcmd=nand read 0x81000000 0x20000 0x40000; go 0x81000000\0"
 #endif
 
+#if defined(CONFIG_NOR_BOOT)
+#define CONFIG_NOR
+#define CONFIG_EXTRA_ENV_SETTINGS \
+	"verify=yes\0" \
+	"bootcmd=cp.b 0x8020000 0x81000000 0x40000; go 0x81000000\0"
+#endif
+
 #else /* u-boot Full / Second stage u-boot */
 
 #include <config_cmd_default.h>
@@ -69,7 +76,9 @@
 /* set to negative value for no autoboot */
 #define CONFIG_BOOTDELAY		3
 
+#ifndef CONFIG_NOR
 #define CONFIG_NAND
+#endif
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"verify=yes\0" \
@@ -205,8 +214,38 @@
 #define CONFIG_ENV_ADDR			MNAND_ENV_OFFSET
 #endif /* NAND support */
 
+/*
+ * NOR Size = 16 MB
+ * No.Of Sectors/Blocks = 128
+ * Sector Size = 128 KB
+ * Word lenght = 16 bits
+ */
+#if defined(CONFIG_NOR)
+# undef CONFIG_ENV_IS_NOWHERE
+# ifdef CONFIG_SYS_MALLOC_LEN
+#  undef CONFIG_SYS_MALLOC_LEN
+# endif
+# define CONFIG_SYS_FLASH_USE_BUFFER_WRITE 1
+# define CONFIG_SYS_MALLOC_LEN		(0x100000)
+# define CONFIG_SYS_FLASH_CFI
+# define CONFIG_FLASH_CFI_DRIVER
+# define CONFIG_FLASH_CFI_MTD
+# define CONFIG_SYS_MAX_FLASH_SECT	128
+# define CONFIG_SYS_MAX_FLASH_BANKS	1
+# define CONFIG_SYS_FLASH_BASE		(0x08000000)
+# define CONFIG_SYS_MONITOR_BASE	CONFIG_SYS_FLASH_BASE
+# define CONFIG_ENV_IS_IN_FLASH	1
+# define NOR_SECT_SIZE			(128 * 1024)
+# define CONFIG_SYS_ENV_SECT_SIZE	(NOR_SECT_SIZE)
+# define CONFIG_ENV_SECT_SIZE		(NOR_SECT_SIZE)
+# define CONFIG_ENV_OFFSET		(8 * NOR_SECT_SIZE) /* After 1 MB */
+# define CONFIG_ENV_ADDR		(CONFIG_SYS_FLASH_BASE + \
+	 CONFIG_ENV_OFFSET)
+# define CONFIG_MTD_DEVICE
+#endif	/* NOR support */
+
 /* I2C */
-# define CONFIG_I2C 
+# define CONFIG_I2C
 # define CONFIG_CMD_I2C
 # define CONFIG_HARD_I2C		1
 # define CONFIG_SYS_I2C_SPEED		100000

@@ -294,6 +294,8 @@ struct gptimer {
 #define CM_WKUP_I2C0_CLKCTRL		(CM_WKUP + 0xB8) /* I2C0 */
 #define CM_PER_CPGMAC0_CLKCTRL		(CM_PER + 0x14)	/* Ethernet */
 #define CM_PER_CPSW_CLKSTCTRL		(CM_PER + 0x144)/* Ethernet */
+#define CM_PER_OCMCRAM_CLKCTRL		(CM_PER	+ 0x2C) /* OCMC RAM */
+#define CM_PER_GPIO2_CLKCTRL		(CM_PER + 0xB0) /* GPIO2 */
 #endif /* CONFIG_AM335X */
 
 /* PRCM */
@@ -462,11 +464,20 @@ struct gptimer {
 #define CM_ALWON_OCMC_1_CLKCTRL		(PRCM_BASE + 0x15B8)
 #endif
 
+#ifdef CONFIG_AM335X
+#define CM_ALWON_GPMC_CLKCTRL		CM_PER_GPMC_CLKCTRL
+#else
 #define CM_ALWON_GPMC_CLKCTRL		(PRCM_BASE + 0x15D0)
+#endif
 
 /* OCMC */
 #ifdef CONFIG_TI816X
 #define SRAM0_SIZE			(0x40000)
+#define SRAM_GPMC_STACK_SIZE		(0x40)
+#endif
+
+#ifdef CONFIG_AM335X
+#define SRAM0_SIZE			(0x10000)
 #define SRAM_GPMC_STACK_SIZE		(0x40)
 #endif
 
@@ -528,7 +539,20 @@ struct gptimer {
 #define GPMC_A23			GPO_IO6
 #define GPMC_A24			TIM6_OUT
 #define GPMC_A25			SC0_DATA
+#endif
 
+#ifdef CONFIG_AM335X
+#define GPMC_A12			(CTRL_BASE + 0x8c0) /* LCD_DATA8 */
+#define GPMC_A13			(CTRL_BASE + 0x8c4) /* LCD_DATA9 */
+#define GPMC_A14			(CTRL_BASE + 0x8c8) /* LCD_DATA10 */
+#define GPMC_A15			(CTRL_BASE + 0x8cc) /* LCD_DATA11 */
+#define GPMC_A16			(CTRL_BASE + 0x8d0) /* LCD_DATA12 */
+#define GPMC_A17			(CTRL_BASE + 0x8d4) /* LCD_DATA13 */
+#define GPMC_A18			(CTRL_BASE + 0x8d8) /* LCD_DATA14 */
+#define GPMC_A19			(CTRL_BASE + 0x8dc) /* LCD_DATA15 */
+#define GPMC_A20			(CTRL_BASE + 0x850) /* GPMC_A4 */
+#define GPMC_A21			(CTRL_BASE + 0x854) /* GPMC_A5 */
+#define GPMC_A22			(CTRL_BASE + 0x858) /* GPMC_A6 */
 #endif
 
 #ifndef __KERNEL_STRICT_NAMES

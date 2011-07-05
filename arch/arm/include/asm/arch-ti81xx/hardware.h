@@ -45,7 +45,9 @@
 /* GPIO Base address */
 #define GPIO0_BASE			0x48032000
 #define GPIO1_BASE			0x4804C000
-
+#ifdef CONFIG_AM335X
+#define GPIO2_BASE			0x481AC000
+#endif
 /* BCH Error Location Module */
 #define ELM_BASE			0x48080000
 
