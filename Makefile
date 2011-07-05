@@ -3167,7 +3167,9 @@ SMN42_config	:	unconfig
 ## ARM CORTEX Systems
 #########################################################################
 am335x_evm_config	\
+am335x_evm_config_nor	\
 am335x_evm_config_nand	\
+am335x_evm_min_nor	\
 am335x_evm_min_nand	\
 am335x_evm_min_uart:	unconfig
 	@mkdir -p $(obj)include
@@ -3184,17 +3186,29 @@ am335x_evm_min_uart:	unconfig
 			echo "#define CONFIG_AM335X_PERIPHERAL_BOOT"	>>$(obj)include/config.h; \
 			echo "Configuring for UART boot mode..." ; \
 			echo "TI_IMAGE = u-boot.min.uart" >> $(obj)board/ti/am335x/config.tmp;\
-		else \
+		elif [ "$(findstring nor,$@)" ] ; then \
+			echo "#define CONFIG_NOR_BOOT"	>>$(obj)include/config.h ; \
+			echo "#undef CONFIG_SYS_NO_FLASH"	>>$(obj)include/config.h ; \
+			echo "#define CONFIG_AM335X_PERIPHERAL_BOOT"	>>$(obj)include/config.h; \
+			echo "Configuring for NOR boot mode..." ; \
+			echo "TI_IMAGE = u-boot.min.nor" >> $(obj)board/ti/am335x/config.tmp;\
+		else	\
 			echo "#define CONFIG_NAND_BOOT"	>>$(obj)include/config.h ; \
 			echo "Configuring for NAND boot mode..." ; \
 			echo "TI_IMAGE = u-boot.min.nand" >> $(obj)board/ti/am335x/config.tmp;\
-		fi; \
-	else \
+		fi;	\
+	else	\
 		echo "TI_IMAGE = DUMMY" >> $(obj)board/ti/am335x/config.tmp;\
 		echo "#define CONFIG_TI_DUMMY_HEADER"	>>$(obj)include/config.h; \
-		echo "#define CONFIG_NAND_ENV"    >>$(obj)include/config.h ; \
-		echo "Configuring for NAND boot mode..." ; \
-		echo "Setting up AM335X default build with ENV in NAND..." ; \
+		if [ "$(findstring _nor,$@)" ] ; then \
+			echo "#define CONFIG_NOR"    >>$(obj)include/config.h ; \
+			echo "#undef CONFIG_SYS_NO_FLASH"	>>$(obj)include/config.h ; \
+			echo "Setting up AM335X build with ENV in NOR..." ; \
+		else	\
+			echo "#define CONFIG_NAND_ENV"    >>$(obj)include/config.h ; \
+			echo "Configuring for NAND boot mode..." ; \
+			echo "Setting up AM335X default build with ENV in NAND..." ; \
+		fi;	\
 	fi;
 	@$(MKCONFIG) -a am335x_evm arm arm_cortexa8 am335x ti ti81xx
 

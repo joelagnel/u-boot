@@ -40,6 +40,9 @@
 
 #if defined(CONFIG_NOR_BOOT)
 #define CONFIG_NOR
+#define CONFIG_EXTRA_ENV_SETTINGS \
+	"verify=yes\0" \
+	"bootcmd=cp.b 0x8020000 0x81000000 0x40000; go 0x81000000\0"
 #endif
 
 #else /* u-boot Full / Second stage u-boot */
