@@ -234,9 +234,33 @@ unsigned short get_ia_profile(void)
 /*
  * Basic board specific setup
  */
-int board_init(void)
+#ifdef CONFIG_AM335X_MIN_CONFIG
+int board_min_init(void)
 {
 	u32 regVal;
+
+	enable_uart0_pin_mux();
+
+	/* UART softreset */
+	regVal = __raw_readl(UART_SYSCFG);
+	regVal |= UART_RESET;
+	__raw_writel(regVal, UART_SYSCFG);
+	while ((__raw_readl(UART_SYSSTS) & UART_CLK_RUNNING_MASK) !=
+		UART_CLK_RUNNING_MASK);
+
+	/* Disable smart idle */
+	regVal = __raw_readl(UART_SYSCFG);
+	regVal |= UART_SMART_IDLE_EN;
+	__raw_writel(regVal, UART_SYSCFG);
+
+	/* Initialize the Timer */
+	init_timer();
+
+	return 0;
+}
+#else
+int board_evm_init(void)
+{
 	unsigned short profile = PROFILE_NONE;
 
 	detect_daughter_board();
@@ -257,30 +281,27 @@ int board_init(void)
 
 	configure_evm_pin_mux(daughter_board_id, profile);
 
-	/* Initialize the Timer */
-	init_timer();
-
-	/* UART softreset */
-	regVal = __raw_readl(UART_SYSCFG);
-	regVal |= UART_RESET;
-	__raw_writel(regVal, UART_SYSCFG);
-	while ((__raw_readl(UART_SYSSTS) & UART_CLK_RUNNING_MASK) !=
-		UART_CLK_RUNNING_MASK);
-
-	/* Disable smart idle */
-	regVal = __raw_readl(UART_SYSCFG);
-	regVal |= UART_SMART_IDLE_EN;
-	__raw_writel(regVal, UART_SYSCFG);
-
 	/* mach type passed to kernel */
 	gd->bd->bi_arch_number = MACH_TYPE_AM335XEVM;
 
 	/* address of boot parameters */
 	gd->bd->bi_boot_params = PHYS_DRAM_1 + 0x100;
 
-	gpmc_init();
-
 	return 0;
+}
+#endif
+
+int board_init(void)
+{
+	#ifdef CONFIG_AM335X_MIN_CONFIG
+		board_min_init();
+	#else
+		board_evm_init();
+	#endif
+
+		gpmc_init();
+
+		return 0;
 }
 
 /* Display the board info */
