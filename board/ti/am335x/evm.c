@@ -14,6 +14,7 @@
  */
 
 #include <common.h>
+#include <asm/cache.h>
 #include <asm/arch/cpu.h>
 #include <asm/arch/ddr_defs.h>
 #include <asm/arch/hardware.h>
@@ -26,6 +27,7 @@
 #include <miiphy.h>
 #include <netdev.h>
 #include "common_def.h"
+#include <i2c.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -48,6 +50,8 @@ DECLARE_GLOBAL_DATA_PTR;
 #define I2C_IA_DB_EEPROM_ADDR	0x52
 #define I2C_IPP_DB_EEPROM_ADDR	0x52
 #define I2C_BB_EEPROM_ADDR	0x50
+
+extern void cpsw_eth_set_mac_addr(const u_int8_t *addr);
 
 void init_timer(void)
 {
@@ -247,6 +251,8 @@ int checkboard(void)
 		printf("board: IPP daughter card connected");
 	else
 		printf("board: No daughter card connected");
+
+	return 0;
 }
 
 /*
