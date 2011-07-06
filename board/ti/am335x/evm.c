@@ -43,14 +43,37 @@ DECLARE_GLOBAL_DATA_PTR;
 #define TCLR_REG		0x38
 
 /*
- * I2C Address of eeprom on Daughter cards
- * I2C Addresses are not confirmed yet and
- * will be modifed later
+ * I2C Address of various board
  */
-#define I2C_GP_DB_EEPROM_ADDR	0x51
-#define I2C_IA_DB_EEPROM_ADDR	0x52
-#define I2C_IPP_DB_EEPROM_ADDR	0x52
-#define I2C_BB_EEPROM_ADDR	0x50
+#define I2C_BASE_BOARD_ADDR	0x50
+#define I2C_DAUGHTER_BOARD_ADDR 0x51
+#define I2C_LCD_BOARD_ADDR	0x52
+
+struct board_id_header {
+	unsigned int  header;
+	char board_name[9];
+	char version[4];
+	unsigned char config[32];
+};
+
+static struct board_id_header db_header[NO_OF_DAUGHTER_CARDS] = {
+	{
+	.header = 0xAA5533EE,
+	.board_name = "SAGENPUR",
+	.version = "001A",
+	},
+	{
+	.header = 0xAA5533EE,
+	.board_name = "SAINDAUT",
+	.version = "001A",
+
+	},
+	{
+	.header = 0xAA5533EE,
+	.board_name = "SAIPPHON",
+	.version = "001A",
+	}
+};
 
 extern void cpsw_eth_set_mac_addr(const u_int8_t *addr);
 
@@ -152,23 +175,37 @@ void s_init(u32 in_ddr)
 
 static unsigned char daughter_board_id = BASE_BOARD_ONLY;
 /*
- * Daughter board detection: All daughter boards have I2C EEPROM in all the
- * profiles. Hence, We probe for the EEPROM to find the daughter board type.
+ * Daughter board detection: All boards have i2c based EEPROM in all the
+ * profiles. Base boards and daughter boards are assigned unique I2C Address.
+ * We probe for daughter card and then if sucessful, read the EEPROM to find
+ * daughter card type.
  */
 static void detect_daughter_board(void)
 {
+	struct board_id_header st_board_id_header;
+	unsigned char db_board_id = GP_DAUGHTER_BOARD;
+
 	/* Configure the i2c0 pin mux */
 	enable_i2c0_pin_mux();
 
 	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
 
-	/* Probe for EEPROM on DBs starting from GP Daughter Board */
-	if (i2c_probe(I2C_GP_DB_EEPROM_ADDR) == 0)
-		daughter_board_id = GP_DAUGHTER_BOARD;
-	else if (i2c_probe(I2C_IA_DB_EEPROM_ADDR) == 0)
-		daughter_board_id = IA_DAUGHTER_BOARD;
-	else if (i2c_probe(I2C_IPP_DB_EEPROM_ADDR) == 0)
-		daughter_board_id = IPP_DAUGHTER_BOARD;
+	/* Check if daughter board is conneted */
+	if (i2c_probe(I2C_DAUGHTER_BOARD_ADDR))
+		return;
+
+	/* read the eeprom using i2c */
+	if (i2c_read(I2C_DAUGHTER_BOARD_ADDR, 0, 1, (uchar *)
+		(&st_board_id_header), sizeof(struct board_id_header)))
+		return;
+
+	do {
+		if (!strncmp(db_header[db_board_id].board_name,
+				st_board_id_header.board_name, 8)) {
+			daughter_board_id = db_board_id;
+			break;
+		}
+	} while (++db_board_id < NO_OF_DAUGHTER_CARDS);
 }
 
 unsigned char get_daughter_board_id(void)
