@@ -108,6 +108,9 @@ void per_clocks_enable(void)
 	__raw_writel(PRCM_MOD_EN, CM_PER_MMC1_CLKCTRL);
 	while (__raw_readl(CM_PER_MMC1_CLKCTRL) != PRCM_MOD_EN);
 
+	/* Enable the control module though RBL would have done it*/
+	__raw_writel(PRCM_MOD_EN, CM_WKUP_CONTROL_CLKCTRL);
+	while (__raw_readl(CM_WKUP_CONTROL_CLKCTRL) != PRCM_MOD_EN);
 }
 
 void core_pll_config(void)
@@ -182,9 +185,6 @@ void enable_ddr_clocks(void)
  */
 void pll_init()
 {
-	/* Enable the control module */
-	__raw_writel(PRCM_MOD_EN, CM_ALWON_CONTROL_CLKCTRL);
-
 	core_pll_config();
 	per_pll_config();
 	ddr_pll_config();
