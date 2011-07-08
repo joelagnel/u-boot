@@ -312,6 +312,19 @@ int checkboard(void)
 	else
 		printf("board: No daughter card connected");
 
+#ifdef CONFIG_AM335X_MIN_CONFIG
+#ifdef CONFIG_NAND
+	if ((daughter_board_id == GP_DAUGHTER_BOARD) &&
+		((daughter_board_profile  == PROFILE_2) ||
+			(daughter_board_profile == PROFILE_3)))
+		printf("NAND boot: Profile setting is wrong!!");
+#endif
+#ifdef CONFIG_NOR
+	if ((daughter_board_id != GP_DAUGHTER_BOARD) ||
+		(daughter_board_profile != PROFILE_3))
+		printf("NOR boot: Profile setting is wrong!!");
+#endif
+#endif
 	return 0;
 }
 
