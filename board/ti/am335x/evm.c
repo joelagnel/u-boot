@@ -282,7 +282,7 @@ int board_evm_init(void)
 	configure_evm_pin_mux(daughter_board_id, profile);
 
 	/* mach type passed to kernel */
-	gd->bd->bi_arch_number = MACH_TYPE_AM335XEVM;
+	gd->bd->bi_arch_number = MACH_TYPE_TIAM335EVM;
 
 	/* address of boot parameters */
 	gd->bd->bi_boot_params = PHYS_DRAM_1 + 0x100;
