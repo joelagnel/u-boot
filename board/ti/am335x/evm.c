@@ -51,27 +51,27 @@ DECLARE_GLOBAL_DATA_PTR;
 
 struct board_id_header {
 	unsigned int  header;
-	char board_name[9];
+	char board_name[8];
 	char version[4];
 	unsigned char config[32];
 };
 
-static struct board_id_header db_header[NO_OF_DAUGHTER_CARDS] = {
+static struct board_id_header db_header[NO_OF_DAUGHTER_BOARDS] = {
 	{
 	.header = 0xAA5533EE,
-	.board_name = "SAGENPUR",
-	.version = "001A",
+	.board_name = "A335GPBD", /* General purpose daughter board */
+	.version = "1.0A",
 	},
 	{
 	.header = 0xAA5533EE,
-	.board_name = "SAINDAUT",
-	.version = "001A",
+	.board_name = "A335IAMC", /* Industrial automation board */
+	.version = "1.0A",
 
 	},
 	{
 	.header = 0xAA5533EE,
-	.board_name = "SAIPPHON",
-	.version = "001A",
+	.board_name = "A335IPPH", /* IP Phone daughter board */
+	.version = "1.0A",
 	}
 };
 
@@ -205,7 +205,7 @@ static void detect_daughter_board(void)
 			daughter_board_id = db_board_id;
 			break;
 		}
-	} while (++db_board_id < NO_OF_DAUGHTER_CARDS);
+	} while (++db_board_id < NO_OF_DAUGHTER_BOARDS);
 }
 
 unsigned char get_daughter_board_id(void)

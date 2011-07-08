@@ -15,7 +15,7 @@
 #ifndef __COMMON_DEF_H__
 #define __COMMON_DEF_H__
 
-#define NO_OF_DAUGHTER_CARDS	3
+#define NO_OF_DAUGHTER_BOARDS	3
 /* Daughter Card type */
 #define GP_DAUGHTER_BOARD	0
 #define IA_DAUGHTER_BOARD	1
