@@ -434,7 +434,11 @@ struct gptimer {
 #define EMIF4_1_DDR_PHY_CTRL_1_SHADOW	(EMIF4_1_CFG_BASE + 0xE8)
 #define EMIF4_1_IODFT_TLGC		(EMIF4_1_CFG_BASE + 0x60)
 
+#ifdef CONFIG_AM335X
+#define VTP0_CTRL_REG			0x44E10E0C
+#else
 #define VTP0_CTRL_REG			0x48140E0C
+#endif
 #define VTP1_CTRL_REG			0x48140E10
 
 /*EMIF4 PRCM Defintion*/
