@@ -267,10 +267,6 @@ int board_min_init(void)
 #else
 int board_evm_init(void)
 {
-	detect_daughter_board();
-
-	detect_daughter_board_profile();
-
 	configure_evm_pin_mux(daughter_board_id, daughter_board_profile);
 
 	/* mach type passed to kernel */
@@ -285,15 +281,23 @@ int board_evm_init(void)
 
 int board_init(void)
 {
-	#ifdef CONFIG_AM335X_MIN_CONFIG
-		board_min_init();
-	#else
-		board_evm_init();
-	#endif
+	/* Configure the i2c0 pin mux */
+	enable_i2c0_pin_mux();
 
-		gpmc_init();
+	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
 
-		return 0;
+	detect_daughter_board();
+
+	detect_daughter_board_profile();
+
+#ifdef CONFIG_AM335X_MIN_CONFIG
+	board_min_init();
+#else
+	board_evm_init();
+#endif
+	gpmc_init();
+
+	return 0;
 }
 
 /* Display the board info */
