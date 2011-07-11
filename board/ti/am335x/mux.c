@@ -461,6 +461,8 @@ static struct evm_pin_mux ia_motor_control_evm_pin_mux[] = {
 static struct evm_pin_mux ip_phone_evm_pin_mux[] = {
 	{nand_pin_mux, PROFILE_0},
 	{emif_pin_mux, PROFILE_0},
+	{ethernet0_pin_mux, PROFILE_0},
+	{ethernet1_pin_mux, PROFILE_0},
 	{0},
 };
 
