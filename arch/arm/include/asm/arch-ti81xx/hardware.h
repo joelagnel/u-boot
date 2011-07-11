@@ -22,8 +22,11 @@
  * in a diff file like cpu.h so that when this is the only place
  * where change is needed for new SoCs when the ip is the same
  */
+#ifdef CONFIG_AM335X
+#define SRAM0_START			0x402f0400
+#else
 #define SRAM0_START			0x40300000
-
+#endif
 #ifdef CONFIG_AM335X
 #define UART0_BASE			0x44E09000
 #else
