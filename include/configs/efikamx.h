@@ -47,6 +47,7 @@
 #define CONFIG_CMD_SF
 #define CONFIG_CMD_MMC
 #define CONFIG_CMD_FAT
+#define CONFIG_CMD_EXT2
 #define CONFIG_CMD_IDE
 #undef CONFIG_CMD_IMLS
 
