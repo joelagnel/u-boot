@@ -426,6 +426,7 @@ static struct module_pin_mux nor_pin_mux[] = {
 	{OFFSET(gpmc_wen), (MODE(0) | PULLUP_EN)},	/* NOR_WEN */
 	{OFFSET(gpmc_wait0), (MODE(0) | RXACTIVE | PULLUP_EN)}, /* NOR WAIT */
 	{OFFSET(lcd_ac_bias_en), MODE(7) | RXACTIVE | PULLUDEN}, /* NOR RESET */
+	{-1},
 };
 
 static struct module_pin_mux mmc0_pin_mux[] = {
@@ -518,6 +519,9 @@ static void configure_module_pin_mux(struct module_pin_mux *mod_pin_mux)
 {
 	int i;
 
+	if (!mod_pin_mux)
+		return;
+
 	for (i = 0; mod_pin_mux[i].reg_offset != -1; i++)
 		MUX_CFG(mod_pin_mux[i].val, mod_pin_mux[i].reg_offset);
 }
@@ -532,6 +536,9 @@ static void set_evm_pin_mux(struct evm_pin_mux *am335x_evm_pin_mux,
 {
 	int i;
 
+	if (!am335x_evm_pin_mux)
+		return;
+
 	for (i = 0; am335x_evm_pin_mux[i].mod_pin_mux != 0; i++)
 		if ((am335x_evm_pin_mux[i].profile & profile) ||
 				(profile == PROFILE_NONE))
@@ -542,6 +549,9 @@ static void set_evm_pin_mux(struct evm_pin_mux *am335x_evm_pin_mux,
 void configure_evm_pin_mux(unsigned char daughter_board_id, unsigned short
 		profile)
 {
+	if (daughter_board_id > BASE_BOARD_ONLY)
+		return;
+
 	set_evm_pin_mux(am335x_evm_pin_mux[daughter_board_id], profile);
 }
 
