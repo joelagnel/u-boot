@@ -121,7 +121,7 @@ struct pad_signals {
 	int spi0_d1;
 	int spi0_cs0;
 	int spi0_cs1;
-	int eCAP0_in_PWM0_out;
+	int ecap0_in_pwm0_out;
 	int uart0_ctsn;
 	int uart0_rtsn;
 	int uart0_rxd;
@@ -130,8 +130,8 @@ struct pad_signals {
 	int uart1_rtsn;
 	int uart1_rxd;
 	int uart1_txd;
-	int I2C0_SDA;
-	int I2C0_SCL;
+	int i2c0_sda;
+	int i2c0_scl;
 	int mcasp0_aclkx;
 	int mcasp0_fsx;
 	int mcasp0_axr0;
@@ -142,36 +142,36 @@ struct pad_signals {
 	int mcasp0_ahclkx;
 	int xdma_event_intr0;
 	int xdma_event_intr1;
-	int nRESETIN_OUT;
+	int nresetin_out;
 	int porz;
-	int nNMI;
-	int OSC0_IN;
-	int OSC0_OUT;
-	int TMS;
-	int TDI;
-	int TDO;
-	int TCK;
-	int nTRST;
-	int EMU0;
-	int EMU1;
-	int OSC1_IN;
-	int OSC1_OUT;
-	int RTC_porz;
-	int EXT_WAKEUP;
-	int PMIC_POWER_EN;
-	int ENZ_KALDO_1P8V;
-	int USB0_DM;
-	int USB0_DP;
-	int USB0_CE;
-	int USB0_ID;
-	int USB0_VBUS;
-	int USB0_DRVVBUS;
-	int USB1_DM;
-	int USB1_DP;
-	int USB1_CE;
-	int USB1_ID;
-	int USB1_VBUS;
-	int USB1_DRVVBUS;
+	int nnmi;
+	int osc0_in;
+	int osc0_out;
+	int tms;
+	int tdi;
+	int tdo;
+	int tck;
+	int ntrst;
+	int emu0;
+	int emu1;
+	int osc1_in;
+	int osc1_out;
+	int rtc_porz;
+	int ext_wakeup;
+	int pmic_power_en;
+	int enz_kaldo_1p8v;
+	int usb0_dm;
+	int usb0_dp;
+	int usb0_ce;
+	int usb0_id;
+	int usb0_vbus;
+	int usb0_drvvbus;
+	int usb1_dm;
+	int usb1_dp;
+	int usb1_ce;
+	int usb1_id;
+	int usb1_vbus;
+	int usb1_drvvbus;
 	int ddr_resetn;
 	int ddr_csn0;
 	int ddr_cke;
@@ -226,16 +226,16 @@ struct pad_signals {
 	int ddr_vtp;
 	int ddr_strben0;
 	int ddr_strben1;
-	int AIN7;
-	int AIN6;
-	int AIN5;
-	int AIN4;
-	int AIN3;
-	int AIN2;
-	int AIN1;
-	int AIN0;
-	int VREFP;
-	int VREFN;
+	int ain7;
+	int ain6;
+	int ain5;
+	int ain4;
+	int ain3;
+	int ain2;
+	int ain1;
+	int ain0;
+	int vrefp;
+	int vrefn;
 };
 
 struct module_pin_mux {
@@ -244,7 +244,7 @@ struct module_pin_mux {
 };
 
 struct evm_pin_mux {
-	struct module_pin_mux *module_pin_mux;
+	struct module_pin_mux *mod_pin_mux;
 	unsigned short profile;
 };
 
@@ -338,8 +338,8 @@ static struct module_pin_mux nand_pin_mux[] = {
 };
 
 static struct module_pin_mux i2c0_pin_mux[] = {
-	{OFFSET(I2C0_SDA), (MODE(0) | RXACTIVE | PULLUDEN)},	/* I2C_DATA */
-	{OFFSET(I2C0_SCL), (MODE(0) | RXACTIVE | PULLUDEN)},	/* I2C_SCLK */
+	{OFFSET(i2c0_sda), (MODE(0) | RXACTIVE | PULLUDEN)},	/* I2C_DATA */
+	{OFFSET(i2c0_scl), (MODE(0) | RXACTIVE | PULLUDEN)},	/* I2C_SCLK */
 	{-1},
 };
 
@@ -504,7 +504,7 @@ static struct evm_pin_mux low_cost_evm_pin_mux[] = {
 	{0},
 };
 
-static struct evm_pin_mux *evm_pin_mux[] = {
+static struct evm_pin_mux *am335x_evm_pin_mux[] = {
 	general_purpose_evm_pin_mux,
 	ia_motor_control_evm_pin_mux,
 	ip_phone_evm_pin_mux,
@@ -514,12 +514,12 @@ static struct evm_pin_mux *evm_pin_mux[] = {
 /*
  * Configure the pin mux for the module
  */
-static void configure_module_pin_mux(struct module_pin_mux *module_pin_mux)
+static void configure_module_pin_mux(struct module_pin_mux *mod_pin_mux)
 {
 	int i;
 
-	for (i = 0; module_pin_mux[i].reg_offset != -1; i++)
-		MUX_CFG(module_pin_mux[i].val, module_pin_mux[i].reg_offset);
+	for (i = 0; mod_pin_mux[i].reg_offset != -1; i++)
+		MUX_CFG(mod_pin_mux[i].val, mod_pin_mux[i].reg_offset);
 }
 
 /*
@@ -527,21 +527,22 @@ static void configure_module_pin_mux(struct module_pin_mux *module_pin_mux)
  * available in the selected profile(second argument). If the module is not
  * available in the selected profile, skip the corresponding configuration.
  */
-static void set_evm_pin_mux(struct evm_pin_mux *evm_pin_mux,
+static void set_evm_pin_mux(struct evm_pin_mux *am335x_evm_pin_mux,
 			char profile)
 {
 	int i;
 
-	for (i = 0; evm_pin_mux[i].module_pin_mux != 0; i++)
-		if ((evm_pin_mux[i].profile & profile) ||
+	for (i = 0; am335x_evm_pin_mux[i].mod_pin_mux != 0; i++)
+		if ((am335x_evm_pin_mux[i].profile & profile) ||
 				(profile == PROFILE_NONE))
-			configure_module_pin_mux(evm_pin_mux[i].module_pin_mux);
+			configure_module_pin_mux(am335x_evm_pin_mux[i].
+					mod_pin_mux);
 }
 
 void configure_evm_pin_mux(unsigned char daughter_board_id, unsigned short
 		profile)
 {
-	set_evm_pin_mux(evm_pin_mux[daughter_board_id], profile);
+	set_evm_pin_mux(am335x_evm_pin_mux[daughter_board_id], profile);
 }
 
 void enable_i2c0_pin_mux(void)
