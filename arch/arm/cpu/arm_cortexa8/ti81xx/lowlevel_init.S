@@ -463,7 +463,11 @@ SRAM_STACK:
 	.word (SRAM0_START + SRAM0_SIZE - SRAM_GPMC_STACK_SIZE)
 #else
 SRAM_STACK:
+#ifndef CONFIG_AM335X
 	.word (SRAM0_START + 0x2800)	/* we'll place stack+heap+gd in top 10 KB */
+#else
+	.word (SRAM0_START + SRAM0_SIZE - 4)	/* we'll place stack at the top */
+#endif
 #endif
 
 _mark1:
