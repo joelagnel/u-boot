@@ -3171,7 +3171,8 @@ am335x_evm_config_nor	\
 am335x_evm_config_nand	\
 am335x_evm_min_nor	\
 am335x_evm_min_nand	\
-am335x_evm_min_uart:	unconfig
+am335x_evm_min_uart	\
+am335x_evm_min_sd:	unconfig
 	@mkdir -p $(obj)include
 	@echo "#define CONFIG_AM335X"	>>$(obj)include/config.h
 	@echo "#define CONFIG_TI81XX"   >>$(obj)include/config.h
@@ -3186,6 +3187,11 @@ am335x_evm_min_uart:	unconfig
 			echo "#define CONFIG_AM335X_PERIPHERAL_BOOT"	>>$(obj)include/config.h; \
 			echo "Configuring for UART boot mode..." ; \
 			echo "TI_IMAGE = u-boot.min.uart" >> $(obj)board/ti/am335x/config.tmp;\
+		elif [ "$(findstring sd,$@)" ] ; then \
+			echo "#define CONFIG_SD_BOOT"    >>$(obj)include/config.h ; \
+			echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
+			echo "Configuring for SD boot mode..." ; \
+			echo "TI_IMAGE = u-boot.min.sd" >> $(obj)board/ti/am335x/config.tmp;\
 		elif [ "$(findstring nor,$@)" ] ; then \
 			echo "#define CONFIG_NOR_BOOT"	>>$(obj)include/config.h ; \
 			echo "#undef CONFIG_SYS_NO_FLASH"	>>$(obj)include/config.h ; \
