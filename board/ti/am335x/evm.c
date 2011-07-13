@@ -221,15 +221,15 @@ unsigned char get_daughter_board_id(void)
 static unsigned char daughter_board_profile = PROFILE_0;
 static void detect_daughter_board_profile(void)
 {
-	unsigned char val;
+	unsigned short val;
 
 	if (i2c_probe(I2C_CPLD_ADDR))
 		return;
 
-	if (i2c_read(I2C_CPLD_ADDR, CFG_REG, 1, &val, 2))
+	if (i2c_read(I2C_CPLD_ADDR, CFG_REG, 1, (unsigned char *)(&val), 2))
 		return;
 
-	daughter_board_profile = val & 0x7;
+	daughter_board_profile = 1 << (val & 0x7);
 }
 
 unsigned char get_daughter_board_profile(void)
