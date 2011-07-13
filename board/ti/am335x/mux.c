@@ -428,6 +428,30 @@ static struct module_pin_mux nor_pin_mux[] = {
 	{OFFSET(lcd_ac_bias_en), MODE(7) | RXACTIVE | PULLUDEN}, /* NOR RESET */
 };
 
+static struct module_pin_mux mmc0_pin_mux[] = {
+	{OFFSET(mmc0_dat3), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT3 */
+	{OFFSET(mmc0_dat2), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT2 */
+	{OFFSET(mmc0_dat1), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT1 */
+	{OFFSET(mmc0_dat0), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT0 */
+	{OFFSET(mmc0_clk), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_CLK */
+	{OFFSET(mmc0_cmd), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_CMD */
+	{OFFSET(mcasp0_aclkr), (MODE(4) | RXACTIVE)},		/* MMC0_WP */
+	{OFFSET(spi0_cs1), (MODE(5) | RXACTIVE | PULLUP_EN)},	/* MMC0_CD */
+	{-1},
+};
+
+static struct module_pin_mux mmc1_pin_mux[] = {
+	{OFFSET(gpmc_ad3), (MODE(1) | RXACTIVE)},	/* MMC1_DAT3 */
+	{OFFSET(gpmc_ad2), (MODE(1) | RXACTIVE)},	/* MMC1_DAT2 */
+	{OFFSET(gpmc_ad1), (MODE(1) | RXACTIVE)},	/* MMC1_DAT1 */
+	{OFFSET(gpmc_ad0), (MODE(1) | RXACTIVE)},	/* MMC1_DAT0 */
+	{OFFSET(gpmc_csn1), (MODE(2) | RXACTIVE | PULLUP_EN)},	/* MMC1_CLK */
+	{OFFSET(gpmc_csn2), (MODE(2) | RXACTIVE | PULLUP_EN)},	/* MMC1_CMD */
+	{OFFSET(uart1_rxd), (MODE(1) | RXACTIVE | PULLUP_EN)},	/* MMC1_WP */
+	{OFFSET(mcasp0_fsx), (MODE(4) | RXACTIVE)},	/* MMC1_CD */
+	{-1},
+};
+
 /*
  * Update the structure with the modules present in the general purpose
  * board and the profiles in which the modules are present.
@@ -443,6 +467,8 @@ static struct evm_pin_mux general_purpose_evm_pin_mux[] = {
 	{ethernet0_pin_mux, PROFILE_ALL},
 	{ethernet1_pin_mux, PROFILE_1 | PROFILE_2 | PROFILE_4 | PROFILE_6},
 	{nor_pin_mux, PROFILE_3},
+	{mmc0_pin_mux, PROFILE_ALL},
+	{mmc1_pin_mux, PROFILE_2},
 	{0},
 };
 
@@ -454,6 +480,7 @@ static struct evm_pin_mux general_purpose_evm_pin_mux[] = {
 static struct evm_pin_mux ia_motor_control_evm_pin_mux[] = {
 	{emif_pin_mux, PROFILE_ALL},
 	{nand_pin_mux, PROFILE_ALL},
+	{mmc0_pin_mux, PROFILE_ALL},
 	{0},
 };
 
@@ -463,6 +490,7 @@ static struct evm_pin_mux ip_phone_evm_pin_mux[] = {
 	{emif_pin_mux, PROFILE_0},
 	{ethernet0_pin_mux, PROFILE_0},
 	{ethernet1_pin_mux, PROFILE_0},
+	{mmc0_pin_mux, PROFILE_0},
 	{0},
 };
 
@@ -472,6 +500,7 @@ static struct evm_pin_mux low_cost_evm_pin_mux[] = {
 	{uart0_pin_mux,	PROFILE_NONE},
 	{nand_pin_mux, PROFILE_NONE},
 	{ethernet0_pin_mux, PROFILE_NONE},
+	{mmc0_pin_mux, PROFILE_NONE},
 	{0},
 };
 

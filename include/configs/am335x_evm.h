@@ -22,6 +22,8 @@
 #include <asm/arch/cpu.h>		/* get chip and board defs */
 #include <asm/arch/hardware.h>
 
+#define CONFIG_AM335X_HSMMC_INSTANCE	0	/* 0 - MMC0, 1 - MMC1 */
+
 /* In the 1st stage we have just 110K, so cut down wherever possible */
 #ifdef CONFIG_AM335X_MIN_CONFIG
 #define CONFIG_CMD_MEMORY	/* for mtest */
@@ -54,6 +56,13 @@
 	"bootcmd=cp.b 0x8020000 0x81000000 0x40000; go 0x81000000\0"
 #endif
 
+#if defined(CONFIG_SD_BOOT)		/* Autoload the 2nd stage from SD */
+#define CONFIG_MMC			1
+#define CONFIG_EXTRA_ENV_SETTINGS \
+	 "verify=yes\0" \
+	"bootcmd=mmc init 1; fatload mmc 1 0x80800000 u-boot.bin; go 0x80800000\0"
+#endif
+
 #else /* u-boot Full / Second stage u-boot */
 
 #include <config_cmd_default.h>
@@ -76,6 +85,8 @@
 /* set to negative value for no autoboot */
 #define CONFIG_BOOTDELAY		3
 
+#define CONFIG_MMC			1
+
 #ifndef CONFIG_NOR
 #define CONFIG_NAND
 #endif
@@ -85,12 +96,28 @@
 	"bootfile=uImage\0" \
 	"ramdisk_file=ramdisk.gz\0" \
 	"loadaddr=0x81000000\0" \
+	"script_addr=0x80900000\0" \
+	"loadbootscript=fatload mmc 1 ${script_addr} boot.scr\0" \
+	"bootscript= echo Running bootscript from MMC/SD to set the ENV...; " \
+		"source ${script_addr}\0" \
 
 #define CONFIG_BOOTCOMMAND \
+	"if mmc init 1; then " \
+		"if run loadbootscript; then " \
+			"run bootscript; " \
+		"else " \
+			"echo In case ENV on MMC/SD is required; "\
+			"echo Please put a valid script named \
+				boot.scr on the card; " \
+			"echo Refer to the User Guide on how to \
+				generate the image; " \
+		"fi; " \
+	"else " \
 		"echo Please set bootargs and bootcmd before \
 			booting the kernel; " \
 		"echo If that has already been done please \
 			ignore this message; "\
+	"fi"
 
 #endif /* CONFIG_AM335X_MIN_CONFIG */
 
@@ -253,6 +280,19 @@
 # define CONFIG_SYS_I2C_BUS		0
 # define CONFIG_SYS_I2C_BUS_SELECT	1
 # define CONFIG_DRIVER_TI81XX_I2C	1
+
+/* HSMMC support */
+#ifdef CONFIG_MMC
+#if (CONFIG_AM335X_HSMMC_INSTANCE == 0)
+# define CONFIG_AM335X_HSMMC_BASE    0x48060100
+#else
+# define CONFIG_AM335X_HSMMC_BASE    0x481D8100
+#endif
+# define CONFIG_OMAP3_MMC	1
+# define CONFIG_CMD_MMC		1
+# define CONFIG_DOS_PARTITION	1
+# define CONFIG_CMD_FAT		1
+#endif
 
 /* Unsupported features */
 #undef CONFIG_USE_IRQ

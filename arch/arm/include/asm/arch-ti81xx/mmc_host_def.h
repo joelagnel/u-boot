@@ -32,6 +32,8 @@
 # define OMAP_HSMMC1_BASE		0x48060100
 #elif defined(CONFIG_TI814X)
 # define OMAP_HSMMC1_BASE		0x481D8100
+#elif defined(CONFIG_AM335X)
+# define OMAP_HSMMC1_BASE		CONFIG_AM335X_HSMMC_BASE
 #endif
 
 typedef struct hsmmc {

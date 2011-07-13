@@ -101,6 +101,13 @@ void per_clocks_enable(void)
 	__raw_writel(PRCM_MOD_EN, CM_PER_CPGMAC0_CLKCTRL);
 	__raw_writel(PRCM_MOD_EN, CM_PER_CPSW_CLKSTCTRL);
 	while ((__raw_readl(CM_PER_CPGMAC0_CLKCTRL) & 0x30000) != 0x0);
+
+	/* MMC 0 & 1 */
+	__raw_writel(PRCM_MOD_EN, CM_PER_MMC0_CLKCTRL);
+	while (__raw_readl(CM_PER_MMC0_CLKCTRL) != PRCM_MOD_EN);
+	__raw_writel(PRCM_MOD_EN, CM_PER_MMC1_CLKCTRL);
+	while (__raw_readl(CM_PER_MMC1_CLKCTRL) != PRCM_MOD_EN);
+
 }
 
 void core_pll_config(void)
