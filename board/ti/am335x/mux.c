@@ -260,64 +260,6 @@ static struct module_pin_mux uart0_pin_mux[] = {
 	{-1},
 };
 
-static struct module_pin_mux emif_pin_mux[] = {
-	{OFFSET(ddr_resetn), MODE(0)},			/* RESETN */
-	{OFFSET(ddr_csn0), (MODE(0) | PULLUP_EN)},	/* CSNO	*/
-	{OFFSET(ddr_cke), MODE(0)},			/* CKE */
-	{OFFSET(ddr_ck), (MODE(0) | PULLUP_EN)},	/* CK */
-	{OFFSET(ddr_nck), (MODE(0) | PULLUP_EN)},	/* NCK */
-	{OFFSET(ddr_casn), (MODE(0) | PULLUP_EN)},	/* CASN */
-	{OFFSET(ddr_rasn), (MODE(0) | PULLUP_EN)},	/* RASN */
-	{OFFSET(ddr_wen), (MODE(0) | PULLUP_EN)},	/* WEN */
-	{OFFSET(ddr_ba0), (MODE(0) | PULLUP_EN)},	/* BA0 */
-	{OFFSET(ddr_ba1), (MODE(0) | PULLUP_EN)},	/* BA1 */
-	{OFFSET(ddr_ba2), (MODE(0) | PULLUP_EN)},	/* BA2 */
-	{OFFSET(ddr_a0), (MODE(0) | PULLUP_EN)},	/* A0 */
-	{OFFSET(ddr_a1), (MODE(0) | PULLUP_EN)},	/* A1 */
-	{OFFSET(ddr_a2), (MODE(0) | PULLUP_EN)},	/* A2 */
-	{OFFSET(ddr_a3), (MODE(0) | PULLUP_EN)},	/* A3 */
-	{OFFSET(ddr_a4), (MODE(0) | PULLUP_EN)},	/* A4 */
-	{OFFSET(ddr_a5), (MODE(0) | PULLUP_EN)},	/* A5 */
-	{OFFSET(ddr_a6), (MODE(0) | PULLUP_EN)},	/* A6 */
-	{OFFSET(ddr_a7), (MODE(0) | PULLUP_EN)},	/* A7 */
-	{OFFSET(ddr_a8), (MODE(0) | PULLUP_EN)},	/* A8 */
-	{OFFSET(ddr_a9), (MODE(0) | PULLUP_EN)},	/* A9 */
-	{OFFSET(ddr_a10), (MODE(0) | PULLUP_EN)},	/* A10 */
-	{OFFSET(ddr_a11), (MODE(0) | PULLUP_EN)},	/* A11 */
-	{OFFSET(ddr_a12), (MODE(0) | PULLUP_EN)},	/* A12 */
-	{OFFSET(ddr_a13), (MODE(0) | PULLUP_EN)},	/* A13 */
-	{OFFSET(ddr_a14), (MODE(0) | PULLUP_EN)},	/* A14 */
-	{OFFSET(ddr_a15), (MODE(0) | PULLUP_EN)},	/* A15 */
-	{OFFSET(ddr_odt), (MODE(0) | RXACTIVE)},	/* A16 */
-	{OFFSET(ddr_d0), (MODE(0) | RXACTIVE)},		/* ODT */
-	{OFFSET(ddr_d1), (MODE(0) | RXACTIVE)},		/* D0 */
-	{OFFSET(ddr_d2), (MODE(0) | RXACTIVE)},		/* D1 */
-	{OFFSET(ddr_d3), (MODE(0) | RXACTIVE)},		/* D2 */
-	{OFFSET(ddr_d4), (MODE(0) | RXACTIVE)},		/* D3 */
-	{OFFSET(ddr_d5), (MODE(0) | RXACTIVE)},		/* D4 */
-	{OFFSET(ddr_d6), (MODE(0) | RXACTIVE)},		/* D5 */
-	{OFFSET(ddr_d7), (MODE(0) | RXACTIVE)},		/* D6 */
-	{OFFSET(ddr_d8), (MODE(0) | RXACTIVE)},		/* D7 */
-	{OFFSET(ddr_d9), (MODE(0) | RXACTIVE)},		/* D8 */
-	{OFFSET(ddr_d10), (MODE(0) | RXACTIVE)},	/* D9 */
-	{OFFSET(ddr_d11), (MODE(0) | RXACTIVE)},	/* D10 */
-	{OFFSET(ddr_d12), (MODE(0) | RXACTIVE)},	/* D11 */
-	{OFFSET(ddr_d13), (MODE(0) | RXACTIVE)},	/* D12 */
-	{OFFSET(ddr_d14), (MODE(0) | RXACTIVE)},	/* D13 */
-	{OFFSET(ddr_d15), (MODE(0) | RXACTIVE)},	/* D14 */
-	{OFFSET(ddr_dqm0), (MODE(0) | PULLUP_EN)},	/* DQM0 */
-	{OFFSET(ddr_dqm1), (MODE(0) | PULLUP_EN)},	/* DQM1 */
-	{OFFSET(ddr_dqs0), (MODE(0) | RXACTIVE)},	/* DQS0 */
-	{OFFSET(ddr_dqsn0), (MODE(0) | PULLUP_EN |
-			RXACTIVE)}, /* DQSN0 */
-	{OFFSET(ddr_dqs1), (MODE(0) | RXACTIVE)},	 /* DQS1 */
-	{OFFSET(ddr_dqsn1), (MODE(0) | PULLUP_EN |
-			RXACTIVE)}, /* DQSN1 */
-	{OFFSET(ddr_vref), (MODE(0) | RXACTIVE)},	/* VREF */
-	{OFFSET(ddr_vtp), (MODE(0) | RXACTIVE)},	/* VTP */
-	{-1},
-};
-
 static struct module_pin_mux nand_pin_mux[] = {
 	{OFFSET(gpmc_ad0), (MODE(0) | RXACTIVE)},	/* NAND AD0 */
 	{OFFSET(gpmc_ad1), (MODE(0) | RXACTIVE)},	/* NAND AD1 */
@@ -469,17 +411,6 @@ static struct module_pin_mux spi1_pin_mux[] = {
 	{-1},
 };
 
-#if defined(CONFIG_AM335X_MIN_CONFIG) && defined(CONFIG_SPI)
-/*
- * initialization of SPI pinmuxing in min U-boot
- */
-static struct evm_pin_mux spi_pin_mux[] = {
-	{spi0_pin_mux, PROFILE_2},
-	{spi1_pin_mux, PROFILE_ALL},
-	{0},
-};
-#endif
-
 /*
  * Update the structure with the modules present in the general purpose
  * board and the profiles in which the modules are present.
@@ -489,15 +420,24 @@ static struct evm_pin_mux spi_pin_mux[] = {
  * UART0  is available in all the profiles.
  */
 static struct evm_pin_mux general_purpose_evm_pin_mux[] = {
-	{emif_pin_mux, PROFILE_ALL},
 	{uart0_pin_mux, PROFILE_ALL},
+#ifdef CONFIG_NAND
 	{nand_pin_mux, PROFILE_ALL & ~PROFILE_2 & ~PROFILE_3},
+#endif
+#ifndef CONFIG_NO_ETH
 	{ethernet0_pin_mux, PROFILE_ALL},
 	{ethernet1_pin_mux, PROFILE_1 | PROFILE_2 | PROFILE_4 | PROFILE_6},
+#endif
+#ifdef CONFIG_NOR
 	{nor_pin_mux, PROFILE_3},
+#endif
+#ifdef CONFIG_MMC
 	{mmc0_pin_mux, PROFILE_ALL},
 	{mmc1_pin_mux, PROFILE_2},
+#endif
+#ifdef CONFIG_SPI
 	{spi0_pin_mux, PROFILE_2},
+#endif
 	{0},
 };
 
@@ -507,30 +447,46 @@ static struct evm_pin_mux general_purpose_evm_pin_mux[] = {
  * present but if it is not available in any of the profile, then do not update
  */
 static struct evm_pin_mux ia_motor_control_evm_pin_mux[] = {
-	{emif_pin_mux, PROFILE_ALL},
+#ifdef CONFIG_NAND
 	{nand_pin_mux, PROFILE_ALL},
+#endif
+#ifdef CONFIG_MMC
 	{mmc0_pin_mux, PROFILE_ALL},
+#endif
+#ifdef CONFIG_SPI
 	{spi1_pin_mux, PROFILE_ALL},
+#endif
 	{0},
 };
 
 /* IP Phone EVM has single profile */
 static struct evm_pin_mux ip_phone_evm_pin_mux[] = {
+	{uart0_pin_mux,	PROFILE_NONE},
+#ifdef CONFIG_NAND
 	{nand_pin_mux, PROFILE_0},
-	{emif_pin_mux, PROFILE_0},
+#endif
+#ifndef CONFIG_NO_ETH
 	{ethernet0_pin_mux, PROFILE_0},
 	{ethernet1_pin_mux, PROFILE_0},
+#endif
+#ifdef CONFIG_MMC
 	{mmc0_pin_mux, PROFILE_0},
+#endif
 	{0},
 };
 
 /* Base board has single profile */
 static struct evm_pin_mux low_cost_evm_pin_mux[] = {
-	{emif_pin_mux, PROFILE_NONE},
 	{uart0_pin_mux,	PROFILE_NONE},
+#ifdef CONFIG_NAND
 	{nand_pin_mux, PROFILE_NONE},
+#endif
+#ifndef CONFIG_NO_ETH
 	{ethernet0_pin_mux, PROFILE_NONE},
+#endif
+#ifdef CONFIG_MMC
 	{mmc0_pin_mux, PROFILE_NONE},
+#endif
 	{0},
 };
 
@@ -589,15 +545,3 @@ void enable_i2c0_pin_mux(void)
 	configure_module_pin_mux(i2c0_pin_mux);
 }
 
-void enable_uart0_pin_mux(void)
-{
-	configure_module_pin_mux(uart0_pin_mux);
-}
-
-#if defined(CONFIG_AM335X_MIN_CONFIG) && defined(CONFIG_SPI)
-void enable_spi_pinmux(unsigned char board_id, unsigned short profile)
-{
-	if (spi_pin_mux[board_id].profile == profile)
-		configure_module_pin_mux(spi_pin_mux[board_id].mod_pin_mux);
-}
-#endif

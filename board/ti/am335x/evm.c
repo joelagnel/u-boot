@@ -191,11 +191,6 @@ static void detect_daughter_board(void)
 	struct board_id_header st_board_id_header;
 	unsigned char db_board_id = GP_DAUGHTER_BOARD;
 
-	/* Configure the i2c0 pin mux */
-	enable_i2c0_pin_mux();
-
-	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
-
 	/* Check if daughter board is conneted */
 	if (i2c_probe(I2C_DAUGHTER_BOARD_ADDR))
 		return;
@@ -246,11 +241,6 @@ int board_min_init(void)
 {
 	u32 regVal;
 
-	enable_uart0_pin_mux();
-#ifdef CONFIG_SPI
-	enable_spi_pinmux(daughter_board_id, daughter_board_profile);
-#endif
-
 	/* UART softreset */
 	regVal = __raw_readl(UART_SYSCFG);
 	regVal |= UART_RESET;
@@ -271,8 +261,6 @@ int board_min_init(void)
 #else
 int board_evm_init(void)
 {
-	configure_evm_pin_mux(daughter_board_id, daughter_board_profile);
-
 	/* mach type passed to kernel */
 	gd->bd->bi_arch_number = MACH_TYPE_TIAM335EVM;
 
@@ -293,6 +281,8 @@ int board_init(void)
 	detect_daughter_board();
 
 	detect_daughter_board_profile();
+
+	configure_evm_pin_mux(daughter_board_id, daughter_board_profile);
 
 #ifdef CONFIG_AM335X_MIN_CONFIG
 	board_min_init();
