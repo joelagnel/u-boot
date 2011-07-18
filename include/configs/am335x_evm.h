@@ -105,30 +105,86 @@
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"verify=yes\0" \
 	"bootfile=uImage\0" \
-	"ramdisk_file=ramdisk.gz\0" \
 	"loadaddr=0x81000000\0" \
 	"script_addr=0x80900000\0" \
+	"console=ttyO0,115200n8\0" \
+	"mmcroot=/dev/mmcblk0p2 rw\0" \
+	"nandroot=/dev/mtdblock4 rw\0" \
+	"spiroot=/dev/mtdblock4 rw\0" \
+	"norroot=/dev/mtdblock3 rw\0" \
+	"mmcrootfstype=ext3 rootwait\0" \
+	"nandrootfstype=jffs2\0" \
+	"spirootfstype=jffs2\0" \
+	"norrootfstype=jffs2\0" \
+	"rootpath=/export/rootfs\0" \
+	"nfsopts=nolock\0" \
 	"loadbootscript=fatload mmc 1 ${script_addr} boot.scr\0" \
 	"bootscript= echo Running bootscript from MMC/SD to set the ENV...; " \
 		"source ${script_addr}\0" \
+	"loaduimage=fatload mmc 1 ${loadaddr} ${bootfile}\0" \
+	"bootargsdefaults=setenv bootargs " \
+		"console=${console} " \
+		 "mem=62M " \
+		 "\0" \
+	"mmcargs=run bootargsdefaults;" \
+		"setenv bootargs $(bootargs) " \
+		"root=${mmcroot} " \
+		"rootfstype=${mmcrootfstype} ip=dhcp\0" \
+	"nandargs=run bootargsdefaults;" \
+		"setenv bootargs $(bootargs) " \
+		"root=${nandroot} noinitrd " \
+		"rootfstype=${nandrootfstype} ip=dhcp\0" \
+	"spiargs=run bootargsdefaults;" \
+		"setenv bootargs $(bootargs) " \
+		"root=${spiroot} " \
+		"rootfstype=${spirootfstype} ip=dhcp\0" \
+	"norargs=run bootargsdefaults;" \
+		"setenv bootargs $(bootargs) " \
+		"root={norroot} " \
+		"rootfstype=${norrootfstype} ip=dhcp\0" \
+	"netargs=run bootargsdefaults;" \
+		"setenv bootargs $(bootargs) " \
+		"root=/dev/nfs rw" \
+		"nfsroot=${serverip}:${rootpath},${nfsopts} " \
+		"ip=${ipaddr}:${serverip}:${gatewayip}:${netmask}:${hostname}::off \0" \
+	"mmcboot=run mmcargs; " \
+		"run loaduimage; " \
+		"bootm ${loadaddr}\0" \
+	"nandboot=echo Booting from nand ...; " \
+		"run nandargs; " \
+		"nand read.i ${loadaddr} 0x280000 0x440000; " \
+		"bootm ${loadaddr}\0" \
+	"spiboot=echo Booting from spi ...; " \
+		"run spiargs; " \
+		"sf probe 0; " \
+		"sf read ${loadaddr} 0x00062000 0x280000; " \
+		"bootm ${loadaddr}\0" \
+	"norboot=echo Booting from NOR ...; " \
+		"run norargs; " \
+		"cp.b 0x08080000 ${loadaddr} 0x280000; " \
+		"bootm ${loadaddr}\0" \
+	"netboot=echo Booting from network ...; " \
+		"setenv autoload no; " \
+		"dhcp; " \
+		"tftp ${loadaddr} ${bootfile}; " \
+		"run netargs; " \
+		"bootm ${loadaddr}\0" \
 
 #define CONFIG_BOOTCOMMAND \
 	"if mmc init 1; then " \
 		"if run loadbootscript; then " \
 			"run bootscript; " \
 		"else " \
-			"echo In case ENV on MMC/SD is required; "\
-			"echo Please put a valid script named \
-				boot.scr on the card; " \
-			"echo Refer to the User Guide on how to \
-				generate the image; " \
+			"if run loaduimage; then " \
+				"run mmcboot; " \
+			"else " \
+				"run nandboot; " \
+			"fi; " \
 		"fi; " \
 	"else " \
-		"echo Please set bootargs and bootcmd before \
-			booting the kernel; " \
-		"echo If that has already been done please \
-			ignore this message; "\
+		"run nandboot; " \
 	"fi"
+
 
 #endif /* CONFIG_AM335X_MIN_CONFIG */
 
