@@ -285,7 +285,7 @@ static struct module_pin_mux i2c0_pin_mux[] = {
 	{-1},
 };
 
-static struct module_pin_mux ethernet0_pin_mux[] = {
+static struct module_pin_mux rgmii1_pin_mux[] = {
 	{OFFSET(mii1_txen), MODE(2)},			/* RGMII1_TCTL */
 	{OFFSET(mii1_rxdv), MODE(2) | RXACTIVE},	/* RGMII1_RCTL */
 	{OFFSET(mii1_txd3), MODE(2)},			/* RGMII1_TD3 */
@@ -304,7 +304,7 @@ static struct module_pin_mux ethernet0_pin_mux[] = {
 	{-1},
 };
 
-static struct module_pin_mux ethernet1_pin_mux[] = {
+static struct module_pin_mux rgmii2_pin_mux[] = {
 	{OFFSET(gpmc_a0), MODE(2)},			/* RGMII2_TCTL */
 	{OFFSET(gpmc_a1), MODE(2) | RXACTIVE},		/* RGMII2_RCTL */
 	{OFFSET(gpmc_a2), MODE(2)},			/* RGMII2_TD3 */
@@ -318,6 +318,25 @@ static struct module_pin_mux ethernet1_pin_mux[] = {
 	{OFFSET(gpmc_a10), MODE(2) | RXACTIVE},		/* RGMII2_RD1 */
 	{OFFSET(gpmc_a11), MODE(2) | RXACTIVE},		/* RGMII2_RD0 */
 	{OFFSET(mii1_col), MODE(1) | RXACTIVE},		/* RMII2_REFCLK */
+	{OFFSET(mdio_data), MODE(0) | RXACTIVE | PULLUP_EN}, /* MDIO_DATA */
+	{OFFSET(mdio_clk), MODE(0) | PULLUP_EN},	/* MDIO_CLK */
+	{-1},
+};
+
+static struct module_pin_mux mii1_pin_mux[] = {
+	{OFFSET(mii1_rxerr), MODE(0) | RXACTIVE},	/* MII1_RXERR */
+	{OFFSET(mii1_txen), MODE(0)},			/* MII1_TXEN */
+	{OFFSET(mii1_rxdv), MODE(0) | RXACTIVE},	/* MII1_RXDV */
+	{OFFSET(mii1_txd3), MODE(0)},			/* MII1_TXD3 */
+	{OFFSET(mii1_txd2), MODE(0)},			/* MII1_TXD2 */
+	{OFFSET(mii1_txd1), MODE(0)},			/* MII1_TXD1 */
+	{OFFSET(mii1_txd0), MODE(0)},			/* MII1_TXD0 */
+	{OFFSET(mii1_txclk), MODE(0) | RXACTIVE},	/* MII1_TXCLK */
+	{OFFSET(mii1_rxclk), MODE(0) | RXACTIVE},	/* MII1_RXCLK */
+	{OFFSET(mii1_rxd3), MODE(0) | RXACTIVE},	/* MII1_RXD3 */
+	{OFFSET(mii1_rxd2), MODE(0) | RXACTIVE},	/* MII1_RXD2 */
+	{OFFSET(mii1_rxd1), MODE(0) | RXACTIVE},	/* MII1_RXD1 */
+	{OFFSET(mii1_rxd0), MODE(0) | RXACTIVE},	/* MII1_RXD0 */
 	{OFFSET(mdio_data), MODE(0) | RXACTIVE | PULLUP_EN}, /* MDIO_DATA */
 	{OFFSET(mdio_clk), MODE(0) | PULLUP_EN},	/* MDIO_CLK */
 	{-1},
@@ -425,8 +444,8 @@ static struct evm_pin_mux general_purpose_evm_pin_mux[] = {
 	{nand_pin_mux, PROFILE_ALL & ~PROFILE_2 & ~PROFILE_3},
 #endif
 #ifndef CONFIG_NO_ETH
-	{ethernet0_pin_mux, PROFILE_ALL},
-	{ethernet1_pin_mux, PROFILE_1 | PROFILE_2 | PROFILE_4 | PROFILE_6},
+	{rgmii1_pin_mux, PROFILE_ALL},
+	{rgmii2_pin_mux, PROFILE_1 | PROFILE_2 | PROFILE_4 | PROFILE_6},
 #endif
 #ifdef CONFIG_NOR
 	{nor_pin_mux, PROFILE_3},
@@ -456,6 +475,9 @@ static struct evm_pin_mux ia_motor_control_evm_pin_mux[] = {
 #ifdef CONFIG_SPI
 	{spi1_pin_mux, PROFILE_ALL},
 #endif
+#ifndef CONFIG_NO_ETH
+	{mii1_pin_mux, PROFILE_ALL},
+#endif
 	{0},
 };
 
@@ -466,8 +488,8 @@ static struct evm_pin_mux ip_phone_evm_pin_mux[] = {
 	{nand_pin_mux, PROFILE_0},
 #endif
 #ifndef CONFIG_NO_ETH
-	{ethernet0_pin_mux, PROFILE_0},
-	{ethernet1_pin_mux, PROFILE_0},
+	{rgmii1_pin_mux, PROFILE_0},
+	{rgmii2_pin_mux, PROFILE_0},
 #endif
 #ifdef CONFIG_MMC
 	{mmc0_pin_mux, PROFILE_0},
@@ -482,7 +504,7 @@ static struct evm_pin_mux low_cost_evm_pin_mux[] = {
 	{nand_pin_mux, PROFILE_NONE},
 #endif
 #ifndef CONFIG_NO_ETH
-	{ethernet0_pin_mux, PROFILE_NONE},
+	{rgmii1_pin_mux, PROFILE_NONE},
 #endif
 #ifdef CONFIG_MMC
 	{mmc0_pin_mux, PROFILE_NONE},

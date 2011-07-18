@@ -55,6 +55,47 @@ DECLARE_GLOBAL_DATA_PTR;
 
 #define I2C_CPLD_ADDR		0x35
 
+/* RGMII mode define */
+#define RGMII_MODE_ENABLE	0xA
+
+/* TLK110 PHY registers */
+#define TLK110_COARSEGAIN_REG	0x00A3
+#define TLK110_LPFHPF_REG	0x00AC
+#define TLK110_SPAREANALOG_REG	0x00B9
+#define TLK110_VRCR_REG		0x00D0
+#define TLK110_SETFFE_REG	0x0107
+#define TLK110_FTSP_REG		0x0154
+#define TLK110_ALFATPIDL_REG	0x002A
+#define TLK110_PSCOEF21_REG	0x0096
+#define TLK110_PSCOEF3_REG	0x0097
+#define TLK110_ALFAFACTOR1_REG	0x002C
+#define TLK110_ALFAFACTOR2_REG	0x0023
+#define TLK110_CFGPS_REG	0x0095
+#define TLK110_FTSPTXGAIN_REG	0x0150
+#define TLK110_SWSCR3_REG	0x000B
+#define TLK110_SCFALLBACK_REG	0x0040
+#define TLK110_PHYRCR_REG	0x001F
+
+/* TLK110 register writes values */
+#define TLK110_COARSEGAIN_VAL	0x0000
+#define TLK110_LPFHPF_VAL	0x8000
+#define TLK110_SPAREANALOG_VAL	0x0000
+#define TLK110_VRCR_VAL		0x0008
+#define TLK110_SETFFE_VAL	0x0605
+#define TLK110_FTSP_VAL		0x0255
+#define TLK110_ALFATPIDL_VAL	0x7998
+#define TLK110_PSCOEF21_VAL	0x3A20
+#define TLK110_PSCOEF3_VAL	0x003F
+#define TLK110_ALFAFACTOR1_VAL	0xFF80
+#define TLK110_ALFAFACTOR2_VAL	0x021C
+#define TLK110_CFGPS_VAL	0x0000
+#define TLK110_FTSPTXGAIN_VAL	0x6A88
+#define TLK110_SWSCR3_VAL	0x0000
+#define TLK110_SCFALLBACK_VAL	0xC11D
+#define TLK110_PHYRCR_VAL	0x4000
+#define TLK110_PHYIDR1		0x2000
+#define TLK110_PHYIDR2		0xA201
+
 struct board_id_header {
 	unsigned int  header;
 	char board_name[8];
@@ -344,10 +385,85 @@ static void evm_phy_init(char *name, int addr)
 {
 	unsigned short val;
 	unsigned int cntr = 0;
+	unsigned short phyid1, phyid2;
 
-	/* Enable PHY to clock out TX_CLK */
-	/* TODO: PHY config register is not present need to check for TX_CLK
-	 * behavior */
+	/* This is done as a workaround to support TLK110 rev1.0 phy */
+	/* Reading phy identification register 1 */
+	if (miiphy_read(name, addr, MII_PHYSID1, &phyid1) != 0) {
+		printf("failed to read phyid1\n");
+		return;
+	}
+
+	/* Reading phy identification register 2 */
+	if (miiphy_read(name, addr, MII_PHYSID2, &phyid2) != 0) {
+		printf("failed to read phyid2\n");
+		return;
+	}
+	if ((phyid1 == TLK110_PHYIDR1) && (phyid2 == TLK110_PHYIDR2)) {
+		miiphy_read(name, addr, TLK110_COARSEGAIN_REG, &val);
+		val |= TLK110_COARSEGAIN_VAL;
+		miiphy_write(name, addr, TLK110_COARSEGAIN_REG, val);
+
+		miiphy_read(name, addr, TLK110_LPFHPF_REG, &val);
+		val |= TLK110_LPFHPF_VAL;
+		miiphy_write(name, addr, TLK110_LPFHPF_REG, val);
+
+		miiphy_read(name, addr, TLK110_SPAREANALOG_REG, &val);
+		val |= TLK110_SPAREANALOG_VAL;
+		miiphy_write(name, addr, TLK110_SPAREANALOG_REG, val);
+
+		miiphy_read(name, addr, TLK110_VRCR_REG, &val);
+		val |= TLK110_VRCR_VAL;
+		miiphy_write(name, addr, TLK110_VRCR_REG, val);
+
+		miiphy_read(name, addr, TLK110_SETFFE_REG, &val);
+		val |= TLK110_SETFFE_VAL;
+		miiphy_write(name, addr, TLK110_SETFFE_REG, val);
+
+		miiphy_read(name, addr, TLK110_FTSP_REG, &val);
+		val |= TLK110_FTSP_VAL;
+		miiphy_write(name, addr, TLK110_FTSP_REG, val);
+
+		miiphy_read(name, addr, TLK110_ALFATPIDL_REG, &val);
+		val |= TLK110_ALFATPIDL_VAL;
+		miiphy_write(name, addr, TLK110_ALFATPIDL_REG, val);
+
+		miiphy_read(name, addr, TLK110_PSCOEF21_REG, &val);
+		val |= TLK110_PSCOEF21_VAL;
+		miiphy_write(name, addr, TLK110_PSCOEF21_REG, val);
+
+		miiphy_read(name, addr, TLK110_PSCOEF3_REG, &val);
+		val |= TLK110_PSCOEF3_VAL;
+		miiphy_write(name, addr, TLK110_PSCOEF3_REG, val);
+
+		miiphy_read(name, addr, TLK110_ALFAFACTOR1_REG, &val);
+		val |= TLK110_ALFAFACTOR1_VAL;
+		miiphy_write(name, addr, TLK110_ALFAFACTOR1_REG, val);
+
+		miiphy_read(name, addr, TLK110_ALFAFACTOR2_REG, &val);
+		val |= TLK110_ALFAFACTOR2_VAL;
+		miiphy_write(name, addr, TLK110_ALFAFACTOR2_REG, val);
+
+		miiphy_read(name, addr, TLK110_CFGPS_REG, &val);
+		val |= TLK110_CFGPS_VAL;
+		miiphy_write(name, addr, TLK110_CFGPS_REG, val);
+
+		miiphy_read(name, addr, TLK110_FTSPTXGAIN_REG, &val);
+		val |= TLK110_FTSPTXGAIN_VAL;
+		miiphy_write(name, addr, TLK110_FTSPTXGAIN_REG, val);
+
+		miiphy_read(name, addr, TLK110_SWSCR3_REG, &val);
+		val |= TLK110_SWSCR3_VAL;
+		miiphy_write(name, addr, TLK110_SWSCR3_REG, val);
+
+		miiphy_read(name, addr, TLK110_SCFALLBACK_REG, &val);
+		val |= TLK110_SCFALLBACK_VAL;
+		miiphy_write(name, addr, TLK110_SCFALLBACK_REG, val);
+
+		miiphy_read(name, addr, TLK110_PHYRCR_REG, &val);
+		val |= TLK110_PHYRCR_VAL;
+		miiphy_write(name, addr, TLK110_PHYRCR_REG, val);
+	}
 
 	/* Enable Autonegotiation */
 	if (miiphy_read(name, addr, MII_BMCR, &val) != 0) {
@@ -361,12 +477,14 @@ static void evm_phy_init(char *name, int addr)
 	}
 	miiphy_read(name, addr, MII_BMCR, &val);
 
-	/* Setup GIG advertisement */
-	miiphy_read(name, addr, MII_CTRL1000, &val);
-	val |= PHY_1000BTCR_1000FD;
-	val &= ~PHY_1000BTCR_1000HD;
-	miiphy_write(name, addr, MII_CTRL1000, val);
-	miiphy_read(name, addr, MII_CTRL1000, &val);
+	/* Setup GIG advertisement only if it is not IA board */
+	if (daughter_board_id != IA_DAUGHTER_BOARD) {
+		miiphy_read(name, addr, MII_CTRL1000, &val);
+		val |= PHY_1000BTCR_1000FD;
+		val &= ~PHY_1000BTCR_1000HD;
+		miiphy_write(name, addr, MII_CTRL1000, val);
+		miiphy_read(name, addr, MII_CTRL1000, &val);
+	}
 
 	/* Setup general advertisement */
 	if (miiphy_read(name, addr, MII_ADVERTISE, &val) != 0) {
@@ -463,7 +581,13 @@ int board_eth_init(bd_t *bis)
 	}
 
 	/* set mii mode to rgmii in in device configure register */
-	__raw_writel(0x2, MAC_MII_SEL);
+	if (daughter_board_id != IA_DAUGHTER_BOARD)
+		__raw_writel(RGMII_MODE_ENABLE, MAC_MII_SEL);
+
+	if (daughter_board_id == IA_DAUGHTER_BOARD) {
+		cpsw_slaves[0].phy_id = 1;
+		cpsw_slaves[1].phy_id = 0;
+	}
 
 	return cpsw_register(&cpsw_data);
 }
