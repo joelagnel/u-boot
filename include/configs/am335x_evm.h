@@ -105,69 +105,79 @@
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"verify=yes\0" \
 	"bootfile=uImage\0" \
+	"brd_mem=62M\0" \
 	"loadaddr=0x81000000\0" \
 	"script_addr=0x80900000\0" \
 	"console=ttyO0,115200n8\0" \
-	"mmcroot=/dev/mmcblk0p2 rw\0" \
-	"nandroot=/dev/mtdblock4 rw\0" \
-	"spiroot=/dev/mtdblock4 rw\0" \
-	"norroot=/dev/mtdblock3 rw\0" \
-	"mmcrootfstype=ext3 rootwait\0" \
-	"nandrootfstype=jffs2\0" \
-	"spirootfstype=jffs2\0" \
-	"norrootfstype=jffs2\0" \
+	"mmc_root=/dev/mmcblk0p2 rw\0" \
+	"nand_root=/dev/mtdblock4 rw\0" \
+	"spi_root=/dev/mtdblock4 rw\0" \
+	"nor_root=/dev/mtdblock3 rw\0" \
+	"mmc_root_fs_type=ext3 rootwait\0" \
+	"nand_root_fs_type=jffs2\0" \
+	"spi_root_fs_type=jffs2\0" \
+	"nor_root_fs_type=jffs2\0" \
+	"nand_src_addr=0x280000\0" \
+	"spi_src_addr=0x62000\0" \
+	"nor_src_addr=0x08080000\0" \
+	"nand_img_siz=0x440000\0" \
+	"spi_img_siz=0x280000\0" \
+	"nor_img_siz=0x280000\0" \
+	"spi_bus_no=0\0" \
 	"rootpath=/export/rootfs\0" \
 	"nfsopts=nolock\0" \
+	"static_ip=${ipaddr}:${serverip}:${gatewayip}:${netmask}:${hostname}" \
+			"::off\0" \
+	"ip_method=dhcp\0" \
 	"loadbootscript=fatload mmc 1 ${script_addr} boot.scr\0" \
 	"bootscript= echo Running bootscript from MMC/SD to set the ENV...; " \
 		"source ${script_addr}\0" \
-	"loaduimage=fatload mmc 1 ${loadaddr} ${bootfile}\0" \
-	"bootargsdefaults=setenv bootargs " \
+	"mmc_load_uimage=fatload mmc 1 ${loadaddr} ${bootfile}\0" \
+	"bootargs_defaults=setenv bootargs " \
 		"console=${console} " \
-		 "mem=62M " \
-		 "\0" \
-	"mmcargs=run bootargsdefaults;" \
-		"setenv bootargs $(bootargs) " \
-		"root=${mmcroot} " \
-		"rootfstype=${mmcrootfstype} ip=dhcp\0" \
-	"nandargs=run bootargsdefaults;" \
-		"setenv bootargs $(bootargs) " \
-		"root=${nandroot} noinitrd " \
-		"rootfstype=${nandrootfstype} ip=dhcp\0" \
-	"spiargs=run bootargsdefaults;" \
-		"setenv bootargs $(bootargs) " \
-		"root=${spiroot} " \
-		"rootfstype=${spirootfstype} ip=dhcp\0" \
-	"norargs=run bootargsdefaults;" \
-		"setenv bootargs $(bootargs) " \
-		"root={norroot} " \
-		"rootfstype=${norrootfstype} ip=dhcp\0" \
-	"netargs=run bootargsdefaults;" \
-		"setenv bootargs $(bootargs) " \
-		"root=/dev/nfs rw" \
-		"nfsroot=${serverip}:${rootpath},${nfsopts} " \
-		"ip=${ipaddr}:${serverip}:${gatewayip}:${netmask}:${hostname}::off \0" \
-	"mmcboot=run mmcargs; " \
-		"run loaduimage; " \
+		 "mem=${brd_mem}\0" \
+	"mmc_args=run bootargs_defaults;" \
+		"setenv bootargs ${bootargs} " \
+		"root=${mmc_root} " \
+		"rootfstype=${mmc_root_fs_type} ip=${ip_method}\0" \
+	"nand_args=run bootargs_defaults;" \
+		"setenv bootargs ${bootargs} " \
+		"root=${nand_root} noinitrd " \
+		"rootfstype=${nand_root_fs_type} ip=${ip_method}\0" \
+	"spi_args=run bootargs_defaults;" \
+		"setenv bootargs ${bootargs} " \
+		"root=${spi_root} " \
+		"rootfstype=${spi_root_fs_type} ip=${ip_method}\0" \
+	"nor_args=run bootargs_defaults;" \
+		"setenv bootargs ${bootargs} " \
+		"root={nor_root} " \
+		"rootfstype=${nor_root_fs_type} ip=${ip_method}\0" \
+	"net_args=run bootargs_defaults;" \
+		"setenv bootargs ${bootargs} " \
+		"root=/dev/nfs " \
+		"nfsroot=${serverip}:${rootpath},${nfsopts} rw " \
+		"ip=${ip_method}\0" \
+	"mmc_boot=run mmc_args; " \
+		"run mmc_load_uimage; " \
 		"bootm ${loadaddr}\0" \
-	"nandboot=echo Booting from nand ...; " \
-		"run nandargs; " \
-		"nand read.i ${loadaddr} 0x280000 0x440000; " \
+	"nand_boot=echo Booting from nand ...; " \
+		"run nand_args; " \
+		"nand read.i ${loadaddr} ${nand_src_addr} ${nand_img_siz}; " \
 		"bootm ${loadaddr}\0" \
-	"spiboot=echo Booting from spi ...; " \
-		"run spiargs; " \
-		"sf probe 0; " \
-		"sf read ${loadaddr} 0x00062000 0x280000; " \
+	"spi_boot=echo Booting from spi ...; " \
+		"run spi_args; " \
+		"sf probe ${spi_bus_no}; " \
+		"sf read ${loadaddr} ${spi_src_addr} ${spi_img_siz}; " \
 		"bootm ${loadaddr}\0" \
-	"norboot=echo Booting from NOR ...; " \
-		"run norargs; " \
-		"cp.b 0x08080000 ${loadaddr} 0x280000; " \
+	"nor_boot=echo Booting from NOR ...; " \
+		"run nor_args; " \
+		"cp.b ${0x08080000} ${loadaddr} ${nor_img_siz}; " \
 		"bootm ${loadaddr}\0" \
-	"netboot=echo Booting from network ...; " \
+	"net_boot=echo Booting from network ...; " \
 		"setenv autoload no; " \
 		"dhcp; " \
 		"tftp ${loadaddr} ${bootfile}; " \
-		"run netargs; " \
+		"run net_args; " \
 		"bootm ${loadaddr}\0" \
 
 #define CONFIG_BOOTCOMMAND \
@@ -175,15 +185,16 @@
 		"if run loadbootscript; then " \
 			"run bootscript; " \
 		"else " \
-			"if run loaduimage; then " \
-				"run mmcboot; " \
+			"if run mmc_load_uimage; then " \
+				"run mmc_boot; " \
 			"else " \
-				"run nandboot; " \
+				"run nand_boot; " \
 			"fi; " \
 		"fi; " \
 	"else " \
-		"run nandboot; " \
+		"run nand_boot; " \
 	"fi"
+
 
 
 #endif /* CONFIG_AM335X_MIN_CONFIG */
