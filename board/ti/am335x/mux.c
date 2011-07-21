@@ -260,6 +260,7 @@ static struct module_pin_mux uart0_pin_mux[] = {
 	{-1},
 };
 
+#ifdef CONFIG_NAND
 static struct module_pin_mux nand_pin_mux[] = {
 	{OFFSET(gpmc_ad0), (MODE(0) | RXACTIVE)},	/* NAND AD0 */
 	{OFFSET(gpmc_ad1), (MODE(0) | RXACTIVE)},	/* NAND AD1 */
@@ -278,6 +279,7 @@ static struct module_pin_mux nand_pin_mux[] = {
 	{OFFSET(gpmc_be0n_cle), (MODE(0) | PULLUP_EN)},	/* NAND_BE_CLE */
 	{-1},
 };
+#endif
 
 static struct module_pin_mux i2c0_pin_mux[] = {
 	{OFFSET(i2c0_sda), (MODE(0) | RXACTIVE | PULLUDEN)},	/* I2C_DATA */
@@ -285,6 +287,7 @@ static struct module_pin_mux i2c0_pin_mux[] = {
 	{-1},
 };
 
+#ifndef CONFIG_NO_ETH
 static struct module_pin_mux rgmii1_pin_mux[] = {
 	{OFFSET(mii1_txen), MODE(2)},			/* RGMII1_TCTL */
 	{OFFSET(mii1_rxdv), MODE(2) | RXACTIVE},	/* RGMII1_RCTL */
@@ -341,7 +344,9 @@ static struct module_pin_mux mii1_pin_mux[] = {
 	{OFFSET(mdio_clk), MODE(0) | PULLUP_EN},	/* MDIO_CLK */
 	{-1},
 };
+#endif
 
+#ifdef CONFIG_NOR
 static struct module_pin_mux nor_pin_mux[] = {
 	{OFFSET(lcd_data0), MODE(1) | PULLUDEN},	/* NOR_A0 */
 	{OFFSET(lcd_data1), MODE(1) | PULLUDEN},	/* NOR_A1 */
@@ -389,7 +394,9 @@ static struct module_pin_mux nor_pin_mux[] = {
 	{OFFSET(lcd_ac_bias_en), MODE(7) | RXACTIVE | PULLUDEN}, /* NOR RESET */
 	{-1},
 };
+#endif
 
+#ifdef CONFIG_MMC
 static struct module_pin_mux mmc0_pin_mux[] = {
 	{OFFSET(mmc0_dat3), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT3 */
 	{OFFSET(mmc0_dat2), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT2 */
@@ -413,7 +420,9 @@ static struct module_pin_mux mmc1_pin_mux[] = {
 	{OFFSET(mcasp0_fsx), (MODE(4) | RXACTIVE)},	/* MMC1_CD */
 	{-1},
 };
+#endif
 
+#ifdef CONFIG_SPI
 static struct module_pin_mux spi0_pin_mux[] = {
 	{OFFSET(spi0_sclk), MODE(0) | RXACTIVE},  /*SPI0_SCLK */
 	{OFFSET(spi0_d0), MODE(0) | RXACTIVE},    /*SPI0_D0 */
@@ -429,6 +438,7 @@ static struct module_pin_mux spi1_pin_mux[] = {
 	{OFFSET(mcasp0_ahclkr), MODE(3) | RXACTIVE | PULLUDEN}, /*SPI1_CS0 */
 	{-1},
 };
+#endif
 
 /*
  * Update the structure with the modules present in the general purpose
