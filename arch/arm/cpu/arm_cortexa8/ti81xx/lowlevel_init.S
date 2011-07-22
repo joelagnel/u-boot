@@ -53,11 +53,6 @@ _TEXT_BASE:
 #define GPIO0_CFG_VAL		0xFFEFFFFF
 #define GPIO0_CLKCTRL_VAL	0x102
 
-#ifdef CONFIG_AM335X
-#define GPIO2_CFG_VAL		0xFDFFFFFF
-#define GPIO2_CLKCTRL_VAL	0x40002
-#endif
-
 #define SRAM1_START		(0x40400000)
 #define RAM_ADDR_MASK		(0xC0000000)
 
@@ -105,7 +100,7 @@ gpmc_next_wait0:
 	ands r2, r2, #0x00030000
 	cmp r2, #0
 	bne gpmc_next_wait0
-
+#ifndef CONFIG_AM335X
 	/****** GPIO out of reset *******/
 	ldr r5, cm_alwon_gpio_clkctrl_addr
 	ldr r2, cm_alwon_gpio_clkctrl_val
@@ -124,7 +119,7 @@ gpio_next_wait0:
 	ldr r5, gpio_cfg_addr
 	ldr r2, gpio_cfg_val
 	str r2, [r5]
-
+#endif
 	/***** GPMC CS0 init ******/
 	/* disable CS0 */
 	ldr r5, gpmc_cfg7_addr
@@ -243,7 +238,6 @@ gpmc_next_wait2:
 /* The Nor has to be in the Flash Base CS0 for this condition to happen */
 cm_alwon_gpmc_clkctrl_addr:
 	.word CM_ALWON_GPMC_CLKCTRL
-#ifndef CONFIG_AM335X
 cm_alwon_gpio_clkctrl_addr:
 	.word CM_ALWON_GPIO_0_CLKCTRL
 cm_alwon_gpio_clkctrl_val:
@@ -254,18 +248,6 @@ gpio_data_addr:
 	.word (GPIO0_BASE + 0x13C)
 gpio_cfg_val:
 	.word GPIO0_CFG_VAL
-#else
-cm_alwon_gpio_clkctrl_addr:
-	.word CM_PER_GPIO2_CLKCTRL
-cm_alwon_gpio_clkctrl_val:
-	.word GPIO2_CLKCTRL_VAL
-gpio_cfg_addr:
-	.word (GPIO2_BASE + 0x134)
-gpio_data_addr:
-	.word (GPIO2_BASE + 0x13C)
-gpio_cfg_val:
-	.word GPIO2_CFG_VAL
-#endif
 sram_pc_start:
 	.word (SRAM0_START + 0x10000)
 SRAM_STACK_GPMC:
