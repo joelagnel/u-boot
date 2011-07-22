@@ -48,9 +48,9 @@ struct mii_dev {
 	struct list_head link;
 	char *name;
 	int (*read) (char *devname, unsigned char addr,
-		     unsigned char reg, unsigned short *value);
+		     unsigned short reg, unsigned short *value);
 	int (*write) (char *devname, unsigned char addr,
-		      unsigned char reg, unsigned short value);
+		      unsigned short reg, unsigned short value);
 };
 
 static struct list_head mii_devs;
@@ -72,9 +72,9 @@ void miiphy_init ()
  */
 void miiphy_register (char *name,
 		      int (*read) (char *devname, unsigned char addr,
-				   unsigned char reg, unsigned short *value),
+				   unsigned short reg, unsigned short *value),
 		      int (*write) (char *devname, unsigned char addr,
-				    unsigned char reg, unsigned short value))
+				    unsigned short reg, unsigned short value))
 {
 	struct list_head *entry;
 	struct mii_dev *new_dev;

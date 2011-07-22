@@ -460,7 +460,7 @@ static inline void wait_for_idle(void)
 }
 
 static int cpsw_mdio_read(char *devname, unsigned char phy_id,
-			  unsigned char phy_reg, unsigned short *data)
+			  unsigned short phy_reg, unsigned short *data)
 {
 	u32 reg;
 
@@ -478,7 +478,7 @@ static int cpsw_mdio_read(char *devname, unsigned char phy_id,
 }
 
 static int cpsw_mdio_write(char *devname, unsigned char phy_id,
-			   unsigned char phy_reg, unsigned short data)
+			   unsigned short phy_reg, unsigned short data)
 {
 	u32 reg;
 

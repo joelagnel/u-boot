@@ -54,9 +54,9 @@ void miiphy_init (void);
 
 void miiphy_register (char *devname,
 		      int (*read) (char *devname, unsigned char addr,
-				   unsigned char reg, unsigned short *value),
+				   unsigned short reg, unsigned short *value),
 		      int (*write) (char *devname, unsigned char addr,
-				    unsigned char reg, unsigned short value));
+				    unsigned short reg, unsigned short value));
 
 int miiphy_set_current_dev (char *devname);
 char *miiphy_get_current_dev (void);
