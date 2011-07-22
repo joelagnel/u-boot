@@ -36,9 +36,9 @@
 
 #include <net.h>
 
-int miiphy_read (char *devname, unsigned char addr, unsigned char reg,
+int miiphy_read(char *devname, unsigned char addr, unsigned short reg,
 		 unsigned short *value);
-int miiphy_write (char *devname, unsigned char addr, unsigned char reg,
+int miiphy_write(char *devname, unsigned char addr, unsigned short reg,
 		  unsigned short value);
 int miiphy_info (char *devname, unsigned char addr, unsigned int *oui,
 		 unsigned char *model, unsigned char *rev);

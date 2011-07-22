@@ -155,7 +155,7 @@ char *miiphy_get_current_dev ()
  * Returns:
  *   0 on success
  */
-int miiphy_read (char *devname, unsigned char addr, unsigned char reg,
+int miiphy_read(char *devname, unsigned char addr, unsigned short reg,
 		 unsigned short *value)
 {
 	struct list_head *entry;
@@ -192,7 +192,7 @@ int miiphy_read (char *devname, unsigned char addr, unsigned char reg,
  * Returns:
  *   0 on success
  */
-int miiphy_write (char *devname, unsigned char addr, unsigned char reg,
+int miiphy_write(char *devname, unsigned char addr, unsigned short reg,
 		  unsigned short value)
 {
 	struct list_head *entry;
