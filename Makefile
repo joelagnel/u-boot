@@ -3214,7 +3214,7 @@ am335x_evm_min_sd:	unconfig
 		echo "TI_IMAGE = DUMMY" >> $(obj)board/ti/am335x/config.tmp;\
 		echo "#define CONFIG_TI_DUMMY_HEADER"	>>$(obj)include/config.h; \
 		if [ "$(findstring _nor,$@)" ] ; then \
-			echo "#define CONFIG_NOR"    >>$(obj)include/config.h ; \
+			echo "#define CONFIG_NOR_BOOT"    >>$(obj)include/config.h ; \
 			echo "#undef CONFIG_SYS_NO_FLASH"	>>$(obj)include/config.h ; \
 			echo "Setting up AM335X build with ENV in NOR..." ; \
 		elif [ "$(findstring spi,$@)" ] ; then \
