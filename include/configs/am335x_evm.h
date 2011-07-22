@@ -96,8 +96,10 @@
 
 #define CONFIG_MMC			1
 
-#ifndef CONFIG_NOR
+#ifndef CONFIG_NOR_BOOT
 #define CONFIG_NAND
+#else
+#define CONFIG_NOR
 #endif
 
 #define CONFIG_SPI			1
