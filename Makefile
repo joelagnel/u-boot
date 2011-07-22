@@ -3191,7 +3191,6 @@ am335x_evm_min_sd:	unconfig
 			echo "TI_IMAGE = u-boot.min.uart" >> $(obj)board/ti/am335x/config.tmp;\
 		elif [ "$(findstring sd,$@)" ] ; then \
 			echo "#define CONFIG_SD_BOOT"    >>$(obj)include/config.h ; \
-			echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
 			echo "Configuring for SD boot mode..." ; \
 			echo "TI_IMAGE = u-boot.min.sd" >> $(obj)board/ti/am335x/config.tmp;\
 		elif [ "$(findstring nor,$@)" ] ; then \
@@ -3202,7 +3201,6 @@ am335x_evm_min_sd:	unconfig
 			echo "TI_IMAGE = u-boot.min.nor" >> $(obj)board/ti/am335x/config.tmp;\
 		elif [ "$(findstring spi,$@)" ] ; then \
 			echo "#define CONFIG_SPI_BOOT" >>$(obj)include/config.h;\
-			echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
 			echo "#define CONFIG_TI81XX_SPI_BOOT"	>>$(obj)include/config.h ; \
 			echo "TI_IMAGE = u-boot.min.spi.tmp" >> $(obj)board/ti/am335x/config.tmp;\
 		else	\
@@ -3218,7 +3216,6 @@ am335x_evm_min_sd:	unconfig
 			echo "#undef CONFIG_SYS_NO_FLASH"	>>$(obj)include/config.h ; \
 			echo "Setting up AM335X build with ENV in NOR..." ; \
 		elif [ "$(findstring spi,$@)" ] ; then \
-			echo "#define CONFIG_SYS_NO_FLASH" >> $(obj)include/config.h ; \
 			echo "#define CONFIG_SPI_ENV"    >>$(obj)include/config.h ; \
 			echo "Setting up AM335X default build with ENV in SPI..." ; \
 		else	\
