@@ -29,6 +29,12 @@
 #include <asm/mp.h>
 #include <asm/fsl_serdes.h>
 #include <phy.h>
+<<<<<<< HEAD
+=======
+#include <hwconfig.h>
+
+#define FSL_MAX_NUM_USB_CTRLS	2
+>>>>>>> 5756736... powerpc/8xxx: Remove dependency on <usb.h>
 
 #if defined(CONFIG_MP) && (defined(CONFIG_MPC85xx) || defined(CONFIG_MPC86xx))
 static int ft_del_cpuhandle(void *blob, int cpuhandle)
@@ -121,6 +127,60 @@ void fdt_fixup_dr_usb(void *blob, bd_t *bd)
 			printf("WARNING: could not set %s for %s: %s.\n",
 			       prop_type, compat, fdt_strerror(err));
 	}
+<<<<<<< HEAD
+=======
+
+	start_offset = node_offset;
+}
+
+void fdt_fixup_dr_usb(void *blob, bd_t *bd)
+{
+	const char *modes[] = { "host", "peripheral", "otg" };
+	const char *phys[] = { "ulpi", "umti" };
+	const char *mode = NULL;
+	const char *phy_type = NULL;
+	char usb1_defined = 0;
+	char str[5];
+	int i, j;
+
+	for (i = 1; i <= FSL_MAX_NUM_USB_CTRLS; i++) {
+		int mode_idx = -1, phy_idx = -1;
+		sprintf(str, "%s%d", "usb", i);
+		if (hwconfig(str)) {
+			for (j = 0; j < sizeof(modes); j++) {
+				if (hwconfig_subarg_cmp(str, "dr_mode",
+						modes[j])) {
+					mode_idx = j;
+					break;
+				}
+			}
+			for (j = 0; j < sizeof(phys); j++) {
+				if (hwconfig_subarg_cmp(str, "phy_type",
+						phys[j])) {
+					phy_idx = j;
+					break;
+				}
+			}
+			if (mode_idx >= 0)
+				fdt_fixup_usb_mode_phy_type(blob,
+					modes[mode_idx], NULL);
+			if (phy_idx >= 0)
+				fdt_fixup_usb_mode_phy_type(blob,
+					NULL, phys[phy_idx]);
+			if (!strcmp(str, "usb1"))
+				usb1_defined = 1;
+			if (mode_idx < 0 && phy_idx < 0)
+				printf("WARNING: invalid phy or mode\n");
+		}
+	}
+	if (!usb1_defined) {
+		mode = getenv("usb_dr_mode");
+		phy_type = getenv("usb_phy_type");
+		if (!mode && !phy_type)
+			return;
+		fdt_fixup_usb_mode_phy_type(blob, mode, phy_type);
+	}
+>>>>>>> 5756736... powerpc/8xxx: Remove dependency on <usb.h>
 }
 #endif /* CONFIG_HAS_FSL_DR_USB */
 
