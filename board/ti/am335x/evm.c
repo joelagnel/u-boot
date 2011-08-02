@@ -96,14 +96,28 @@ DECLARE_GLOBAL_DATA_PTR;
 #define TLK110_PHYIDR1		0x2000
 #define TLK110_PHYIDR2		0xA201
 
-struct board_id_header {
+struct dghtr_brd_id_hdr {
 	unsigned int  header;
 	char board_name[8];
 	char version[4];
+	char serial_num[12];
 	unsigned char config[32];
 };
 
-static struct board_id_header db_header[NO_OF_DAUGHTER_BOARDS] = {
+#define NO_OF_MAC_ADDR          3
+#define ETH_ALEN		6
+struct basebrd_id_hdr {
+	unsigned int  header;
+	char board_name[8];
+	char version[4];
+	char serial_num[12];
+	unsigned char config[32];
+	unsigned char mac_addr[NO_OF_MAC_ADDR][ETH_ALEN];
+};
+
+static struct basebrd_id_hdr brd_id_hdr;
+
+static struct dghtr_brd_id_hdr db_header[NO_OF_DAUGHTER_BOARDS] = {
 	{
 	.header = 0xAA5533EE,
 	.board_name = "A335GPBD", /* General purpose daughter board */
@@ -229,7 +243,7 @@ static unsigned char daughter_board_id = BASE_BOARD_ONLY;
  */
 static void detect_daughter_board(void)
 {
-	struct board_id_header st_board_id_header;
+	struct dghtr_brd_id_hdr st_dghtr_brd_id_hdr;
 	unsigned char db_board_id = GP_DAUGHTER_BOARD;
 
 	/* Check if daughter board is conneted */
@@ -238,12 +252,12 @@ static void detect_daughter_board(void)
 
 	/* read the eeprom using i2c */
 	if (i2c_read(I2C_DAUGHTER_BOARD_ADDR, 0, 1, (uchar *)
-		(&st_board_id_header), sizeof(struct board_id_header)))
+		(&st_dghtr_brd_id_hdr), sizeof(struct dghtr_brd_id_hdr)))
 		return;
 
 	do {
 		if (!strncmp(db_header[db_board_id].board_name,
-				st_board_id_header.board_name, 8)) {
+				st_dghtr_brd_id_hdr.board_name, 8)) {
 			daughter_board_id = db_board_id;
 			break;
 		}
@@ -318,6 +332,15 @@ int board_init(void)
 	enable_i2c0_pin_mux();
 
 	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
+
+	/* Check if baseboard eeprom is available */
+	if (i2c_probe(I2C_BASE_BOARD_ADDR))
+		return 1; /* something is seriously wrong */
+
+	/* read the eeprom using i2c */
+	if (i2c_read(I2C_BASE_BOARD_ADDR, 0, 1, (uchar *)
+		(&brd_id_hdr), sizeof(struct basebrd_id_hdr)))
+		return 1;	/* something is seriously wrong */
 
 	detect_daughter_board();
 
