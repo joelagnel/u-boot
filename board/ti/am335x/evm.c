@@ -280,12 +280,7 @@ static void detect_daughter_board_profile(void)
 	if (i2c_read(I2C_CPLD_ADDR, CFG_REG, 1, (unsigned char *)(&val), 2))
 		return;
 
-	evm_profile = 1 << (val & 0x7);
-}
-
-unsigned char get_daughter_board_profile(void)
-{
-	return evm_profile;
+	evm_profile = (val & 0x7);
 }
 
 /*
@@ -369,11 +364,11 @@ int board_init(void)
 							dghtr_brd_valid);
 	else if (!strncmp("SKU#01", sku_config, 6) &&
 			(daughter_board_id == GP_DAUGHTER_BOARD))
-		configure_evm_pin_mux(GP_DAUGHTER_BOARD, evm_profile,
+		configure_evm_pin_mux(GP_DAUGHTER_BOARD, (1L << evm_profile),
 							dghtr_brd_valid);
 	else if (!strncmp("SKU#02", sku_config, 6) &&
 			(daughter_board_id == IA_DAUGHTER_BOARD))
-		configure_evm_pin_mux(IA_DAUGHTER_BOARD, evm_profile,
+		configure_evm_pin_mux(IA_DAUGHTER_BOARD, (1L << evm_profile),
 							dghtr_brd_valid);
 	else if (!strncmp("SKU#03", sku_config, 6) &&
 			(daughter_board_id == IPP_DAUGHTER_BOARD))
@@ -428,13 +423,13 @@ int checkboard(void)
 #ifdef CONFIG_AM335X_MIN_CONFIG
 #ifdef CONFIG_NAND
 	if ((daughter_board_id == GP_DAUGHTER_BOARD) &&
-		((evm_profile  == PROFILE_2) ||
-			(evm_profile == PROFILE_3)))
+		(((1L << evm_profile)  == PROFILE_2) ||
+			((1L << evm_profile) == PROFILE_3)))
 		printf("NAND boot: Profile setting is wrong!!");
 #endif
 #ifdef CONFIG_NOR
 	if ((daughter_board_id != GP_DAUGHTER_BOARD) ||
-		(evm_profile != PROFILE_3))
+		((1L << evm_profile) != PROFILE_3))
 		printf("NOR boot: Profile setting is wrong!!");
 #endif
 #endif
