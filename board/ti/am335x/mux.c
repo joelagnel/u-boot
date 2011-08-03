@@ -246,6 +246,13 @@ struct module_pin_mux {
 struct evm_pin_mux {
 	struct module_pin_mux *mod_pin_mux;
 	unsigned short profile;
+/*
+* If the device is required on both baseboard & daughter board (ex i2c),
+* specify DEV_ON_BASEBOARD
+*/
+#define DEV_ON_BASEBOARD       0
+#define DEV_ON_DGHTR_BRD       1
+	unsigned short device_on;
 };
 
 #define PAD_CTRL_BASE	0x800
@@ -449,23 +456,24 @@ static struct module_pin_mux spi1_pin_mux[] = {
  * UART0  is available in all the profiles.
  */
 static struct evm_pin_mux general_purpose_evm_pin_mux[] = {
-	{uart0_pin_mux, PROFILE_ALL},
+	{uart0_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
 #ifdef CONFIG_NAND
-	{nand_pin_mux, PROFILE_ALL & ~PROFILE_2 & ~PROFILE_3},
+	{nand_pin_mux, PROFILE_ALL & ~PROFILE_2 & ~PROFILE_3, DEV_ON_DGHTR_BRD},
 #endif
 #ifndef CONFIG_NO_ETH
-	{rgmii1_pin_mux, PROFILE_ALL},
-	{rgmii2_pin_mux, PROFILE_1 | PROFILE_2 | PROFILE_4 | PROFILE_6},
+	{rgmii1_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
+	{rgmii2_pin_mux, PROFILE_1 | PROFILE_2 | PROFILE_4 | PROFILE_6,
+							DEV_ON_DGHTR_BRD},
 #endif
 #ifdef CONFIG_NOR
-	{nor_pin_mux, PROFILE_3},
+	{nor_pin_mux, PROFILE_3, DEV_ON_DGHTR_BRD},
 #endif
 #ifdef CONFIG_MMC
-	{mmc0_pin_mux, PROFILE_ALL},
-	{mmc1_pin_mux, PROFILE_2},
+	{mmc0_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
+	{mmc1_pin_mux, PROFILE_2, DEV_ON_DGHTR_BRD},
 #endif
 #ifdef CONFIG_SPI
-	{spi0_pin_mux, PROFILE_2},
+	{spi0_pin_mux, PROFILE_2, DEV_ON_DGHTR_BRD},
 #endif
 	{0},
 };
@@ -477,47 +485,47 @@ static struct evm_pin_mux general_purpose_evm_pin_mux[] = {
  */
 static struct evm_pin_mux ia_motor_control_evm_pin_mux[] = {
 #ifdef CONFIG_NAND
-	{nand_pin_mux, PROFILE_ALL},
+	{nand_pin_mux, PROFILE_ALL, DEV_ON_DGHTR_BRD},
 #endif
 #ifdef CONFIG_MMC
-	{mmc0_pin_mux, PROFILE_ALL},
+	{mmc0_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
 #endif
 #ifdef CONFIG_SPI
-	{spi1_pin_mux, PROFILE_ALL},
+	{spi1_pin_mux, PROFILE_ALL, DEV_ON_DGHTR_BRD},
 #endif
 #ifndef CONFIG_NO_ETH
-	{mii1_pin_mux, PROFILE_ALL},
+	{mii1_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
 #endif
 	{0},
 };
 
 /* IP Phone EVM has single profile */
 static struct evm_pin_mux ip_phone_evm_pin_mux[] = {
-	{uart0_pin_mux,	PROFILE_NONE},
+	{uart0_pin_mux,	PROFILE_NONE, DEV_ON_BASEBOARD},
 #ifdef CONFIG_NAND
-	{nand_pin_mux, PROFILE_0},
+	{nand_pin_mux, PROFILE_0, DEV_ON_BASEBOARD},
 #endif
 #ifndef CONFIG_NO_ETH
-	{rgmii1_pin_mux, PROFILE_0},
-	{rgmii2_pin_mux, PROFILE_0},
+	{rgmii1_pin_mux, PROFILE_0, DEV_ON_BASEBOARD},
+	{rgmii2_pin_mux, PROFILE_0, DEV_ON_DGHTR_BRD},
 #endif
 #ifdef CONFIG_MMC
-	{mmc0_pin_mux, PROFILE_0},
+	{mmc0_pin_mux, PROFILE_0, DEV_ON_BASEBOARD},
 #endif
 	{0},
 };
 
 /* Base board has single profile */
 static struct evm_pin_mux low_cost_evm_pin_mux[] = {
-	{uart0_pin_mux,	PROFILE_NONE},
+	{uart0_pin_mux,	PROFILE_NONE, DEV_ON_BASEBOARD},
 #ifdef CONFIG_NAND
-	{nand_pin_mux, PROFILE_NONE},
+	{nand_pin_mux, PROFILE_NONE, DEV_ON_BASEBOARD},
 #endif
 #ifndef CONFIG_NO_ETH
-	{rgmii1_pin_mux, PROFILE_NONE},
+	{rgmii1_pin_mux, PROFILE_NONE, DEV_ON_BASEBOARD},
 #endif
 #ifdef CONFIG_MMC
-	{mmc0_pin_mux, PROFILE_NONE},
+	{mmc0_pin_mux, PROFILE_NONE, DEV_ON_BASEBOARD},
 #endif
 	{0},
 };
@@ -548,28 +556,45 @@ static void configure_module_pin_mux(struct module_pin_mux *mod_pin_mux)
  * available in the selected profile(second argument). If the module is not
  * available in the selected profile, skip the corresponding configuration.
  */
-static void set_evm_pin_mux(struct evm_pin_mux *am335x_evm_pin_mux,
-			char profile)
+static void set_evm_pin_mux(struct evm_pin_mux *pin_mux,
+			int prof, unsigned int dghtr_brd_flg)
 {
 	int i;
 
-	if (!am335x_evm_pin_mux)
+	if (!pin_mux)
 		return;
 
-	for (i = 0; am335x_evm_pin_mux[i].mod_pin_mux != 0; i++)
-		if ((am335x_evm_pin_mux[i].profile & profile) ||
-				(profile == PROFILE_NONE))
-			configure_module_pin_mux(am335x_evm_pin_mux[i].
-					mod_pin_mux);
+	/*
+	* Only General Purpose & Industrial Auto Motro Control
+	* EVM has profiles. So check if this evm has profile.
+	* If not, ignore the profile comparison
+	*/
+
+	/*
+	* If the device is on baseboard, directly configure it. Else (device on
+	* Daughter board), check if the daughter card is detected.
+	*/
+
+	for (i = 0; pin_mux[i].mod_pin_mux != 0; i++)
+		if ((pin_mux[i].profile & prof) ||
+					(prof == PROFILE_NONE)) {
+			if (pin_mux->device_on == DEV_ON_BASEBOARD)
+				configure_module_pin_mux(pin_mux[i].
+								mod_pin_mux);
+			else if (dghtr_brd_flg)
+					configure_module_pin_mux(pin_mux[i].
+								mod_pin_mux);
+		}
 }
 
-void configure_evm_pin_mux(unsigned char daughter_board_id, unsigned short
-		profile)
+void configure_evm_pin_mux(unsigned char dghtr_brd_id, unsigned short
+		profile, unsigned int daughter_board_flag)
 {
-	if (daughter_board_id > BASE_BOARD_ONLY)
+	if (dghtr_brd_id > BASE_BOARD_ONLY)
 		return;
 
-	set_evm_pin_mux(am335x_evm_pin_mux[daughter_board_id], profile);
+	set_evm_pin_mux(am335x_evm_pin_mux[dghtr_brd_id], profile,
+							daughter_board_flag);
 }
 
 void enable_i2c0_pin_mux(void)

@@ -269,7 +269,7 @@ unsigned char get_daughter_board_id(void)
 	return daughter_board_id;
 }
 
-static unsigned char daughter_board_profile = PROFILE_0;
+static unsigned char evm_profile = PROFILE_0;
 static void detect_daughter_board_profile(void)
 {
 	unsigned short val;
@@ -280,12 +280,12 @@ static void detect_daughter_board_profile(void)
 	if (i2c_read(I2C_CPLD_ADDR, CFG_REG, 1, (unsigned char *)(&val), 2))
 		return;
 
-	daughter_board_profile = 1 << (val & 0x7);
+	evm_profile = 1 << (val & 0x7);
 }
 
 unsigned char get_daughter_board_profile(void)
 {
-	return daughter_board_profile;
+	return evm_profile;
 }
 
 /*
@@ -328,6 +328,9 @@ int board_evm_init(void)
 
 int board_init(void)
 {
+	char sku_config[7];
+	unsigned int dghtr_brd_valid;
+
 	/* Configure the i2c0 pin mux */
 	enable_i2c0_pin_mux();
 
@@ -344,15 +347,51 @@ int board_init(void)
 
 	detect_daughter_board();
 
-	detect_daughter_board_profile();
+	if ((daughter_board_id == GP_DAUGHTER_BOARD) ||
+				(daughter_board_id == IA_DAUGHTER_BOARD))
+		detect_daughter_board_profile();
 
-	configure_evm_pin_mux(daughter_board_id, daughter_board_profile);
+	memcpy(sku_config, brd_id_hdr.config, 6);
+	sku_config[6] = '\0';
+
+	/*
+	* If any daughter board is already detected, daughter board detection
+	* logic	detect_daughter_board() would have changed
+	* daughter_board_id to appropriate evm id. If not set means no daughter
+	* board is detected.
+	*/
+	if (daughter_board_id != BASE_BOARD_ONLY)
+		dghtr_brd_valid = 1;
+
+	if (!strncmp("SKU#00", sku_config, 6) &&
+			(daughter_board_id == BASE_BOARD_ONLY))
+		configure_evm_pin_mux(BASE_BOARD_ONLY, PROFILE_NONE,
+							dghtr_brd_valid);
+	else if (!strncmp("SKU#01", sku_config, 6) &&
+			(daughter_board_id == GP_DAUGHTER_BOARD))
+		configure_evm_pin_mux(GP_DAUGHTER_BOARD, evm_profile,
+							dghtr_brd_valid);
+	else if (!strncmp("SKU#02", sku_config, 6) &&
+			(daughter_board_id == IA_DAUGHTER_BOARD))
+		configure_evm_pin_mux(IA_DAUGHTER_BOARD, evm_profile,
+							dghtr_brd_valid);
+	else if (!strncmp("SKU#03", sku_config, 6) &&
+			(daughter_board_id == IPP_DAUGHTER_BOARD))
+		configure_evm_pin_mux(IPP_DAUGHTER_BOARD, PROFILE_NONE,
+							dghtr_brd_valid);
+	else
+		/*
+		printf("AM335X: Invalid configuration. Board %s, sku %s, "
+				"evm Id %d\n", brd_name, sku_config,
+				daughter_board_id);
+		*/
 
 #ifdef CONFIG_AM335X_MIN_CONFIG
 	board_min_init();
 #else
 	board_evm_init();
 #endif
+
 	gpmc_init();
 
 	return 0;
@@ -389,13 +428,13 @@ int checkboard(void)
 #ifdef CONFIG_AM335X_MIN_CONFIG
 #ifdef CONFIG_NAND
 	if ((daughter_board_id == GP_DAUGHTER_BOARD) &&
-		((daughter_board_profile  == PROFILE_2) ||
-			(daughter_board_profile == PROFILE_3)))
+		((evm_profile  == PROFILE_2) ||
+			(evm_profile == PROFILE_3)))
 		printf("NAND boot: Profile setting is wrong!!");
 #endif
 #ifdef CONFIG_NOR
 	if ((daughter_board_id != GP_DAUGHTER_BOARD) ||
-		(daughter_board_profile != PROFILE_3))
+		(evm_profile != PROFILE_3))
 		printf("NOR boot: Profile setting is wrong!!");
 #endif
 #endif

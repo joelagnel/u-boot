@@ -16,6 +16,7 @@
 #define __COMMON_DEF_H__
 
 #define NO_OF_DAUGHTER_BOARDS	3
+
 /* Daughter Card type */
 #define GP_DAUGHTER_BOARD	0
 #define IA_DAUGHTER_BOARD	1
@@ -39,7 +40,8 @@ extern void enable_ddr_clocks(void);
 
 extern void enable_i2c0_pin_mux(void);
 extern void configure_evm_pin_mux(unsigned char daughter_board_id,
-	unsigned short daughter_board_profile);
+					unsigned short daughter_board_profile,
+					unsigned int daughter_board_flag);
 
 extern unsigned char get_daughter_board_id(void);
 #endif/*__COMMON_DEF_H__ */
