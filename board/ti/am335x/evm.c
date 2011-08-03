@@ -624,6 +624,7 @@ int board_eth_init(bd_t *bis)
 {
 	uint8_t mac_addr[6];
 	uint32_t mac_hi, mac_lo;
+	u_int32_t i;
 
 	if (!eth_getenv_enetaddr("ethaddr", mac_addr)) {
 		printf("<ethaddr> not set. Reading from E-fuse\n");
@@ -636,11 +637,19 @@ int board_eth_init(bd_t *bis)
 		mac_addr[3] = (mac_hi & 0xFF000000) >> 24;
 		mac_addr[4] = mac_lo & 0xFF;
 		mac_addr[5] = (mac_lo & 0xFF00) >> 8;
+	}
+
+	if (!is_valid_ether_addr(mac_addr)) {
+		/* Read MACID from eeprom if MACID in eFuse is not valid */
+		for (i = 0; i < ETH_ALEN; i++)
+			mac_addr[i] = brd_id_hdr.mac_addr[0][i];
+	}
+
+	if (is_valid_ether_addr(mac_addr))
 		/* set the ethaddr variable with MACID detected */
 		eth_setenv_enetaddr("ethaddr", mac_addr);
-	} else {
+	else
 		printf("Caution:using static MACID!! Set <ethaddr> variable\n");
-	}
 
 	/* set mii mode to rgmii in in device configure register */
 	if (daughter_board_id != IA_DAUGHTER_BOARD)
