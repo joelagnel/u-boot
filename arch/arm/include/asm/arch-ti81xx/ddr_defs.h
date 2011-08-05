@@ -328,6 +328,19 @@
 #define VTP_CTRL_ENABLE		(0x1 << 6)
 #define VTP_CTRL_LOCK_EN	(0x1 << 4)
 #define VTP_CTRL_START_EN	(0x1)
+#define DDR2_RATIO		0x80
+#define CMD_FORCE		0x00
+#define CMD_DELAY		0x00
+#define	DDR2_DLL_LOCK_DIFF	0x4
+#define	DDR2_INVERT_CLKOUT	0x00
+#define	DDR2_RD_DQS		0x40
+#define	DDR2_WR_DQS		0x00
+#define	DDR2_PHY_WRLVL		0x00
+#define	DDR2_PHY_GATELVL	0x00
+#define	DDR2_PHY_FIFO_WE	0x00
+#define	DDR2_PHY_WR_DATA	0x40
+#define	PHY_RANK0_DELAY		0x01
+#define PHY_DLL_LOCK_DIFF	0x4
 #endif
 
 #endif  /* _DDR_DEFS_H */
