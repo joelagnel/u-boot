@@ -175,17 +175,74 @@ int misc_init_r(void)
 	return 0;
 }
 
-#ifdef CONFIG_AM335X_CONFIG_DDR
-static void config_am335x_ddr(void)
+void Data_Macro_Config(int dataMacroNum)
 {
-	enable_ddr_clocks();
+	u32 BaseAddrOffset;
 
+	if (dataMacroNum == 0)
+		BaseAddrOffset = 0x00;
+	else if (dataMacroNum == 1)
+		BaseAddrOffset = 0xA4;
+
+	__raw_writel((DATA0_RD_DQS_SLAVE_RATIO_0 + BaseAddrOffset),
+				((DDR2_RD_DQS<<30)|(DDR2_RD_DQS<<20)
+				|(DDR2_RD_DQS<<10)|(DDR2_RD_DQS<<0)));
+	__raw_writel((DATA0_RD_DQS_SLAVE_RATIO_1 + BaseAddrOffset), DDR2_RD_DQS>>2);
+	__raw_writel((DATA0_WR_DQS_SLAVE_RATIO_0 + BaseAddrOffset),
+				((DDR2_WR_DQS<<30)|(DDR2_WR_DQS<<20)
+				|(DDR2_WR_DQS<<10)|(DDR2_WR_DQS<<0)));
+	__raw_writel((DATA0_WR_DQS_SLAVE_RATIO_1 + BaseAddrOffset), DDR2_WR_DQS>>2);
+	__raw_writel((DATA0_WRLVL_INIT_RATIO_0 + BaseAddrOffset),
+				((DDR2_PHY_WRLVL<<30)|(DDR2_PHY_WRLVL<<20)
+				|(DDR2_PHY_WRLVL<<10)|(DDR2_PHY_WRLVL<<0)));
+	__raw_writel((DATA0_WRLVL_INIT_RATIO_1 + BaseAddrOffset), DDR2_PHY_WRLVL>>2);
+	__raw_writel((DATA0_GATELVL_INIT_RATIO_0 + BaseAddrOffset),
+				((DDR2_PHY_GATELVL<<30)|(DDR2_PHY_GATELVL<<20)
+				|(DDR2_PHY_GATELVL<<10)|(DDR2_PHY_GATELVL<<0)));
+	__raw_writel((DATA0_GATELVL_INIT_RATIO_1 + BaseAddrOffset),
+				DDR2_PHY_GATELVL>>2);
+	__raw_writel((DATA0_FIFO_WE_SLAVE_RATIO_0 + BaseAddrOffset),
+				((DDR2_PHY_FIFO_WE<<30)|(DDR2_PHY_FIFO_WE<<20)
+				|(DDR2_PHY_FIFO_WE<<10)|(DDR2_PHY_FIFO_WE<<0)));
+	__raw_writel((DATA0_FIFO_WE_SLAVE_RATIO_1 + BaseAddrOffset),
+				DDR2_PHY_FIFO_WE>>2);
+	__raw_writel((DATA0_WR_DATA_SLAVE_RATIO_0 + BaseAddrOffset),
+				((DDR2_PHY_WR_DATA<<30)|(DDR2_PHY_WR_DATA<<20)
+				|(DDR2_PHY_WR_DATA<<10)|(DDR2_PHY_WR_DATA<<0)));
+	__raw_writel((DATA0_WR_DATA_SLAVE_RATIO_1 + BaseAddrOffset),
+				DDR2_PHY_WR_DATA>>2);
+	__raw_writel((DATA0_DLL_LOCK_DIFF_0 + BaseAddrOffset), PHY_DLL_LOCK_DIFF);
+}
+
+void Cmd_Macro_Config(void)
+{
+	__raw_writel(CMD0_CTRL_SLAVE_RATIO_0, DDR2_RATIO);
+	__raw_writel(CMD0_CTRL_SLAVE_RATIO_0, CMD_FORCE);
+	__raw_writel(CMD0_CTRL_SLAVE_FORCE_0, CMD_DELAY);
+	__raw_writel(CMD0_DLL_LOCK_DIFF_0, DDR2_DLL_LOCK_DIFF);
+	__raw_writel(CMD0_INVERT_CLKOUT_0, DDR2_INVERT_CLKOUT);
+
+	__raw_writel(CMD1_CTRL_SLAVE_RATIO_0, DDR2_RATIO);
+	__raw_writel(CMD1_CTRL_SLAVE_RATIO_0, CMD_FORCE);
+	__raw_writel(CMD1_CTRL_SLAVE_FORCE_0, CMD_DELAY);
+	__raw_writel(CMD1_DLL_LOCK_DIFF_0, DDR2_DLL_LOCK_DIFF);
+	__raw_writel(CMD1_INVERT_CLKOUT_0, DDR2_INVERT_CLKOUT);
+
+	__raw_writel(CMD2_CTRL_SLAVE_RATIO_0, DDR2_RATIO);
+	__raw_writel(CMD2_CTRL_SLAVE_RATIO_0, CMD_FORCE);
+	__raw_writel(CMD2_CTRL_SLAVE_FORCE_0, CMD_DELAY);
+	__raw_writel(CMD2_DLL_LOCK_DIFF_0, DDR2_DLL_LOCK_DIFF);
+	__raw_writel(CMD2_INVERT_CLKOUT_0, DDR2_INVERT_CLKOUT);
+}
+
+void config_emif(void)
+{
 	__raw_writel(__raw_readl(VTP0_CTRL_REG) | VTP_CTRL_ENABLE,
-		 VTP0_CTRL_REG);
+			VTP0_CTRL_REG);
 	__raw_writel(__raw_readl(VTP0_CTRL_REG) & (~VTP_CTRL_START_EN),
-		 VTP0_CTRL_REG);
-	__raw_writel(__raw_readl(VTP0_CTRL_REG) | VTP_CTRL_START_EN,
-		 VTP0_CTRL_REG);
+			VTP0_CTRL_REG);
+	 __raw_writel(__raw_readl(VTP0_CTRL_REG) | VTP_CTRL_START_EN,
+			VTP0_CTRL_REG);
 
 	/* Poll for READY */
 	while ((__raw_readl(VTP0_CTRL_REG) & VTP_CTRL_READY) != VTP_CTRL_READY);
@@ -213,6 +270,51 @@ static void config_am335x_ddr(void)
 	__raw_writel(EMIF_SDREF, EMIF4_0_SDRAM_REF_CTRL_SHADOW);
 	__raw_writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG);
 }
+
+void config_am335x_ddr(void)
+{
+	config_am335x_mddr(); /* Do DDR settings for 13x13 */
+	/* config_am335x_ddr2(); */  /* Do DDR settings for 15x15 */
+}
+#ifdef CONFIG_AM335X_CONFIG_DDR
+void config_am335x_mddr(void)
+{
+	int data_macro_0 = 0;
+	int data_macro_1 = 1;
+	enable_ddr_clocks();
+
+	Cmd_Macro_Config();
+
+	Data_Macro_Config(data_macro_0);
+	Data_Macro_Config(data_macro_1);
+
+	__raw_writel(DATA0_RANK0_DELAYS_0, PHY_RANK0_DELAY);
+	__raw_writel(DATA1_RANK0_DELAYS_0, PHY_RANK0_DELAY);
+
+	__raw_writel(DDR_IO_CTRL, __raw_readl(DDR_IO_CTRL) | 0x10000000);
+	__raw_writel(DDR_CKE_CTRL, __raw_readl(DDR_CKE_CTRL) | 0x00000001);
+
+	config_emif();
+}
+
+void config_am335x_ddr2(void)
+{
+	int data_macro_0 = 0;
+	int data_macro_1 = 1;
+	enable_ddr_clocks();
+
+	Cmd_Macro_Config();
+
+	Data_Macro_Config(data_macro_0);
+	Data_Macro_Config(data_macro_1);
+
+	__raw_writel(DATA0_RANK0_DELAYS_0, PHY_RANK0_DELAY);
+	__raw_writel(DATA1_RANK0_DELAYS_0, PHY_RANK0_DELAY);
+
+	__raw_writel(DDR_CKE_CTRL, __raw_readl(DDR_CKE_CTRL) | 0x00000001);
+
+	config_emif();
+}
 #endif
 
 /*
@@ -229,7 +331,7 @@ void s_init(u32 in_ddr)
 
 #ifdef CONFIG_AM335X_CONFIG_DDR
 	if (!in_ddr)
-		config_am335x_ddr(); /* Do DDR settings */
+		config_am335x_ddr();
 #endif
 }
 
