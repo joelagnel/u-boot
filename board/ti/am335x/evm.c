@@ -138,7 +138,7 @@ static struct dghtr_brd_id_hdr db_header[NO_OF_DAUGHTER_BOARDS] = {
 
 extern void cpsw_eth_set_mac_addr(const u_int8_t *addr);
 
-void init_timer(void)
+static void init_timer(void)
 {
 	/* Reset the Timer */
 	__raw_writel(0x2, (DM_TIMER2_BASE + TSICR_REG));
@@ -175,7 +175,9 @@ int misc_init_r(void)
 	return 0;
 }
 
-void Data_Macro_Config(int dataMacroNum)
+#ifdef CONFIG_AM335X_CONFIG_DDR
+
+static void Data_Macro_Config(int dataMacroNum)
 {
 	u32 BaseAddrOffset;
 
@@ -214,7 +216,7 @@ void Data_Macro_Config(int dataMacroNum)
 	__raw_writel((DATA0_DLL_LOCK_DIFF_0 + BaseAddrOffset), PHY_DLL_LOCK_DIFF);
 }
 
-void Cmd_Macro_Config(void)
+static void Cmd_Macro_Config(void)
 {
 	__raw_writel(CMD0_CTRL_SLAVE_RATIO_0, DDR2_RATIO);
 	__raw_writel(CMD0_CTRL_SLAVE_RATIO_0, CMD_FORCE);
@@ -235,7 +237,7 @@ void Cmd_Macro_Config(void)
 	__raw_writel(CMD2_INVERT_CLKOUT_0, DDR2_INVERT_CLKOUT);
 }
 
-void config_emif(void)
+static void config_emif(void)
 {
 	__raw_writel(__raw_readl(VTP0_CTRL_REG) | VTP_CTRL_ENABLE,
 			VTP0_CTRL_REG);
@@ -271,13 +273,7 @@ void config_emif(void)
 	__raw_writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG);
 }
 
-void config_am335x_ddr(void)
-{
-	config_am335x_mddr(); /* Do DDR settings for 13x13 */
-	/* config_am335x_ddr2(); */  /* Do DDR settings for 15x15 */
-}
-#ifdef CONFIG_AM335X_CONFIG_DDR
-void config_am335x_mddr(void)
+static void config_am335x_mddr(void)
 {
 	int data_macro_0 = 0;
 	int data_macro_1 = 1;
@@ -297,7 +293,7 @@ void config_am335x_mddr(void)
 	config_emif();
 }
 
-void config_am335x_ddr2(void)
+static void config_am335x_ddr2(void)
 {
 	int data_macro_0 = 0;
 	int data_macro_1 = 1;
@@ -315,6 +311,13 @@ void config_am335x_ddr2(void)
 
 	config_emif();
 }
+
+static void config_am335x_ddr(void)
+{
+	config_am335x_mddr(); /* Do DDR settings for 13x13 */
+	/* config_am335x_ddr2(); */  /* Do DDR settings for 15x15 */
+}
+
 #endif
 
 /*
@@ -364,11 +367,6 @@ static void detect_daughter_board(void)
 			break;
 		}
 	} while (++db_board_id < NO_OF_DAUGHTER_BOARDS);
-}
-
-unsigned char get_daughter_board_id(void)
-{
-	return daughter_board_id;
 }
 
 static unsigned char evm_profile = PROFILE_0;
@@ -499,7 +497,7 @@ int board_init(void)
  * SPI bus number is switched to in case Industrial Automation
  * motor control EVM.
  */
-void set_spi_bus_on_board_detect(void){
+static void set_spi_bus_on_board_detect(void){
 	if (daughter_board_id == IA_DAUGHTER_BOARD)
 		setenv("spi_bus_no", "1");
 }
