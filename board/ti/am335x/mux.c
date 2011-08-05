@@ -147,6 +147,7 @@ struct pad_signals {
 	int nnmi;
 	int osc0_in;
 	int osc0_out;
+	int rsvd1;
 	int tms;
 	int tdi;
 	int tdo;
@@ -156,9 +157,10 @@ struct pad_signals {
 	int emu1;
 	int osc1_in;
 	int osc1_out;
-	int rtc_porz;
-	int ext_wakeup;
 	int pmic_power_en;
+	int rtc_porz;
+	int rsvd2;
+	int ext_wakeup;
 	int enz_kaldo_1p8v;
 	int usb0_dm;
 	int usb0_dp;
