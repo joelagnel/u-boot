@@ -116,6 +116,7 @@ struct omap3_spi_slave {
 	struct mcspi *regs;
 	unsigned int freq;
 	unsigned int mode;
+	unsigned char data_lines_reversed;
 };
 
 static inline struct omap3_spi_slave *to_omap3_spi(struct spi_slave *slave)

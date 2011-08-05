@@ -104,9 +104,11 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
 	}
 	ds->slave.bus = bus;
 
+	ds->data_lines_reversed = 0;
 #ifdef CONFIG_TI81XX
 #ifndef CONFIG_AM335X
 	if ((bus == 0) && (cs > 3)) {
+		ds->data_lines_reversed = 1;
 #else
 	if (((bus == 0) && (cs > 1))
 			|| ((bus == 1) && (cs > 1))) {
@@ -183,8 +185,13 @@ int spi_claim_bus(struct spi_slave *slave)
 	/* standard 4-wire master mode:  SCK, MOSI/out, MISO/in, nCS
 	 * REVISIT: this controller could support SPI_3WIRE mode.
 	 */
-	conf &= ~(OMAP3_MCSPI_CHCONF_IS|OMAP3_MCSPI_CHCONF_DPE1);
-	conf |= OMAP3_MCSPI_CHCONF_DPE0;
+	if (!ds->data_lines_reversed) {
+		conf &= ~(OMAP3_MCSPI_CHCONF_IS|OMAP3_MCSPI_CHCONF_DPE1);
+		conf |= OMAP3_MCSPI_CHCONF_DPE0;
+	} else {
+		conf &= ~OMAP3_MCSPI_CHCONF_DPE0;
+		conf |= (OMAP3_MCSPI_CHCONF_IS|OMAP3_MCSPI_CHCONF_DPE1);
+	}
 
 	/* wordlength */
 	conf &= ~OMAP3_MCSPI_CHCONF_WL_MASK;

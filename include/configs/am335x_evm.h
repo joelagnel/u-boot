@@ -48,7 +48,7 @@
 #  define CONFIG_EXTRA_ENV_SETTINGS \
 	"verify=yes\0" \
 	"spi_bus_no=0\0" \
-	"bootcmd=sf probe ${spi_bus_no};sf read 0x81000000 0x20000 0x40000; \
+	"bootcmd=sf probe ${spi_bus_no}:0;sf read 0x81000000 0x20000 0x40000; \
 	go 0x81000000\0" \
 
 # elif defined(CONFIG_NAND_BOOT)
