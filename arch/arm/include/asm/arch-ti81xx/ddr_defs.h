@@ -320,6 +320,7 @@
 #define EMIF_SDREF		0x50F
 #define EMIF_SDCFG		0x40804DC2
 #define EMIF_SDMGT		0x80000000
+#define EMIF_SDRAM		0x00004650
 #define EMIF_PHYCFG		0x2
 #define DDR_PHY_RESET		(0x1 << 10)
 #define DDR_FUNCTIONAL_MODE_EN	0x1
@@ -341,6 +342,7 @@
 #define	DDR2_PHY_WR_DATA	0x40
 #define	PHY_RANK0_DELAY		0x01
 #define PHY_DLL_LOCK_DIFF	0x4
+#define DDR_IOCTRL_VALUE	0x18B
 #endif
 
 #endif  /* _DDR_DEFS_H */
