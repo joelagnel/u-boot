@@ -186,55 +186,59 @@ static void Data_Macro_Config(int dataMacroNum)
 	else if (dataMacroNum == 1)
 		BaseAddrOffset = 0xA4;
 
-	__raw_writel((DATA0_RD_DQS_SLAVE_RATIO_0 + BaseAddrOffset),
-				((DDR2_RD_DQS<<30)|(DDR2_RD_DQS<<20)
-				|(DDR2_RD_DQS<<10)|(DDR2_RD_DQS<<0)));
-	__raw_writel((DATA0_RD_DQS_SLAVE_RATIO_1 + BaseAddrOffset), DDR2_RD_DQS>>2);
-	__raw_writel((DATA0_WR_DQS_SLAVE_RATIO_0 + BaseAddrOffset),
-				((DDR2_WR_DQS<<30)|(DDR2_WR_DQS<<20)
-				|(DDR2_WR_DQS<<10)|(DDR2_WR_DQS<<0)));
-	__raw_writel((DATA0_WR_DQS_SLAVE_RATIO_1 + BaseAddrOffset), DDR2_WR_DQS>>2);
-	__raw_writel((DATA0_WRLVL_INIT_RATIO_0 + BaseAddrOffset),
-				((DDR2_PHY_WRLVL<<30)|(DDR2_PHY_WRLVL<<20)
-				|(DDR2_PHY_WRLVL<<10)|(DDR2_PHY_WRLVL<<0)));
-	__raw_writel((DATA0_WRLVL_INIT_RATIO_1 + BaseAddrOffset), DDR2_PHY_WRLVL>>2);
-	__raw_writel((DATA0_GATELVL_INIT_RATIO_0 + BaseAddrOffset),
-				((DDR2_PHY_GATELVL<<30)|(DDR2_PHY_GATELVL<<20)
-				|(DDR2_PHY_GATELVL<<10)|(DDR2_PHY_GATELVL<<0)));
-	__raw_writel((DATA0_GATELVL_INIT_RATIO_1 + BaseAddrOffset),
-				DDR2_PHY_GATELVL>>2);
-	__raw_writel((DATA0_FIFO_WE_SLAVE_RATIO_0 + BaseAddrOffset),
-				((DDR2_PHY_FIFO_WE<<30)|(DDR2_PHY_FIFO_WE<<20)
-				|(DDR2_PHY_FIFO_WE<<10)|(DDR2_PHY_FIFO_WE<<0)));
-	__raw_writel((DATA0_FIFO_WE_SLAVE_RATIO_1 + BaseAddrOffset),
-				DDR2_PHY_FIFO_WE>>2);
-	__raw_writel((DATA0_WR_DATA_SLAVE_RATIO_0 + BaseAddrOffset),
-				((DDR2_PHY_WR_DATA<<30)|(DDR2_PHY_WR_DATA<<20)
-				|(DDR2_PHY_WR_DATA<<10)|(DDR2_PHY_WR_DATA<<0)));
-	__raw_writel((DATA0_WR_DATA_SLAVE_RATIO_1 + BaseAddrOffset),
-				DDR2_PHY_WR_DATA>>2);
-	__raw_writel((DATA0_DLL_LOCK_DIFF_0 + BaseAddrOffset), PHY_DLL_LOCK_DIFF);
+	__raw_writel(((DDR2_RD_DQS<<30)|(DDR2_RD_DQS<<20)
+			|(DDR2_RD_DQS<<10)|(DDR2_RD_DQS<<0)),
+			(DATA0_RD_DQS_SLAVE_RATIO_0 + BaseAddrOffset));
+	__raw_writel(DDR2_RD_DQS>>2,
+			(DATA0_RD_DQS_SLAVE_RATIO_1 + BaseAddrOffset));
+	__raw_writel(((DDR2_WR_DQS<<30)|(DDR2_WR_DQS<<20)
+			|(DDR2_WR_DQS<<10)|(DDR2_WR_DQS<<0)),
+			(DATA0_WR_DQS_SLAVE_RATIO_0 + BaseAddrOffset));
+	__raw_writel(DDR2_WR_DQS>>2,
+			(DATA0_WR_DQS_SLAVE_RATIO_1 + BaseAddrOffset));
+	__raw_writel(((DDR2_PHY_WRLVL<<30)|(DDR2_PHY_WRLVL<<20)
+			|(DDR2_PHY_WRLVL<<10)|(DDR2_PHY_WRLVL<<0)),
+			(DATA0_WRLVL_INIT_RATIO_0 + BaseAddrOffset));
+	__raw_writel(DDR2_PHY_WRLVL>>2,
+			(DATA0_WRLVL_INIT_RATIO_1 + BaseAddrOffset));
+	__raw_writel(((DDR2_PHY_GATELVL<<30)|(DDR2_PHY_GATELVL<<20)
+			|(DDR2_PHY_GATELVL<<10)|(DDR2_PHY_GATELVL<<0)),
+			(DATA0_GATELVL_INIT_RATIO_0 + BaseAddrOffset));
+	__raw_writel(DDR2_PHY_GATELVL>>2,
+			(DATA0_GATELVL_INIT_RATIO_1 + BaseAddrOffset));
+	__raw_writel(((DDR2_PHY_FIFO_WE<<30)|(DDR2_PHY_FIFO_WE<<20)
+			|(DDR2_PHY_FIFO_WE<<10)|(DDR2_PHY_FIFO_WE<<0)),
+			(DATA0_FIFO_WE_SLAVE_RATIO_0 + BaseAddrOffset));
+	__raw_writel(DDR2_PHY_FIFO_WE>>2,
+			(DATA0_FIFO_WE_SLAVE_RATIO_1 + BaseAddrOffset));
+	__raw_writel(((DDR2_PHY_WR_DATA<<30)|(DDR2_PHY_WR_DATA<<20)
+			|(DDR2_PHY_WR_DATA<<10)|(DDR2_PHY_WR_DATA<<0)),
+			(DATA0_WR_DATA_SLAVE_RATIO_0 + BaseAddrOffset));
+	__raw_writel(DDR2_PHY_WR_DATA>>2,
+			(DATA0_WR_DATA_SLAVE_RATIO_1 + BaseAddrOffset));
+	__raw_writel(PHY_DLL_LOCK_DIFF,
+			(DATA0_DLL_LOCK_DIFF_0 + BaseAddrOffset));
 }
 
 static void Cmd_Macro_Config(void)
 {
-	__raw_writel(CMD0_CTRL_SLAVE_RATIO_0, DDR2_RATIO);
-	__raw_writel(CMD0_CTRL_SLAVE_RATIO_0, CMD_FORCE);
-	__raw_writel(CMD0_CTRL_SLAVE_FORCE_0, CMD_DELAY);
-	__raw_writel(CMD0_DLL_LOCK_DIFF_0, DDR2_DLL_LOCK_DIFF);
-	__raw_writel(CMD0_INVERT_CLKOUT_0, DDR2_INVERT_CLKOUT);
+	__raw_writel(DDR2_RATIO, CMD0_CTRL_SLAVE_RATIO_0);
+	__raw_writel(CMD_FORCE, CMD0_CTRL_SLAVE_RATIO_0);
+	__raw_writel(CMD_DELAY, CMD0_CTRL_SLAVE_FORCE_0);
+	__raw_writel(DDR2_DLL_LOCK_DIFF, CMD0_DLL_LOCK_DIFF_0);
+	__raw_writel(DDR2_INVERT_CLKOUT, CMD0_INVERT_CLKOUT_0);
 
-	__raw_writel(CMD1_CTRL_SLAVE_RATIO_0, DDR2_RATIO);
-	__raw_writel(CMD1_CTRL_SLAVE_RATIO_0, CMD_FORCE);
-	__raw_writel(CMD1_CTRL_SLAVE_FORCE_0, CMD_DELAY);
-	__raw_writel(CMD1_DLL_LOCK_DIFF_0, DDR2_DLL_LOCK_DIFF);
-	__raw_writel(CMD1_INVERT_CLKOUT_0, DDR2_INVERT_CLKOUT);
+	__raw_writel(DDR2_RATIO, CMD1_CTRL_SLAVE_RATIO_0);
+	__raw_writel(CMD_FORCE, CMD1_CTRL_SLAVE_RATIO_0);
+	__raw_writel(CMD_DELAY, CMD1_CTRL_SLAVE_FORCE_0);
+	__raw_writel(DDR2_DLL_LOCK_DIFF, CMD1_DLL_LOCK_DIFF_0);
+	__raw_writel(DDR2_INVERT_CLKOUT, CMD1_INVERT_CLKOUT_0);
 
-	__raw_writel(CMD2_CTRL_SLAVE_RATIO_0, DDR2_RATIO);
-	__raw_writel(CMD2_CTRL_SLAVE_RATIO_0, CMD_FORCE);
-	__raw_writel(CMD2_CTRL_SLAVE_FORCE_0, CMD_DELAY);
-	__raw_writel(CMD2_DLL_LOCK_DIFF_0, DDR2_DLL_LOCK_DIFF);
-	__raw_writel(CMD2_INVERT_CLKOUT_0, DDR2_INVERT_CLKOUT);
+	__raw_writel(DDR2_RATIO, CMD2_CTRL_SLAVE_RATIO_0);
+	__raw_writel(CMD_FORCE, CMD2_CTRL_SLAVE_RATIO_0);
+	__raw_writel(CMD_DELAY, CMD2_CTRL_SLAVE_FORCE_0);
+	__raw_writel(DDR2_DLL_LOCK_DIFF, CMD2_DLL_LOCK_DIFF_0);
+	__raw_writel(DDR2_INVERT_CLKOUT, CMD2_INVERT_CLKOUT_0);
 }
 
 static void config_emif(void)
@@ -266,11 +270,18 @@ static void config_emif(void)
 	__raw_writel(EMIF_TIM2, EMIF4_0_SDRAM_TIM_2_SHADOW);
 	__raw_writel(EMIF_TIM3, EMIF4_0_SDRAM_TIM_3);
 	__raw_writel(EMIF_TIM3, EMIF4_0_SDRAM_TIM_3_SHADOW);
-	__raw_writel(EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL);
-	__raw_writel(EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL_SHD);
+
+	__raw_writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG);
+	__raw_writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG2);
+	__raw_writel(EMIF_SDRAM, EMIF4_0_SDRAM_REF_CTRL);
+	__raw_writel(EMIF_SDRAM, EMIF4_0_SDRAM_REF_CTRL_SHADOW);
+
+	/* __raw_writel(EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL);
+	__raw_writel(EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL_SHD); */
 	__raw_writel(EMIF_SDREF, EMIF4_0_SDRAM_REF_CTRL);
 	__raw_writel(EMIF_SDREF, EMIF4_0_SDRAM_REF_CTRL_SHADOW);
 	__raw_writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG);
+	__raw_writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG2);
 }
 
 static void config_am335x_mddr(void)
@@ -284,11 +295,17 @@ static void config_am335x_mddr(void)
 	Data_Macro_Config(data_macro_0);
 	Data_Macro_Config(data_macro_1);
 
-	__raw_writel(DATA0_RANK0_DELAYS_0, PHY_RANK0_DELAY);
-	__raw_writel(DATA1_RANK0_DELAYS_0, PHY_RANK0_DELAY);
+	__raw_writel(PHY_RANK0_DELAY, DATA0_RANK0_DELAYS_0);
+	__raw_writel(PHY_RANK0_DELAY, DATA1_RANK0_DELAYS_0);
 
-	__raw_writel(DDR_IO_CTRL, __raw_readl(DDR_IO_CTRL) | 0x10000000);
-	__raw_writel(DDR_CKE_CTRL, __raw_readl(DDR_CKE_CTRL) | 0x00000001);
+	__raw_writel(DDR_IOCTRL_VALUE, DDR_CMD0_IOCTRL);
+	__raw_writel(DDR_IOCTRL_VALUE, DDR_CMD1_IOCTRL);
+	__raw_writel(DDR_IOCTRL_VALUE, DDR_CMD2_IOCTRL);
+	__raw_writel(DDR_IOCTRL_VALUE, DDR_DATA0_IOCTRL);
+	__raw_writel(DDR_IOCTRL_VALUE, DDR_DATA1_IOCTRL);
+
+	__raw_writel(__raw_readl(DDR_IO_CTRL) | 0x10000000, DDR_IO_CTRL);
+	__raw_writel(__raw_readl(DDR_CKE_CTRL) | 0x00000001, DDR_CKE_CTRL);
 
 	config_emif();
 }
@@ -304,10 +321,10 @@ static void config_am335x_ddr2(void)
 	Data_Macro_Config(data_macro_0);
 	Data_Macro_Config(data_macro_1);
 
-	__raw_writel(DATA0_RANK0_DELAYS_0, PHY_RANK0_DELAY);
-	__raw_writel(DATA1_RANK0_DELAYS_0, PHY_RANK0_DELAY);
+	__raw_writel(PHY_RANK0_DELAY, DATA0_RANK0_DELAYS_0);
+	__raw_writel(PHY_RANK0_DELAY, DATA1_RANK0_DELAYS_0);
 
-	__raw_writel(DDR_CKE_CTRL, __raw_readl(DDR_CKE_CTRL) | 0x00000001);
+	__raw_writel(__raw_readl(DDR_CKE_CTRL) | 0x00000001, DDR_CKE_CTRL);
 
 	config_emif();
 }
@@ -315,7 +332,7 @@ static void config_am335x_ddr2(void)
 static void config_am335x_ddr(void)
 {
 	config_am335x_mddr(); /* Do DDR settings for 13x13 */
-	/* config_am335x_ddr2(); */  /* Do DDR settings for 15x15 */
+	/* config_am335x_ddr2(); */  /* TODO DDR settings for 15x15 */
 }
 
 #endif
