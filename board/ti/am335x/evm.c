@@ -425,6 +425,15 @@ void s_init(u32 in_ddr)
 {
 	/* Can be removed as A8 comes up with L2 enabled */
 	l2_cache_enable();
+
+	/* WDT1 is already running when the bootloader gets control
+	 * Disable it to avoid "random" resets
+	 */
+	__raw_writel(0xAAAA, WDT_WSPR);
+	while(__raw_readl(WDT_WWPS) != 0x0);
+	__raw_writel(0x5555, WDT_WSPR);
+	while(__raw_readl(WDT_WWPS) != 0x0);
+
 	/* Setup the PLLs and the clocks for the peripherals */
 #ifdef CONFIG_SETUP_PLL
 	pll_init();

@@ -55,7 +55,11 @@
 #define ELM_BASE			0x48080000
 
 /* Watchdog Timer */
+#ifdef CONFIG_AM335X
+#define WDT_BASE			0x44E35000
+#else
 #define WDT_BASE			0x480C2000
+#endif
 
 /* Control Module Base Address */
 #ifdef CONFIG_AM335X
