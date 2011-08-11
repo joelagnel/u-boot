@@ -271,21 +271,21 @@ static struct module_pin_mux uart0_pin_mux[] = {
 
 #ifdef CONFIG_NAND
 static struct module_pin_mux nand_pin_mux[] = {
-	{OFFSET(gpmc_ad0), (MODE(0) | RXACTIVE)},	/* NAND AD0 */
-	{OFFSET(gpmc_ad1), (MODE(0) | RXACTIVE)},	/* NAND AD1 */
-	{OFFSET(gpmc_ad2), (MODE(0) | RXACTIVE)},	/* NAND AD2 */
-	{OFFSET(gpmc_ad3), (MODE(0) | RXACTIVE)},	/* NAND AD3 */
-	{OFFSET(gpmc_ad4), (MODE(0) | RXACTIVE)},	/* NAND AD4 */
-	{OFFSET(gpmc_ad5), (MODE(0) | RXACTIVE)},	/* NAND AD5 */
-	{OFFSET(gpmc_ad6), (MODE(0) | RXACTIVE)},	/* NAND AD6 */
-	{OFFSET(gpmc_ad7), (MODE(0) | RXACTIVE)},	/* NAND AD7 */
+	{OFFSET(gpmc_ad0), (MODE(0) | PULLUP_EN | RXACTIVE)},	/* NAND AD0 */
+	{OFFSET(gpmc_ad1), (MODE(0) | PULLUP_EN | RXACTIVE)},	/* NAND AD1 */
+	{OFFSET(gpmc_ad2), (MODE(0) | PULLUP_EN | RXACTIVE)},	/* NAND AD2 */
+	{OFFSET(gpmc_ad3), (MODE(0) | PULLUP_EN | RXACTIVE)},	/* NAND AD3 */
+	{OFFSET(gpmc_ad4), (MODE(0) | PULLUP_EN | RXACTIVE)},	/* NAND AD4 */
+	{OFFSET(gpmc_ad5), (MODE(0) | PULLUP_EN | RXACTIVE)},	/* NAND AD5 */
+	{OFFSET(gpmc_ad6), (MODE(0) | PULLUP_EN | RXACTIVE)},	/* NAND AD6 */
+	{OFFSET(gpmc_ad7), (MODE(0) | PULLUP_EN | RXACTIVE)},	/* NAND AD7 */
 	{OFFSET(gpmc_wait0), (MODE(0) | RXACTIVE | PULLUP_EN)}, /* NAND WAIT */
-	{OFFSET(gpmc_wpn), (MODE(0) | PULLUP_EN)},	/* NAND_WPN */
-	{OFFSET(gpmc_csn0), (MODE(0) | PULLUP_EN)},	/* NAND_CS0 */
-	{OFFSET(gpmc_advn_ale), (MODE(0) | PULLUP_EN)}, /* NAND_ADV_ALE */
-	{OFFSET(gpmc_oen_ren), (MODE(0) | PULLUP_EN)},	/* NAND_OE */
-	{OFFSET(gpmc_wen), (MODE(0) | PULLUP_EN)},	/* NAND_WEN */
-	{OFFSET(gpmc_be0n_cle), (MODE(0) | PULLUP_EN)},	/* NAND_BE_CLE */
+	{OFFSET(gpmc_wpn), (MODE(7) | PULLUP_EN | RXACTIVE)},	/* NAND_WPN */
+	{OFFSET(gpmc_csn0), (MODE(0) | PULLUDEN)},	/* NAND_CS0 */
+	{OFFSET(gpmc_advn_ale), (MODE(0) | PULLUDEN)}, /* NAND_ADV_ALE */
+	{OFFSET(gpmc_oen_ren), (MODE(0) | PULLUDEN)},	/* NAND_OE */
+	{OFFSET(gpmc_wen), (MODE(0) | PULLUDEN)},	/* NAND_WEN */
+	{OFFSET(gpmc_be0n_cle), (MODE(0) | PULLUDEN)},	/* NAND_BE_CLE */
 	{-1},
 };
 #endif

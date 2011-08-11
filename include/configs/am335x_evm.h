@@ -56,7 +56,7 @@
 #define CONFIG_NAND		1
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"verify=yes\0" \
-	"bootcmd=nand read 0x81000000 0x20000 0x40000; go 0x81000000\0"
+	"bootcmd=nand read 0x81000000 0x80000 0x40000; go 0x81000000\0"
 #endif
 
 #if defined(CONFIG_NOR_BOOT)
@@ -120,7 +120,7 @@
 	"nand_root_fs_type=jffs2\0" \
 	"spi_root_fs_type=jffs2\0" \
 	"nor_root_fs_type=jffs2\0" \
-	"nand_src_addr=0x280000\0" \
+	"nand_src_addr=0x2e0000\0" \
 	"spi_src_addr=0x62000\0" \
 	"nor_src_addr=0x08080000\0" \
 	"nand_img_siz=0x440000\0" \
@@ -297,7 +297,7 @@
 #ifdef CONFIG_NAND
 #define CONFIG_CMD_NAND
 #define CONFIG_NAND_TI81XX
-#define GPMC_NAND_ECC_LP_x8_LAYOUT	1
+#define GPMC_NAND_ECC_LP_x16_LAYOUT	1
 #define NAND_BASE			(0x08000000)
 #define CONFIG_SYS_NAND_ADDR		NAND_BASE	/* physical address */
 							/* to access nand */
