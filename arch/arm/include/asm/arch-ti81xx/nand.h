@@ -46,7 +46,6 @@
 		{.offset = 13,\
 		 .length = 51 } } \
 }
-#define GPMC_NAND_HW_ECC_LAYOUT_KERNEL GPMC_NAND_HW_ECC_LAYOUT
 #endif
 
 /* Large Page x16 NAND device Layout */
