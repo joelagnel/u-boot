@@ -433,10 +433,12 @@ static struct module_pin_mux mmc1_pin_mux[] = {
 
 #ifdef CONFIG_SPI
 static struct module_pin_mux spi0_pin_mux[] = {
-	{OFFSET(spi0_sclk), MODE(0) | PULLUP_EN },  /*SPI0_SCLK */
-	{OFFSET(spi0_d0), MODE(0) | PULLUP_EN},    /*SPI0_D0 */
-	{OFFSET(spi0_d1), MODE(0) | RXACTIVE | PULLUP_EN},    /*SPI0_D1 */
-	{OFFSET(spi0_cs0), MODE(0) | PULLUP_EN},   /*SPI0_CS0 */
+	{OFFSET(spi0_sclk), MODE(0) | PULLUDEN | RXACTIVE},	/*SPI0_SCLK */
+	{OFFSET(spi0_d0), MODE(0) | PULLUDEN | PULLUP_EN |
+							RXACTIVE}, /*SPI0_D0 */
+	{OFFSET(spi0_d1), MODE(0) | PULLUDEN |
+							RXACTIVE}, /*SPI0_D1 */
+	{OFFSET(spi0_cs0), MODE(0) | PULLUDEN | PULLUP_EN | RXACTIVE},	/*SPI0_CS0 */
 	{-1},
 };
 
