@@ -94,22 +94,22 @@ extern void rtl8019_get_enetaddr (uchar * addr);
  */
 void inline __coloured_LED_init (void) {}
 void coloured_LED_init (void) __attribute__((weak, alias("__coloured_LED_init")));
-void inline __red_LED_on (void) {}
-void red_LED_on (void) __attribute__((weak, alias("__red_LED_on")));
-void inline __red_LED_off(void) {}
-void red_LED_off(void) __attribute__((weak, alias("__red_LED_off")));
-void inline __green_LED_on(void) {}
-void green_LED_on(void) __attribute__((weak, alias("__green_LED_on")));
-void inline __green_LED_off(void) {}
-void green_LED_off(void) __attribute__((weak, alias("__green_LED_off")));
-void inline __yellow_LED_on(void) {}
-void yellow_LED_on(void) __attribute__((weak, alias("__yellow_LED_on")));
-void inline __yellow_LED_off(void) {}
-void yellow_LED_off(void) __attribute__((weak, alias("__yellow_LED_off")));
-void inline __blue_LED_on(void) {}
-void blue_LED_on(void) __attribute__((weak, alias("__blue_LED_on")));
-void inline __blue_LED_off(void) {}
-void blue_LED_off(void) __attribute__((weak, alias("__blue_LED_off")));
+void inline __red_led_on (void) {}
+void red_led_on (void) __attribute__((weak, alias("__red_led_on")));
+void inline __red_led_off(void) {}
+void red_led_off(void) __attribute__((weak, alias("__red_led_off")));
+void inline __green_led_on(void) {}
+void green_led_on(void) __attribute__((weak, alias("__green_led_on")));
+void inline __green_led_off(void) {}
+void green_led_off(void) __attribute__((weak, alias("__green_led_off")));
+void inline __yellow_led_on(void) {}
+void yellow_led_on(void) __attribute__((weak, alias("__yellow_led_on")));
+void inline __yellow_led_off(void) {}
+void yellow_led_off(void) __attribute__((weak, alias("__yellow_led_off")));
+void inline __blue_led_on(void) {}
+void blue_led_on(void) __attribute__((weak, alias("__blue_led_on")));
+void inline __blue_led_off(void) {}
+void blue_led_off(void) __attribute__((weak, alias("__blue_led_off")));
 
 /************************************************************************
  * Init Utilities							*
