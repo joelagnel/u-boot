@@ -100,47 +100,22 @@ DECLARE_GLOBAL_DATA_PTR;
 #define TLK110_PHYIDR1		0x2000
 #define TLK110_PHYIDR2		0xA201
 
-struct dghtr_brd_id_hdr {
-	unsigned int  header;
-	char board_name[8];
-	char version[4];
-	char serial_num[12];
-	unsigned char config[32];
-};
-
 #define NO_OF_MAC_ADDR          3
 #define ETH_ALEN		6
-struct basebrd_id_hdr {
-	unsigned int  header;
-	char board_name[8];
+
+struct am335x_baseboard_id {
+	unsigned int  magic;
+	char name[8];
 	char version[4];
-	char serial_num[12];
-	unsigned char config[32];
-	unsigned char mac_addr[NO_OF_MAC_ADDR][ETH_ALEN];
+	char serial[12];
+	char config[32];
+	char mac_addr[NO_OF_MAC_ADDR][ETH_ALEN];
 };
 
-static struct basebrd_id_hdr brd_id_hdr;
-
-static struct dghtr_brd_id_hdr db_header[NO_OF_DAUGHTER_BOARDS] = {
-	{
-	.header = 0xAA5533EE,
-	.board_name = "A335GPBD", /* General purpose daughter board */
-	.version = "1.0A",
-	},
-	{
-	.header = 0xAA5533EE,
-	.board_name = "A335IAMC", /* Industrial automation board */
-	.version = "1.0A",
-
-	},
-	{
-	.header = 0xAA5533EE,
-	.board_name = "A335IPPH", /* IP Phone daughter board */
-	.version = "1.0A",
-	}
-};
-
+static struct am335x_baseboard_id header;
 extern void cpsw_eth_set_mac_addr(const u_int8_t *addr);
+static unsigned char daughter_board_connected;
+static volatile int board_id = BASE_BOARD;
 
 static void init_timer(void)
 {
@@ -449,38 +424,19 @@ void s_init(u32 in_ddr)
 #endif
 }
 
-
-static unsigned char daughter_board_id = BASE_BOARD_ONLY;
-/*
- * Daughter board detection: All boards have i2c based EEPROM in all the
- * profiles. Base boards and daughter boards are assigned unique I2C Address.
- * We probe for daughter card and then if sucessful, read the EEPROM to find
- * daughter card type.
- */
 static void detect_daughter_board(void)
 {
-	struct dghtr_brd_id_hdr st_dghtr_brd_id_hdr;
-	unsigned char db_board_id = GP_DAUGHTER_BOARD;
-
 	/* Check if daughter board is conneted */
-	if (i2c_probe(I2C_DAUGHTER_BOARD_ADDR))
+	if (i2c_probe(I2C_DAUGHTER_BOARD_ADDR)) {
+		//printf("No daughter card present\n");
 		return;
-
-	/* read the eeprom using i2c */
-	if (i2c_read(I2C_DAUGHTER_BOARD_ADDR, 0, 1, (uchar *)
-		(&st_dghtr_brd_id_hdr), sizeof(struct dghtr_brd_id_hdr)))
-		return;
-
-	do {
-		if (!strncmp(db_header[db_board_id].board_name,
-				st_dghtr_brd_id_hdr.board_name, 8)) {
-			daughter_board_id = db_board_id;
-			break;
-		}
-	} while (++db_board_id < NO_OF_DAUGHTER_BOARDS);
+	} else {
+		//printf("Found a daughter card connected\n");
+		daughter_board_connected = 1;
+	}
 }
 
-static unsigned char evm_profile = PROFILE_0;
+static unsigned char profile = PROFILE_0;
 static void detect_daughter_board_profile(void)
 {
 	unsigned short val;
@@ -491,7 +447,7 @@ static void detect_daughter_board_profile(void)
 	if (i2c_read(I2C_CPLD_ADDR, CFG_REG, 1, (unsigned char *)(&val), 2))
 		return;
 
-	evm_profile = (val & 0x7);
+	profile = 1 << (val & 0x7);
 }
 
 /*
@@ -504,7 +460,7 @@ int board_min_init(void)
 	u32 uart_base = DEFAULT_UART_BASE;
 
 	/* IA Motor Control Board has default console on UART3*/
-	if (daughter_board_id == IA_DAUGHTER_BOARD) {
+	if (board_id == IA_BOARD) {
 		uart_base = UART3_BASE;
 	}
 
@@ -544,7 +500,7 @@ int board_evm_init(void)
 struct serial_device *default_serial_console(void)
 {
 
-	if (daughter_board_id != IA_DAUGHTER_BOARD) {
+	if (board_id != IA_BOARD) {
 		return &eserial1_device;	/* UART0 */
 	} else {
 		/* Change console to tty03 for IA Motor Control EVM */
@@ -556,67 +512,47 @@ struct serial_device *default_serial_console(void)
 
 int board_init(void)
 {
-	char sku_config[7];
-	unsigned int dghtr_brd_valid;
-
 	/* Configure the i2c0 pin mux */
 	enable_i2c0_pin_mux();
 
 	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
 
 	/* Check if baseboard eeprom is available */
-	if (i2c_probe(I2C_BASE_BOARD_ADDR))
-		return 1; /* something is seriously wrong */
+	if (i2c_probe(I2C_BASE_BOARD_ADDR)) {
+		//printf("Could not probe the EEPROM; something fundamentally "
+		//	"wrong on the I2C bus.\n");
+		return 1;
+	}
 
 	/* read the eeprom using i2c */
-	if (i2c_read(I2C_BASE_BOARD_ADDR, 0, 1, (uchar *)
-		(&brd_id_hdr), sizeof(struct basebrd_id_hdr)))
-		return 1;	/* something is seriously wrong */
+	if (i2c_read(I2C_BASE_BOARD_ADDR, 0, 1, (uchar *)&header,
+							sizeof(header))) {
+		//printf("Could not read the EEPROM; something fundamentally"
+		//	" wrong on the I2C bus.\n");
+		return 1;
+	}
 
 	if (header.magic != 0xEE3355AA) {
+		//printf("Incorrect magic number in EEPROM\n");
 		return 0;
 	}
 
 	detect_daughter_board();
 
-	if ((daughter_board_id == GP_DAUGHTER_BOARD) ||
-				(daughter_board_id == IA_DAUGHTER_BOARD))
+	if (!strncmp("SKU#01", header.config, 6)) {
+		board_id = GP_BOARD;
 		detect_daughter_board_profile();
+	} else if (!strncmp("SKU#02", header.config, 6)) {
+		board_id = IA_BOARD;
+		detect_daughter_board_profile();
+	} else if (!strncmp("SKU#03", header.config, 6)) {
+		board_id = IPP_BOARD;
+	} else {
+		//printf("Did not find a recognized configuration, "
+		//	"assuming just a base board\n");
+	}
 
-	memcpy(sku_config, brd_id_hdr.config, 6);
-	sku_config[6] = '\0';
-
-	/*
-	* If any daughter board is already detected, daughter board detection
-	* logic	detect_daughter_board() would have changed
-	* daughter_board_id to appropriate evm id. If not set means no daughter
-	* board is detected.
-	*/
-	if (daughter_board_id != BASE_BOARD_ONLY)
-		dghtr_brd_valid = 1;
-
-	if (!strncmp("SKU#00", sku_config, 6) &&
-			(daughter_board_id == BASE_BOARD_ONLY))
-		configure_evm_pin_mux(BASE_BOARD_ONLY, PROFILE_NONE,
-							dghtr_brd_valid);
-	else if (!strncmp("SKU#01", sku_config, 6) &&
-			(daughter_board_id == GP_DAUGHTER_BOARD))
-		configure_evm_pin_mux(GP_DAUGHTER_BOARD, (1L << evm_profile),
-							dghtr_brd_valid);
-	else if (!strncmp("SKU#02", sku_config, 6) &&
-			(daughter_board_id == IA_DAUGHTER_BOARD))
-		configure_evm_pin_mux(IA_DAUGHTER_BOARD, (1L << evm_profile),
-							dghtr_brd_valid);
-	else if (!strncmp("SKU#03", sku_config, 6) &&
-			(daughter_board_id == IPP_DAUGHTER_BOARD))
-		configure_evm_pin_mux(IPP_DAUGHTER_BOARD, PROFILE_NONE,
-							dghtr_brd_valid);
-	else
-		/*
-		printf("AM335X: Invalid configuration. Board %s, sku %s, "
-				"evm Id %d\n", brd_name, sku_config,
-				daughter_board_id);
-		*/
+	configure_evm_pin_mux(board_id, profile, daughter_board_connected);
 
 #ifdef CONFIG_AM335X_MIN_CONFIG
 	board_min_init();
@@ -635,40 +571,32 @@ int board_init(void)
  * motor control EVM.
  */
 static void set_spi_bus_on_board_detect(void){
-	if (daughter_board_id == IA_DAUGHTER_BOARD)
+	if (board_id == IA_DAUGHTER_BOARD)
 		setenv("spi_bus_no", "1");
 }
 
 int board_late_init(void){
-		set_spi_bus_on_board_detect();
-		return 0;
+	set_spi_bus_on_board_detect();
+	return 0;
 }
 #endif
 
 /* Display the board info */
 int checkboard(void)
 {
-	if (daughter_board_id == GP_DAUGHTER_BOARD)
-		printf("board: General purpose daughter card connected");
-	else if (daughter_board_id == IA_DAUGHTER_BOARD)
-		printf("board: IA motor control daughter card connected");
-	else if (daughter_board_id == IPP_DAUGHTER_BOARD)
-		printf("board: IPP daughter card connected");
-	else
-		printf("board: No daughter card connected");
-
 #ifdef CONFIG_AM335X_MIN_CONFIG
+	if (board_id == GP_BOARD) {
 #ifdef CONFIG_NAND
-	if ((daughter_board_id == GP_DAUGHTER_BOARD) &&
-		(((1L << evm_profile)  == PROFILE_2) ||
-			((1L << evm_profile) == PROFILE_3)))
-		printf("NAND boot: Profile setting is wrong!!");
+		if (profile & (PROFILE_2 | PROFILE_3))
+			printf("NAND: NAND device not present in selected "
+				"profile. Change the profile and reboot\n");
 #endif
 #ifdef CONFIG_NOR
-	if ((daughter_board_id != GP_DAUGHTER_BOARD) ||
-		((1L << evm_profile) != PROFILE_3))
-		printf("NOR boot: Profile setting is wrong!!");
+		if (!(profile & PROFILE_3))
+			printf("NOR: NOR device not present in selected "
+				"profile. Change the profile and reboot\n");
 #endif
+	}
 #endif
 	return 0;
 }
@@ -772,7 +700,7 @@ static void evm_phy_init(char *name, int addr)
 	miiphy_read(name, addr, MII_BMCR, &val);
 
 	/* Setup GIG advertisement only if it is not IA board */
-	if (daughter_board_id != IA_DAUGHTER_BOARD) {
+	if (board_id != IA_BOARD) {
 		miiphy_read(name, addr, MII_CTRL1000, &val);
 		val |= PHY_1000BTCR_1000FD;
 		val &= ~PHY_1000BTCR_1000HD;
@@ -887,10 +815,10 @@ int board_eth_init(bd_t *bis)
 	}
 
 	/* set mii mode to rgmii in in device configure register */
-	if (daughter_board_id != IA_DAUGHTER_BOARD)
+	if (board_id != IA_BOARD)
 		__raw_writel(RGMII_MODE_ENABLE, MAC_MII_SEL);
 
-	if (daughter_board_id == IA_DAUGHTER_BOARD) {
+	if (board_id == IA_BOARD) {
 		cpsw_slaves[0].phy_id = 1;
 		cpsw_slaves[1].phy_id = 0;
 	}

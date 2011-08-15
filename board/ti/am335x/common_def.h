@@ -17,22 +17,22 @@
 
 #define NO_OF_DAUGHTER_BOARDS	3
 
-/* Daughter Card type */
-#define GP_DAUGHTER_BOARD	0
-#define IA_DAUGHTER_BOARD	1
-#define IPP_DAUGHTER_BOARD	2
-#define BASE_BOARD_ONLY		3
+/* EVM type */
+#define GP_BOARD	0
+#define IA_BOARD	1
+#define IPP_BOARD	2
+#define BASE_BOARD	3
 
 /* Profiles */
 #define PROFILE_NONE	0x0
-#define PROFILE_0	(0x1 << 0)
-#define PROFILE_1	(0x1 << 1)
-#define PROFILE_2	(0x1 << 2)
-#define PROFILE_3	(0x1 << 3)
-#define PROFILE_4	(0x1 << 4)
-#define PROFILE_5	(0x1 << 5)
-#define PROFILE_6	(0x1 << 6)
-#define PROFILE_7	(0x1 << 7)
+#define PROFILE_0	(1 << 0)
+#define PROFILE_1	(1 << 1)
+#define PROFILE_2	(1 << 2)
+#define PROFILE_3	(1 << 3)
+#define PROFILE_4	(1 << 4)
+#define PROFILE_5	(1 << 5)
+#define PROFILE_6	(1 << 6)
+#define PROFILE_7	(1 << 7)
 #define PROFILE_ALL	0xFF
 
 extern void pll_init(void);
