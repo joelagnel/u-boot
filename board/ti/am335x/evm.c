@@ -866,19 +866,22 @@ int board_eth_init(bd_t *bis)
 		mac_addr[3] = (mac_hi & 0xFF000000) >> 24;
 		mac_addr[4] = mac_lo & 0xFF;
 		mac_addr[5] = (mac_lo & 0xFF00) >> 8;
-	}
 
-	if (!is_valid_ether_addr(mac_addr)) {
-		/* Read MACID from eeprom if MACID in eFuse is not valid */
-		for (i = 0; i < ETH_ALEN; i++)
-			mac_addr[i] = brd_id_hdr.mac_addr[0][i];
-	}
+		if (!is_valid_ether_addr(mac_addr)) {
+			printf("Did not find a valid mac address in e-fuse. "
+				"Trying the one present in EEPROM\n");
 
-	if (is_valid_ether_addr(mac_addr))
-		/* set the ethaddr variable with MACID detected */
-		eth_setenv_enetaddr("ethaddr", mac_addr);
-	else
-		printf("Caution:using static MACID!! Set <ethaddr> variable\n");
+			for (i = 0; i < ETH_ALEN; i++)
+				mac_addr[i] = header.mac_addr[0][i];
+		}
+
+		if (is_valid_ether_addr(mac_addr))
+			eth_setenv_enetaddr("ethaddr", mac_addr);
+		else {
+			printf("Caution: Using hardcoded mac address. "
+				"Set <ethaddr> variable to overcome this.\n");
+		}
+	}
 
 	/* set mii mode to rgmii in in device configure register */
 	if (daughter_board_id != IA_DAUGHTER_BOARD)
