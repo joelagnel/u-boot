@@ -34,6 +34,7 @@
 #endif
 #define UART1_BASE			0x48022000
 #define UART2_BASE			0x48024000
+#define UART3_BASE			0x481A6000
 
 /* McSPI register */
 /* In ti814x the following address if for MCSPI0 */
