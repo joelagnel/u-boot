@@ -30,10 +30,14 @@
 #include <spi_flash.h>
 #include "common_def.h"
 #include <i2c.h>
+#include <serial.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
 /* UART Defines */
+#define UART_SYSCFG_OFFSET	(0x54)
+#define UART_SYSSTS_OFFSET	(0x58)
+
 #define UART_RESET		(0x1 << 1)
 #define UART_CLK_RUNNING_MASK	0x1
 #define UART_SMART_IDLE_EN	(0x1 << 0x3)
@@ -497,18 +501,24 @@ static void detect_daughter_board_profile(void)
 int board_min_init(void)
 {
 	u32 regVal;
+	u32 uart_base = DEFAULT_UART_BASE;
+
+	/* IA Motor Control Board has default console on UART3*/
+	if (daughter_board_id == IA_DAUGHTER_BOARD) {
+		uart_base = UART3_BASE;
+	}
 
 	/* UART softreset */
-	regVal = __raw_readl(UART_SYSCFG);
+	regVal = __raw_readl(uart_base + UART_SYSCFG_OFFSET);
 	regVal |= UART_RESET;
-	__raw_writel(regVal, UART_SYSCFG);
-	while ((__raw_readl(UART_SYSSTS) & UART_CLK_RUNNING_MASK) !=
-		UART_CLK_RUNNING_MASK);
+	__raw_writel(regVal, (uart_base + UART_SYSCFG_OFFSET) );
+	while ((__raw_readl(uart_base + UART_SYSSTS_OFFSET) &
+			UART_CLK_RUNNING_MASK) != UART_CLK_RUNNING_MASK);
 
 	/* Disable smart idle */
-	regVal = __raw_readl(UART_SYSCFG);
+	regVal = __raw_readl((uart_base + UART_SYSCFG_OFFSET));
 	regVal |= UART_SMART_IDLE_EN;
-	__raw_writel(regVal, UART_SYSCFG);
+	__raw_writel(regVal, (uart_base + UART_SYSCFG_OFFSET));
 
 	/* Initialize the Timer */
 	init_timer();
@@ -527,6 +537,19 @@ int board_evm_init(void)
 	return 0;
 }
 #endif
+
+struct serial_device *default_serial_console(void)
+{
+
+	if (daughter_board_id != IA_DAUGHTER_BOARD) {
+		return &eserial1_device;	/* UART0 */
+	} else {
+		/* Change console to tty03 for IA Motor Control EVM */
+		setenv("console", "ttyO3,115200n8");
+
+		return &eserial4_device;	/* UART3 */
+	}
+}
 
 int board_init(void)
 {

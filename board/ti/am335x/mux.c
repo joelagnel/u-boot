@@ -269,6 +269,13 @@ static struct module_pin_mux uart0_pin_mux[] = {
 	{-1},
 };
 
+static struct module_pin_mux uart3_pin_mux[] = {
+	{OFFSET(spi0_cs1), (MODE(1) | PULLUDEN | RXACTIVE)},	/* UART3_RXD */
+	{OFFSET(ecap0_in_pwm0_out), (MODE(1) | PULLUDEN)},	/* UART3_TXD */
+	{-1},
+};
+
+
 #ifdef CONFIG_NAND
 static struct module_pin_mux nand_pin_mux[] = {
 	{OFFSET(gpmc_ad0), (MODE(0) | PULLUP_EN | RXACTIVE)},	/* NAND AD0 */
@@ -500,6 +507,7 @@ static struct evm_pin_mux ia_motor_control_evm_pin_mux[] = {
 #ifndef CONFIG_NO_ETH
 	{mii1_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
 #endif
+	{uart3_pin_mux, PROFILE_ALL, DEV_ON_DGHTR_BRD},
 	{0},
 };
 

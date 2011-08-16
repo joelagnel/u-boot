@@ -34,6 +34,7 @@
 #endif
 #define UART1_BASE			0x48022000
 #define UART2_BASE			0x48024000
+#define UART3_BASE			0x481A6000
 
 /* DM Timer base addresses */
 #define DM_TIMER0_BASE			0x4802C000
