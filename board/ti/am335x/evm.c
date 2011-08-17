@@ -529,7 +529,10 @@ int board_min_init(void)
 int board_evm_init(void)
 {
 	/* mach type passed to kernel */
-	gd->bd->bi_arch_number = MACH_TYPE_TIAM335EVM;
+	if (board_id == IA_BOARD)
+		gd->bd->bi_arch_number = MACH_TYPE_TIAM335IAEVM;
+	else
+		gd->bd->bi_arch_number = MACH_TYPE_TIAM335EVM;
 
 	/* address of boot parameters */
 	gd->bd->bi_boot_params = PHYS_DRAM_1 + 0x100;
