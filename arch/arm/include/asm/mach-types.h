@@ -3041,6 +3041,7 @@ extern unsigned int __machine_arch_type;
 #define MACH_TYPE_SPEAR900             3061
 #define MACH_TYPE_PCONTROL_G20         3062
 #define MACH_TYPE_TIAM335EVM           3589
+#define MACH_TYPE_TIAM335IAEVM         3684
 
 #ifdef CONFIG_ARCH_EBSA110
 # ifdef machine_arch_type
