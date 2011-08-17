@@ -262,9 +262,7 @@ struct evm_pin_mux {
 				(PAD_CTRL_BASE))->x)
 
 static struct module_pin_mux uart0_pin_mux[] = {
-	{OFFSET(uart0_ctsn), (MODE(0) | PULLUDEN | RXACTIVE)},	/* UART0_CTS */
-	{OFFSET(uart0_rtsn), (MODE(0) | PULLUDEN)},		/* UART0_RTS */
-	{OFFSET(uart0_rxd), (MODE(0) | PULLUDEN | RXACTIVE)},	/* UART0_RXD */
+	{OFFSET(uart0_rxd), (MODE(0) | PULLUP_EN | RXACTIVE)},	/* UART0_RXD */
 	{OFFSET(uart0_txd), (MODE(0) | PULLUDEN)},		/* UART0_TXD */
 	{-1},
 };
