@@ -304,6 +304,7 @@ struct gptimer {
 #define CM_PER_CPSW_CLKSTCTRL		(CM_PER + 0x144)/* Ethernet */
 #define CM_PER_OCMCRAM_CLKCTRL		(CM_PER	+ 0x2C) /* OCMC RAM */
 #define CM_PER_GPIO2_CLKCTRL		(CM_PER + 0xB0) /* GPIO2 */
+#define CM_PER_UART3_CLKCTRL		(CM_PER + 0x74) /* UART3 */
 
 #define CM_PER_MMC0_CLKCTRL     	(CM_PER + 0x3C)
 #define CM_PER_MMC1_CLKCTRL     	(CM_PER + 0xF4)

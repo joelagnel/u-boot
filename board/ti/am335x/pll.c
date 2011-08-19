@@ -85,6 +85,10 @@ static void per_clocks_enable(void)
 	__raw_writel(PRCM_MOD_EN, CM_WKUP_UART0_CLKCTRL);
 	while (__raw_readl(CM_WKUP_UART0_CLKCTRL) != PRCM_MOD_EN);
 
+	/* UART3 */
+	__raw_writel(PRCM_MOD_EN, CM_PER_UART3_CLKCTRL);
+	while (__raw_readl(CM_PER_UART3_CLKCTRL) != PRCM_MOD_EN);
+
 	/* GPMC */
 	__raw_writel(PRCM_MOD_EN, CM_PER_GPMC_CLKCTRL);
 	while (__raw_readl(CM_PER_GPMC_CLKCTRL) != PRCM_MOD_EN);
