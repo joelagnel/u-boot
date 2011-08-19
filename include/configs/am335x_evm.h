@@ -45,7 +45,6 @@
 
 # if defined(CONFIG_SPI_BOOT)
 #  define CONFIG_SPI			1
-#  define BOARD_LATE_INIT               1
 #  define CONFIG_EXTRA_ENV_SETTINGS \
 	"verify=yes\0" \
 	"spi_bus_no=0\0" \
@@ -169,7 +168,7 @@
 		"bootm ${loadaddr}\0" \
 	"spi_boot=echo Booting from spi ...; " \
 		"run spi_args; " \
-		"sf probe ${spi_bus_no}; " \
+		"sf probe ${spi_bus_no}:0; " \
 		"sf read ${loadaddr} ${spi_src_addr} ${spi_img_siz}; " \
 		"bootm ${loadaddr}\0" \
 	"nor_boot=echo Booting from NOR ...; " \
@@ -356,6 +355,7 @@
 
 /* SPI support */
 #ifdef CONFIG_SPI
+#define BOARD_LATE_INIT               1
 #define CONFIG_OMAP3_SPI
 #define CONFIG_MTD_DEVICE
 #define CONFIG_SPI_FLASH
