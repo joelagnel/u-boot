@@ -80,6 +80,7 @@ struct s5pc210_gpio_part3 {
 };
 
 /* functions */
+<<<<<<< HEAD
 void gpio_cfg_pin(struct s5p_gpio_bank *bank, int gpio, int cfg);
 void gpio_direction_output(struct s5p_gpio_bank *bank, int gpio, int en);
 void gpio_direction_input(struct s5p_gpio_bank *bank, int gpio);
@@ -88,6 +89,45 @@ unsigned int gpio_get_value(struct s5p_gpio_bank *bank, int gpio);
 void gpio_set_pull(struct s5p_gpio_bank *bank, int gpio, int mode);
 void gpio_set_drv(struct s5p_gpio_bank *bank, int gpio, int mode);
 void gpio_set_rate(struct s5p_gpio_bank *bank, int gpio, int mode);
+=======
+void s5p_gpio_cfg_pin(struct s5p_gpio_bank *bank, int gpio, int cfg);
+void s5p_gpio_direction_output(struct s5p_gpio_bank *bank, int gpio, int en);
+void s5p_gpio_direction_input(struct s5p_gpio_bank *bank, int gpio);
+void s5p_gpio_set_value(struct s5p_gpio_bank *bank, int gpio, int en);
+unsigned int s5p_gpio_get_value(struct s5p_gpio_bank *bank, int gpio);
+void s5p_gpio_set_pull(struct s5p_gpio_bank *bank, int gpio, int mode);
+void s5p_gpio_set_drv(struct s5p_gpio_bank *bank, int gpio, int mode);
+void s5p_gpio_set_rate(struct s5p_gpio_bank *bank, int gpio, int mode);
+
+/* GPIO pins per bank  */
+#define GPIO_PER_BANK 8
+
+#define s5pc210_gpio_part1_get_nr(bank, pin) \
+	((((((unsigned int) &(((struct s5pc210_gpio_part1 *) \
+			       S5PC210_GPIO_PART1_BASE)->bank)) \
+	    - S5PC210_GPIO_PART1_BASE) / sizeof(struct s5p_gpio_bank)) \
+	  * GPIO_PER_BANK) + pin)
+
+#define GPIO_PART1_MAX ((sizeof(struct s5pc210_gpio_part1) \
+			    / sizeof(struct s5p_gpio_bank)) * GPIO_PER_BANK)
+
+#define s5pc210_gpio_part2_get_nr(bank, pin) \
+	(((((((unsigned int) &(((struct s5pc210_gpio_part2 *) \
+				S5PC210_GPIO_PART2_BASE)->bank)) \
+	    - S5PC210_GPIO_PART2_BASE) / sizeof(struct s5p_gpio_bank)) \
+	  * GPIO_PER_BANK) + pin) + GPIO_PART1_MAX)
+
+static inline unsigned int s5p_gpio_base(int nr)
+{
+	if (nr < GPIO_PART1_MAX)
+		return S5PC210_GPIO_PART1_BASE;
+	else
+		return S5PC210_GPIO_PART2_BASE;
+
+	return 0;
+}
+
+>>>>>>> 9f15bc0... i2c:gpio:s5p: I2C GPIO Software implementation (via soft_i2c)
 #endif
 
 /* Pin configurations */
