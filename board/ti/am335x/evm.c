@@ -503,9 +503,6 @@ struct serial_device *default_serial_console(void)
 	if (board_id != IA_BOARD) {
 		return &eserial1_device;	/* UART0 */
 	} else {
-		/* Change console to tty03 for IA Motor Control EVM */
-		setenv("console", "ttyO3,115200n8");
-
 		return &eserial4_device;	/* UART3 */
 	}
 }
@@ -566,17 +563,18 @@ int board_init(void)
 }
 
 #ifdef BOARD_LATE_INIT
-/*
- * SPI bus number is switched to in case Industrial Automation
- * motor control EVM.
- */
-static void set_spi_bus_on_board_detect(void){
-	if (board_id == IA_DAUGHTER_BOARD)
+int board_late_init(void)
+{
+	if (board_id == IA_BOARD) {
+		/*
+		* SPI bus number is switched to in case Industrial Automation
+		* motor control EVM.
+		*/
 		setenv("spi_bus_no", "1");
-}
+		/* Change console to tty03 for IA Motor Control EVM */
+		setenv("console", "ttyO3,115200n8");
+	}
 
-int board_late_init(void){
-	set_spi_bus_on_board_detect();
 	return 0;
 }
 #endif
