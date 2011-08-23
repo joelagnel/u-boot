@@ -25,14 +25,11 @@
 #include <asm/arch/i2c.h>
 #include <asm/io.h>
 
-#include "omap24xx_i2c.h"
-
 DECLARE_GLOBAL_DATA_PTR;
 
-#define I2C_TIMEOUT	1000
-
-static void wait_for_bb(void);
-static u16 wait_for_pin(void);
+#define I2C_TIMEOUT   ( 1 << 31)
+static u32 wait_for_bb (void);
+static u32 wait_for_status_mask(u16 mask);
 static void flush_fifo(void);
 
 static struct i2c *i2c_base = (struct i2c *)I2C_DEFAULT_BASE;
@@ -45,20 +42,17 @@ void i2c_init(int speed, int slaveadd)
 	int psc, fsscll, fssclh;
 	int hsscll = 0, hssclh = 0;
 	u32 scll, sclh;
-	int timeout = I2C_TIMEOUT;
 
 	/* Only handle standard, fast and high speeds */
 	if ((speed != OMAP_I2C_STANDARD) &&
 	    (speed != OMAP_I2C_FAST_MODE) &&
 	    (speed != OMAP_I2C_HIGH_SPEED)) {
-		printf("Error : I2C unsupported speed %d\n", speed);
 		return;
 	}
 
 	psc = I2C_IP_CLK / I2C_INTERNAL_SAMPLING_CLK;
 	psc -= 1;
 	if (psc < I2C_PSC_MIN) {
-		printf("Error : I2C unsupported prescalar %d\n", psc);
 		return;
 	}
 
@@ -73,7 +67,6 @@ void i2c_init(int speed, int slaveadd)
 		fssclh -= I2C_HIGHSPEED_PHASE_ONE_SCLH_TRIM;
 		if (((fsscll < 0) || (fssclh < 0)) ||
 		    ((fsscll > 255) || (fssclh > 255))) {
-			printf("Error : I2C initializing first phase clock\n");
 			return;
 		}
 
@@ -84,7 +77,6 @@ void i2c_init(int speed, int slaveadd)
 		hssclh -= I2C_HIGHSPEED_PHASE_TWO_SCLH_TRIM;
 		if (((fsscll < 0) || (fssclh < 0)) ||
 		    ((fsscll > 255) || (fssclh > 255))) {
-			printf("Error : I2C initializing second phase clock\n");
 			return;
 		}
 
@@ -99,7 +91,6 @@ void i2c_init(int speed, int slaveadd)
 		fssclh -= I2C_FASTSPEED_SCLH_TRIM;
 		if (((fsscll < 0) || (fssclh < 0)) ||
 		    ((fsscll > 255) || (fssclh > 255))) {
-			printf("Error : I2C initializing clock\n");
 			return;
 		}
 
@@ -132,149 +123,6 @@ void i2c_init(int speed, int slaveadd)
 	writew (0, I2C_CNT);
 }
 
-static int i2c_read_byte(u8 devaddr, u8 regoffset, u8 *value)
-{
-	int i2c_error = 0;
-	u16 status;
-
-	/* wait until bus not busy */
-	wait_for_bb();
-
-	/* one byte only */
-	writew (1, I2C_CNT);
-	/* set slave address */
-	writew (devaddr, I2C_SA);
-	/* no stop bit needed here */
-	writew (I2C_CON_EN | I2C_CON_MST | I2C_CON_TRX | I2C_CON_STT, I2C_CON);
-	status = wait_for_pin ();
-
-	if (status & I2C_STAT_XRDY) {
-		/* Important: have to use byte access */
-		writew (regoffset, I2C_DATA);
-		udelay (20000);
-		if (readw (I2C_STAT) & I2C_STAT_NACK) {
-			i2c_error = 1;
-			goto read_exit;
-		}
-	} else {
-		i2c_error = 1;
-	}
-
-	if (!i2c_error) {
-		/* free bus, otherwise we can't use a combined transction */
-		writew (I2C_CON_EN, I2C_CON);
-		while (readw (I2C_STAT) & ((I2C_STAT_RRDY) | (I2C_STAT_ARDY))) {
-			udelay (10000);
-			/* Have to clear pending interrupt to clear I2C_STAT */
-			writew (0xFFFF, I2C_STAT);
-		}
-
-		/* set slave address */
-		writew (devaddr, I2C_SA);
-		/* read one byte from slave */
-		writew (1, I2C_CNT);
-		/* need stop bit here */
-		writew (I2C_CON_EN | I2C_CON_MST | I2C_CON_STT | I2C_CON_STP,
-			I2C_CON);
-
-		status = wait_for_pin ();
-		if (status & I2C_STAT_RRDY) {
-#if defined(CONFIG_OMAP243X) || defined(CONFIG_OMAP34XX)
-			*value = readb (I2C_DATA);
-#else
-			*value = readw (I2C_DATA);
-#endif
-			udelay (20000);
-		} else {
-			i2c_error = 1;
-		}
-
-		if (!i2c_error) {
-			writew (I2C_CON_EN, I2C_CON);
-			while (readw (I2C_STAT)
-			       || (readw (I2C_CON) & I2C_CON_MST)) {
-				udelay (10000);
-				writew (0xFFFF, I2C_STAT);
-			}
-		}
-	}
-	flush_fifo();
-	writew (0xFFFF, I2C_STAT);
-	writew (0, I2C_CNT);
-	return i2c_error;
-}
-
-static int i2c_write_byte (u8 devaddr, u8 regoffset, u8 value)
-{
-	int i2c_error = 0;
-	u16 status, stat;
-
-	/* wait until bus not busy */
-	wait_for_bb ();
-
-	/* two bytes */
-	writew (2, I2C_CNT);
-	/* set slave address */
-	writew (devaddr, I2C_SA);
-	/* stop bit needed here */
-	writew (I2C_CON_EN | I2C_CON_MST | I2C_CON_STT | I2C_CON_TRX |
-		I2C_CON_STP, I2C_CON);
-
-	/* wait until state change */
-	status = wait_for_pin ();
-
-	if (status & I2C_STAT_XRDY) {
-#if defined(CONFIG_OMAP243X) || defined(CONFIG_OMAP34XX) || defined(CONFIG_TI81XX)
-		/* send out 1 byte */
-		writeb (regoffset, I2C_DATA);
-		writew (I2C_STAT_XRDY, I2C_STAT);
-
-		status = wait_for_pin ();
-		if ((status & I2C_STAT_XRDY)) {
-			/* send out next 1 byte */
-			writeb (value, I2C_DATA);
-			writew (I2C_STAT_XRDY, I2C_STAT);
-		} else {
-			i2c_error = 1;
-			goto read_exit;
-		}
-		if (status & I2C_STAT_RRDY) {
-#if defined(CONFIG_OMAP243X) || defined(CONFIG_OMAP34XX) || \
-	defined(CONFIG_OMAP44XX)
-			*value = readb(&i2c_base->data);
-#else
-		/* send out two bytes */
-		writew ((value << 8) + regoffset, I2C_DATA);
-#endif
-		/* must have enough delay to allow BB bit to go low */
-		udelay (50000);
-		if (readw (I2C_STAT) & I2C_STAT_NACK) {
-			i2c_error = 1;
-		}
-	} else {
-		i2c_error = 1;
-	}
-
-	if (!i2c_error) {
-		int eout = 200;
-
-		writew (I2C_CON_EN, I2C_CON);
-		while ((stat = readw (I2C_STAT)) || (readw (I2C_CON) & I2C_CON_MST)) {
-			udelay (1000);
-			/* have to read to clear intrrupt */
-			writew (0xFFFF, I2C_STAT);
-			if(--eout == 0) /* better leave with error than hang */
-				break;
-		}
-	}
-
-read_exit:
-	flush_fifo();
-	writew (0xFFFF, I2C_STAT);
-	writew (0, I2C_CNT);
-	return i2c_error;
-}
-
 static void flush_fifo(void)
 {	u16 stat;
 
@@ -298,14 +146,18 @@ static void flush_fifo(void)
 
 int i2c_probe(uchar chip)
 {
-	u16 status;
 	int res = 1; /* default = fail */
+	u32 status;
 
 	if (chip == readw (I2C_OA))
 		return res;
 
 	/* wait until bus not busy */
-	wait_for_bb();
+	status = wait_for_bb();
+
+	/* exiting on BUS busy */
+	if (status & I2C_TIMEOUT)
+		return res;
 
 	/* try to read one byte */
 	writew (1, I2C_CNT);
@@ -322,121 +174,331 @@ int i2c_probe(uchar chip)
 		writew(0xFFFF, I2C_STAT);
 	} else {
 		writew(0xFFFF, I2C_STAT);	 /* failue, clear sources*/
-		writew (readw (I2C_CON) | I2C_CON_STP, I2C_CON); /* finish up xfer */
+		/* finish up xfer */
+		writew(readw(I2C_CON) | I2C_CON_STP, I2C_CON);
 		udelay(20000);
-		wait_for_bb ();
+		wait_for_bb();
+		status = wait_for_bb();
+
+		/* exiting on BUS busy */
+		if (status & I2C_TIMEOUT)
+			return res;
 	}
 	flush_fifo();
-	writew (0, I2C_CNT); /* don't allow any more data in...we don't want it.*/
+	/* don't allow any more data in...we don't want it.*/
+	writew(0, I2C_CNT);
 	writew(0xFFFF, I2C_STAT);
 	return res;
 }
 
 int i2c_read(uchar chip, uint addr, int alen, uchar *buffer, int len)
 {
-	int i;
+	int i2c_error = 0, i;
+	u32 status;
 
-	if (alen > 1) {
-		printf("I2C read: addr len %d not supported\n", alen);
+	if ((alen > 2) || (alen < 0)) {
 		return 1;
 	}
 
-	if (addr + len > 256) {
-		printf("I2C read: address out of range\n");
-		return 1;
-	}
-
-	for (i = 0; i < len; i++) {
-		if (i2c_read_byte(chip, addr + i, &buffer[i])) {
-			printf("I2C read: I/O error\n");
-			i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
-			return 1;
-		}
-	}
-
-	return 0;
-}
-
-int i2c_write(uchar chip, uint addr, int alen, uchar *buffer, int len)
-{
-	int i;
-	u16 status;
-	int i2c_error = 0;
-
-	if (alen > 1) {
-		printf("I2C write: addr len %d not supported\n", alen);
-		return 1;
-	}
-
-	if (addr + len > 256) {
-		printf("I2C write: address 0x%x + 0x%x out of range\n",
-				addr, len);
+	if (addr + len > 0xFFFF) {
 		return 1;
 	}
 
 	/* wait until bus not busy */
-	wait_for_bb();
+	status = wait_for_bb();
 
-	/* start address phase - will write regoffset + len bytes data */
-	/* TODO consider case when !CONFIG_OMAP243X/34XX/44XX */
-	writew(alen + len, &i2c_base->cnt);
+	/* exiting on BUS busy */
+	if (status & I2C_TIMEOUT)
+		return 1;
+
+	/* one byte only */
+	writew((alen & 0xFF), I2C_CNT);
 	/* set slave address */
-	writew(chip, &i2c_base->sa);
-	/* stop bit needed here */
-	writew(I2C_CON_EN | I2C_CON_MST | I2C_CON_STT | I2C_CON_TRX |
-		I2C_CON_STP, &i2c_base->con);
+	writew(chip, I2C_SA);
+	/* Clear the Tx & Rx FIFOs */
+	writew((readw(I2C_BUF) | I2C_RXFIFO_CLEAR | I2C_TXFIFO_CLEAR), I2C_BUF);
+	/* no stop bit needed here */
+	writew(I2C_CON_EN | I2C_CON_MST | I2C_CON_TRX | I2C_CON_STT, I2C_CON);
 
-	/* Send address byte */
-	status = wait_for_pin();
+	/* waiting for Transmit ready condition */
+	status = wait_for_status_mask(I2C_STAT_XRDY | I2C_STAT_NACK);
 
-	if (status == 0 || status & I2C_STAT_NACK) {
+	if (status & (I2C_STAT_NACK | I2C_TIMEOUT))
 		i2c_error = 1;
-		printf("error waiting for i2c address ACK (status=0x%x)\n",
-		      status);
-		goto write_exit;
-	}
 
-	if (status & I2C_STAT_XRDY) {
-		writeb(addr & 0xFF, &i2c_base->data);
-		writew(I2C_STAT_XRDY, &i2c_base->stat);
-	} else {
-		i2c_error = 1;
-		printf("i2c bus not ready for transmit (status=0x%x)\n",
-		      status);
-		goto write_exit;
-	}
-
-	/* address phase is over, now write data */
-	for (i = 0; i < len; i++) {
-		status = wait_for_pin();
-
-		if (status == 0 || status & I2C_STAT_NACK) {
-			i2c_error = 1;
-			printf("i2c error waiting for data ACK (status=0x%x)\n",
-					status);
-			goto write_exit;
-		}
-
+	if (!i2c_error) {
 		if (status & I2C_STAT_XRDY) {
-			writeb(buffer[i], &i2c_base->data);
-			writew(I2C_STAT_XRDY, &i2c_base->stat);
-		} else {
+			switch (alen) {
+			case 2:
+				/* Send address MSByte */
+#if defined(CONFIG_OMAP243X) || defined(CONFIG_OMAP34XX)\
+		|| defined(CONFIG_TI81XX)
+				writew(((addr >> 8) & 0xFF), I2C_DATA);
+
+				/* Clearing XRDY event */
+				writew((status & I2C_STAT_XRDY), I2C_STAT);
+				/*waiting for Transmit ready * condition */
+				status = wait_for_status_mask(I2C_STAT_XRDY |
+						I2C_STAT_NACK);
+
+				if (status & (I2C_STAT_NACK |
+							I2C_TIMEOUT)) {
+					i2c_error = 1;
+					break;
+				}
+#else
+#endif
+			case 1:
+#if defined(CONFIG_OMAP243X) || defined(CONFIG_OMAP34XX)\
+		|| defined(CONFIG_TI81XX)
+				/* Send address LSByte */
+				writew((addr & 0xFF), I2C_DATA);
+#else
+				/* Send address Short word */
+				writew((addr & 0xFFFF), I2C_DATA);
+#endif
+				/* Clearing XRDY event */
+				writew((status & I2C_STAT_XRDY), I2C_STAT);
+				/*waiting for Transmit ready * condition */
+				status = wait_for_status_mask(I2C_STAT_ARDY |
+						I2C_STAT_NACK);
+
+				if (status & (I2C_STAT_NACK |
+								I2C_TIMEOUT)) {
+					i2c_error = 1;
+					break;
+				}
+			}
+		} else
 			i2c_error = 1;
-			printf("i2c bus not ready for Tx (i=%d)\n", i);
-			goto write_exit;
+	}
+
+	/* Waiting for ARDY to set */
+	status = wait_for_status_mask(I2C_STAT_ARDY | I2C_STAT_NACK
+			| I2C_STAT_AL);
+
+	if (!i2c_error) {
+		/* set slave address */
+		writew(chip, I2C_SA);
+		/* read one byte from slave */
+		writew((len & 0xFF), I2C_CNT);
+		/* Clear the Tx & Rx FIFOs */
+		writew((readw(I2C_BUF) | I2C_RXFIFO_CLEAR |
+					I2C_TXFIFO_CLEAR), I2C_BUF);
+		/* need stop bit here */
+		writew(I2C_CON_EN | I2C_CON_MST | I2C_CON_STT | I2C_CON_STP,
+				I2C_CON);
+
+		for (i = 0; i < len; i++) {
+			/* waiting for Receive condition */
+			status = wait_for_status_mask(I2C_STAT_RRDY |
+					I2C_STAT_NACK);
+
+			if (status & (I2C_STAT_NACK | I2C_TIMEOUT)) {
+				i2c_error = 1;
+				break;
+			}
+
+			if (status & I2C_STAT_RRDY) {
+#if defined(CONFIG_OMAP243X) || defined(CONFIG_OMAP34XX) \
+				|| defined(CONFIG_TI81XX)
+				buffer[i] = readb(I2C_DATA);
+#else
+				*((u16 *)&buffer[i]) = readw(I2C_DATA) & 0xFFFF;
+				i++;
+#endif
+				writew((status & I2C_STAT_RRDY), I2C_STAT);
+				udelay(1000);
+			} else {
+				i2c_error = 1;
+			}
 		}
 	}
 
-write_exit:
+	/* Waiting for ARDY to set */
+	status = wait_for_status_mask(I2C_STAT_ARDY | I2C_STAT_NACK
+			| I2C_STAT_AL);
+
+	if (i2c_error) {
+		writew(0, I2C_CON);
+		return 1;
+	}
+
+	if (!i2c_error) {
+		writew(I2C_CON_EN, I2C_CON);
+
+		while (readw(I2C_STAT)
+				|| (readw(I2C_CON) & I2C_CON_MST)) {
+			udelay(10000);
+			writew(0xFFFF, I2C_STAT);
+		}
+	}
+
+	writew(I2C_CON_EN, I2C_CON);
 	flush_fifo();
-	writew(0xFFFF, &i2c_base->stat);
-	return i2c_error;
+	writew(0xFFFF, I2C_STAT);
+	writew(0, I2C_CNT);
+
+	return 0;
 }
 
-static void wait_for_bb(void)
+int i2c_write(uchar chip, uint addr, int alen,
+		uchar *buffer, int len)
 {
-	int timeout = I2C_TIMEOUT;
-	u16 stat;
+	int i, i2c_error = 0;
+	u16 writelen;
+	u32 status;
+
+	if (alen > 2) {
+		return 1;
+	}
+
+	if (addr + len > 0xFFFF) {
+		return 1;
+	}
+
+	/* wait until bus not busy */
+	status = wait_for_bb();
+
+	/* exiting on BUS busy */
+	if (status & I2C_TIMEOUT)
+		return 1;
+
+	writelen = (len & 0xFFFF) + alen;
+
+	/* two bytes */
+	writew((writelen & 0xFFFF), I2C_CNT);
+	/* Clear the Tx & Rx FIFOs */
+	writew((readw(I2C_BUF) | I2C_RXFIFO_CLEAR | I2C_TXFIFO_CLEAR), I2C_BUF);
+	/* set slave address */
+	writew(chip, I2C_SA);
+	/* stop bit needed here */
+	writew(I2C_CON_EN | I2C_CON_MST | I2C_CON_STT | I2C_CON_TRX |
+		I2C_CON_STP, I2C_CON);
+
+	/* waiting for Transmit ready condition */
+	status = wait_for_status_mask(I2C_STAT_XRDY | I2C_STAT_NACK);
+
+	if (status & (I2C_STAT_NACK | I2C_TIMEOUT))
+		i2c_error = 1;
+
+	if (!i2c_error) {
+		if (status & I2C_STAT_XRDY) {
+			switch (alen) {
+#if defined(CONFIG_OMAP243X) || defined(CONFIG_OMAP34XX)\
+		|| defined(CONFIG_TI81XX)
+			case 2:
+				/* send out MSB byte */
+				writeb(((addr >> 8) & 0xFF), I2C_DATA);
+#else
+				writeb((addr  & 0xFFFF), I2C_DATA);
+				break;
+#endif
+				/* Clearing XRDY event */
+				writew((status & I2C_STAT_XRDY), I2C_STAT);
+				/*waiting for Transmit ready * condition */
+				status = wait_for_status_mask(I2C_STAT_XRDY |
+						I2C_STAT_NACK);
+
+				if (status & (I2C_STAT_NACK | I2C_TIMEOUT)) {
+					i2c_error = 1;
+					break;
+				}
+			case 1:
+#if defined(CONFIG_OMAP243X) || defined(CONFIG_OMAP34XX)\
+		|| defined(CONFIG_TI81XX)
+				/* send out MSB byte */
+				writeb((addr  & 0xFF), I2C_DATA);
+#else
+				writew(((bufer[0] << 8) | (addr & 0xFF)),
+						I2C_DATA);
+#endif
+			}
+
+			/* Clearing XRDY event */
+			writew((status & I2C_STAT_XRDY), I2C_STAT);
+		}
+
+		/* waiting for Transmit ready condition */
+		status = wait_for_status_mask(I2C_STAT_XRDY | I2C_STAT_NACK);
+
+		if (status & (I2C_STAT_NACK | I2C_TIMEOUT))
+			i2c_error = 1;
+
+		if (!i2c_error) {
+			for (i = ((alen > 1) ? 0 : 1); i < len; i++) {
+
+				if (status & I2C_STAT_XRDY) {
+#if defined(CONFIG_OMAP243X) || defined(CONFIG_OMAP34XX) \
+			       || defined(CONFIG_TI81XX)
+					writeb((buffer[i] & 0xFF), I2C_DATA);
+#else
+					writew((((bufer[i] << 8) | buffer[i + 1]) &
+								0xFFFF) ,
+							I2C_DATA);
+					i++;
+#endif
+					} else
+						i2c_error = 1;
+
+					/* Clearing XRDY event */
+					writew((status & I2C_STAT_XRDY),
+							I2C_STAT);
+					/* waiting for XRDY condition */
+					status = wait_for_status_mask(
+							I2C_STAT_XRDY |
+							I2C_STAT_ARDY |
+							I2C_STAT_NACK);
+
+					if (status & (I2C_STAT_NACK | I2C_TIMEOUT)) {
+						i2c_error = 1;
+						break;
+					}
+
+					if (status & I2C_STAT_ARDY)
+						break;
+			}
+		}
+
+	}
+
+	status = wait_for_status_mask(I2C_STAT_ARDY | I2C_STAT_NACK |
+			I2C_STAT_AL);
+
+	if (status & (I2C_STAT_NACK | I2C_TIMEOUT))
+		i2c_error = 1;
+
+	if (i2c_error) {
+		writew(0, I2C_CON);
+		return 1;
+	}
+
+	if (!i2c_error) {
+		int eout = 200;
+
+		writew(I2C_CON_EN, I2C_CON);
+		while ((status = readw(I2C_STAT)) ||
+				(readw(I2C_CON) & I2C_CON_MST)) {
+			udelay(1000);
+			/* have to read to clear intrrupt */
+			writew(0xFFFF, I2C_STAT);
+
+			if (--eout == 0)
+				/* better leave with error than hang */
+				break;
+		}
+	}
+
+	flush_fifo();
+	writew(0xFFFF, I2C_STAT);
+	writew(0, I2C_CNT);
+	return 0;
+}
+
+static u32 wait_for_bb (void)
+{
+	int timeout = 10;
+	u32 stat;
 
 	writew(0xFFFF, I2C_STAT);	 /* clear current interruts...*/
 	while ((stat = readw (I2C_STAT) & I2C_STAT_BB) && timeout--) {
@@ -445,37 +507,32 @@ static void wait_for_bb(void)
 	}
 
 	if (timeout <= 0) {
-		printf ("timed out in wait_for_bb: I2C_STAT=%x\n",
-			readw (I2C_STAT));
+			stat |= I2C_TIMEOUT;
 	}
 	writew(0xFFFF, I2C_STAT);	 /* clear delayed stuff*/
+	return stat;
 }
 
-static u16 wait_for_pin(void)
+static u32 wait_for_status_mask(u16 mask)
 {
-	u16 status;
-	int timeout = I2C_TIMEOUT;
+	u32 status;
+	int timeout = 10;
 
 	do {
-		udelay (1000);
-		status = readw (I2C_STAT);
-       } while (  !(status &
-                   (I2C_STAT_ROVR | I2C_STAT_XUDF | I2C_STAT_XRDY |
-                    I2C_STAT_RRDY | I2C_STAT_ARDY | I2C_STAT_NACK |
-                    I2C_STAT_AL)) && timeout--);
+		udelay(1000);
+		status = readw(I2C_STAT);
+	} while (!(status & mask) && timeout--);
 
 	if (timeout <= 0) {
-		printf ("timed out in wait_for_pin: I2C_STAT=%x\n",
-			readw (I2C_STAT));
-			writew(0xFFFF, I2C_STAT);
-}
+		writew(0xFFFF, I2C_STAT);
+		status |= I2C_TIMEOUT;
+	}
 	return status;
 }
 
 int i2c_set_bus_num(unsigned int bus)
 {
 	if ((bus < 0) || (bus >= I2C_BUS_MAX)) {
-		printf("Bad bus: %d\n", bus);
 		return -1;
 	}
 
