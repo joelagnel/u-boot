@@ -296,8 +296,14 @@ static struct module_pin_mux nand_pin_mux[] = {
 #endif
 
 static struct module_pin_mux i2c0_pin_mux[] = {
-	{OFFSET(i2c0_sda), (MODE(0) | RXACTIVE | PULLUDEN)},	/* I2C_DATA */
-	{OFFSET(i2c0_scl), (MODE(0) | RXACTIVE | PULLUDEN)},	/* I2C_SCLK */
+	{OFFSET(i2c0_sda), (MODE(0) | RXACTIVE | PULLUDEN | SLEWCTRL)},	/* I2C_DATA */
+	{OFFSET(i2c0_scl), (MODE(0) | RXACTIVE | PULLUDEN | SLEWCTRL)},	/* I2C_SCLK */
+	{-1},
+};
+
+static struct module_pin_mux i2c1_pin_mux[] = {
+	{OFFSET(spi0_d1), (MODE(2) | RXACTIVE | PULLUDEN | SLEWCTRL)},	/* I2C_DATA */
+	{OFFSET(spi0_cs0), (MODE(2) | RXACTIVE | PULLUDEN | SLEWCTRL)},	/* I2C_SCLK */
 	{-1},
 };
 
@@ -466,6 +472,7 @@ static struct module_pin_mux spi1_pin_mux[] = {
  */
 static struct evm_pin_mux general_purpose_evm_pin_mux[] = {
 	{uart0_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
+	{i2c1_pin_mux, PROFILE_ALL & ~PROFILE_2 & ~PROFILE_4, DEV_ON_BASEBOARD},
 #ifdef CONFIG_NAND
 	{nand_pin_mux, PROFILE_ALL & ~PROFILE_2 & ~PROFILE_3, DEV_ON_DGHTR_BRD},
 #endif
@@ -512,6 +519,7 @@ static struct evm_pin_mux ia_motor_control_evm_pin_mux[] = {
 /* IP Phone EVM has single profile */
 static struct evm_pin_mux ip_phone_evm_pin_mux[] = {
 	{uart0_pin_mux,	PROFILE_NONE, DEV_ON_BASEBOARD},
+	{i2c1_pin_mux, PROFILE_NONE, DEV_ON_BASEBOARD},
 #ifdef CONFIG_NAND
 	{nand_pin_mux, PROFILE_0, DEV_ON_BASEBOARD},
 #endif
@@ -528,6 +536,7 @@ static struct evm_pin_mux ip_phone_evm_pin_mux[] = {
 /* Base board has single profile */
 static struct evm_pin_mux low_cost_evm_pin_mux[] = {
 	{uart0_pin_mux,	PROFILE_NONE, DEV_ON_BASEBOARD},
+	{i2c1_pin_mux, PROFILE_NONE, DEV_ON_BASEBOARD},
 #ifdef CONFIG_NAND
 	{nand_pin_mux, PROFILE_NONE, DEV_ON_BASEBOARD},
 #endif

@@ -101,6 +101,14 @@ static void per_clocks_enable(void)
 	__raw_writel(PRCM_MOD_EN, CM_WKUP_I2C0_CLKCTRL);
 	while (__raw_readl(CM_WKUP_I2C0_CLKCTRL) != PRCM_MOD_EN);
 
+	/* i2c1 */
+	__raw_writel(PRCM_MOD_EN, CM_PER_I2C1_CLKCTRL);
+	while (__raw_readl(CM_PER_I2C1_CLKCTRL) != PRCM_MOD_EN);
+
+	/* i2c2 */
+	__raw_writel(PRCM_MOD_EN, CM_PER_I2C2_CLKCTRL);
+	while (__raw_readl(CM_PER_I2C2_CLKCTRL) != PRCM_MOD_EN);
+
 	/* Ethernet */
 	__raw_writel(PRCM_MOD_EN, CM_PER_CPGMAC0_CLKCTRL);
 	__raw_writel(PRCM_MOD_EN, CM_PER_CPSW_CLKSTCTRL);
