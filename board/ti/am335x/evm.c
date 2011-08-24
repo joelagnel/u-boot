@@ -522,7 +522,7 @@ int board_init(void)
 	}
 
 	/* read the eeprom using i2c */
-	if (i2c_read(I2C_BASE_BOARD_ADDR, 0, 1, (uchar *)&header,
+	if (i2c_read(I2C_BASE_BOARD_ADDR, 0, 2, (uchar *)&header,
 							sizeof(header))) {
 		//printf("Could not read the EEPROM; something fundamentally"
 		//	" wrong on the I2C bus.\n");
