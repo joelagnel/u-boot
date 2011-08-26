@@ -302,12 +302,15 @@ LIST_SA="$(boards_by_cpu sa1100)"
 
 LIST_ARM7="		\
 <<<<<<< HEAD
+<<<<<<< HEAD
 	ap7		\
 	ap720t		\
 	armadillo	\
 =======
 >>>>>>> be28857... ARM: remove broken "armadillo" board
 	B2		\
+=======
+>>>>>>> 5dcf536... ARM: remove broken "B2" board
 	ep7312		\
 	evb4510		\
 	impa7		\
