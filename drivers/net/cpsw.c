@@ -549,6 +549,8 @@ static void cpsw_slave_update_link(struct cpsw_slave *slave,
 
 		*link = 1;
 		mac_control = priv->data.mac_control;
+		if (speed == 10)
+			mac_control |= BIT(18);	/* In Band mode	*/
 		if (speed == 1000)
 			mac_control |= BIT(7);	/* GIGABITEN	*/
 		if (duplex == FULL)
