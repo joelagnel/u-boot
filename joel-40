@@ -1,0 +1,40 @@
+0466da2 OMAP: Remove omapfb.debug=y from Beagle and Overo env settings
+0fdb723 led: remove camel casing of led identifiers globally
+114b017 BeagleBoard: config: decrease bootdelay to 2 seconds
+13bb604 BeagleBoard: config: enable DSS
+14195dd USB: Remove __attribute__ ((packed)) for struct ehci_hccr and ehci_hcor
+1779d02 usb: Some EHCI chipsets are slow to respond.
+177f386 Minor coding style fixes.
+181f565 usb: convert to partial linking
+1ed8e42 OMAP3: Add function to get state of a GPIO output
+200cc8e dm3730: enable dpll5
+2080cd1 beagleboard: add support for xM revision C
+21c3ff9 Add Ethernet hardware MAC address framework to usbnet
+2b64d57 BeagleBoard: config: increase command-line functionality
+300764d BeagleBoard: config: Enabled multibus support for I2C in configuration
+31649ca BeagleBoard: config: load kernel from MMC ext, not FAT
+39f7aad BeagleBoard: Configure DVI/S-video
+3d825a5 BeagleBoard: turn off clocks in ehci_stop
+4466afd led: Fixed setting of STATUS_LED_BIT1 when led_name is 'all'
+51ba5a9 beagleboard: enable HUB power on all variants of the BeagleBoard
+5c8563d BeagleBoard: config: use uImage.beagle for tftp
+5d94f42 BeagleBoard: config: make mtest run
+60b583d BeagleBoard: config: Switch console to ttyO2
+62d497b BeagleBoard: config: add optargs/buddy/camera
+757a0b2 led: Remove state-saving of led for toggle functionality and add toggle option to led command
+787c3f9 Corrected LED name match finding avoiding extraneous Usage printouts
+79b75f6 BeagleBoard: config: enable asix driver and dhcp
+7a9d984 Add support for SMSC95XX USB 2.0 10/100MBit Ethernet Adapter
+8641231 BeagleBoard: config: updated default configuration
+8eb0d26 BeagleBoard: fix LED 0/1 in driver
+9335530 led: correct off/on locations in structure
+9692999 led: added cmd_led to Makefile
+9f68459 BeagleBoard: Added userbutton command
+a75612b BeagleBoard: config: hardcode MAC for onboard SMSC
+af4260f OMAP3: Add DSS driver for OMAP3
+b1af6f5 Prepare v2011.06
+ca73b03 ehci-hcd: Allow cleanups to happen gracefully on a timeout.
+cfd6eb5 OMAP3 Beagle Pin Mux initialization glitch fix
+d2cabfa Add documentation for USB Host Networking
+e9fd344 BeagleBoard: config: enable networking
+ef9bcf4 beagle: pass expansionboard name in bootargs

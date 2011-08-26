@@ -1,0 +1,40 @@
+0ad6811 BeagleBoard: config: enable asix driver and dhcp
+10122d8 BeagleBoard: Configure DVI/S-video
+1216c31 da850: modify the U-Boot prompt string
+24b1b9d BeagleBoard: config: decrease bootdelay to 2 seconds
+3240f90 beagleboard: add support for xM revision C
+356f67e BeagleBoard: config: hardcode MAC for onboard SMSC
+35b6350 BeagleBoard: config: updated default configuration
+3bf5adb BeagleBoard: config: make mtest run
+4499ee1 BeagleBoard: fix LED 0/1 in driver
+458c94e led: Remove state-saving of led for toggle functionality and add toggle option to led command
+459a4a4 dm3730: enable dpll5
+59d8e0d BeagleBoard: config: Enabled multibus support for I2C in configuration
+674d0ae BeagleBoard: config: add optargs/buddy/camera
+74d4dc6 beagle: pass expansionboard name in bootargs
+7554c6e Corrected LED name match finding avoiding extraneous Usage printouts
+7dec92f BeagleBoard: Added userbutton command
+8156dfb da850: add support to wake up DSP during board init
+83da3e8 BeagleBoard: config: enable DSS
+88f10af OMAP3: Add DSS driver for OMAP3
+8cc9052 beagleboard: enable HUB power on all variants of the BeagleBoard
+90503a7 BeagleBoard: config: increase command-line functionality
+9566f30 OMAP: Remove omapfb.debug=y from Beagle and Overo env settings
+98fdbbb da850: fix the channel number for EMAC teardown init
+992d363 da850: add support for Spectrum Digital AM18xx EVM
+9f90d3a BeagleBoard: config: enable networking
+a5b1e66 BeagleBoard: config: load kernel from MMC ext, not FAT
+b66e602 BeagleBoard: config: use uImage.beagle for tftp
+ba67a4c USB: Remove __attribute__ ((packed)) for struct ehci_hccr and ehci_hcor
+c3d766e OMAP: Add function to get state of a GPIO output
+c75610f BeagleBoard: turn off clocks in ehci_stop
+cb2463e da8xx: add support for multiple PLL controllers
+cd6929e BeagleBoard: Defined NFS/tftp boot env commands.
+d0d3c3e da850: add NOR boot mode support
+e19c54c ehci-hcd: Allow cleanups to happen gracefully on a timeout.
+e4ae72f led: added cmd_led to Makefile
+e4bdade da850: modifications for Logic PD Rev.3 AM18xx EVM
+e6a73e7 led: correct off/on locations in structure
+ec31874 OMAP3 Beagle Pin Mux initialization glitch fix
+f1d9f67 led: Fixed setting of STATUS_LED_BIT1 when led_name is 'all'
+f7e96e5 da850: indicate cache usage disable in config file

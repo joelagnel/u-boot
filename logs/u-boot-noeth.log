@@ -1,0 +1,45 @@
+Importing environment from mmc ...
+(Re)start USB...
+USB:   Register 1313 NbrPorts 3
+USB EHCI 1.00
+scanning bus for devices... New Device 0
+usb_control_msg: request: 0x6, requesttype: 0x80, value 0x100 index 0x0 length 0x40
+set address 1
+usb_control_msg: request: 0x5, requesttype: 0x0, value 0x1 index 0x0 length 0x0
+usb_control_msg: request: 0x6, requesttype: 0x80, value 0x100 index 0x0 length 0x12
+usb_control_msg: request: 0x6, requesttype: 0x80, value 0x200 index 0x0 length 0x9
+usb_control_msg: request: 0x6, requesttype: 0x80, value 0x200 index 0x0 length 0x19
+get_conf_no 0 Result 25, wLength 25
+if 0, ep 0
+##EP epmaxpacketin[1] = 8
+set configuration 1
+usb_control_msg: request: 0x9, requesttype: 0x0, value 0x1 index 0x0 length 0x0
+new device strings: Mfr=1, Product=2, SerialNumber=0
+usb_control_msg: request: 0x6, requesttype: 0x80, value 0x300 index 0x0 length 0xFF
+USB device number 1 default language ID 0x1
+usb_control_msg: request: 0x6, requesttype: 0x80, value 0x301 index 0x1 length 0xFF
+usb_control_msg: request: 0x6, requesttype: 0x80, value 0x302 index 0x1 length 0xFF
+Manufacturer u-boot
+Product      EHCI Host Controller
+SerialNumber 
+usb_control_msg: request: 0x6, requesttype: 0xA0, value 0x2900 index 0x0 length 0x4
+usb_control_msg: request: 0x6, requesttype: 0xA0, value 0x2900 index 0x0 length 0x8
+usb_control_msg: request: 0x0, requesttype: 0xA0, value 0x0 index 0x0 length 0x4
+usb_control_msg: request: 0x3, requesttype: 0x23, value 0x8 index 0x1 length 0x0
+usb_control_msg: request: 0x3, requesttype: 0x23, value 0x8 index 0x2 length 0x0
+usb_control_msg: request: 0x3, requesttype: 0x23, value 0x8 index 0x3 length 0x0
+usb_control_msg: request: 0x0, requesttype: 0xA3, value 0x0 index 0x1 length 0x4
+usb_control_msg: request: 0x0, requesttype: 0xA3, value 0x0 index 0x2 length 0x4
+usb_control_msg: request: 0x0, requesttype: 0xA3, value 0x0 index 0x2 length 0x4
+usb_control_msg: request: 0x1, requesttype: 0x23, value 0x10 index 0x2 length 0x0
+usb_control_msg: request: 0x3, requesttype: 0x23, value 0x4 index 0x2 length 0x0
+usb_control_msg: request: 0x0, requesttype: 0xA3, value 0x0 index 0x2 length 0x4
+usb_control_msg: request: 0x1, requesttype: 0x23, value 0x14 index 0x2 length 0x0
+New Device 1
+usb_control_msg: request: 0x6, requesttype: 0x80, value 0x100 index 0x0 length 0x40
+EHCI timed out on TD - token=0x80008c80
+usb_new_device: usb_get_descriptor() failed
+usb_control_msg: request: 0x1, requesttype: 0x23, value 0x1 index 0x2 length 0x0
+usb_control_msg: request: 0x0, requesttype: 0xA3, value 0x0 index 0x3 length 0x4
+2 USB Device(s) found
+

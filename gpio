@@ -1,0 +1,53 @@
+arch/blackfin/include/asm/gpio.h:int bfin_gpio_direction_output(unsigned gpio, int value);
+arch/blackfin/include/asm/gpio.h:static inline int gpio_direction_output(unsigned gpio, int value)
+arch/blackfin/include/asm/gpio.h:	return bfin_gpio_direction_output(gpio, value);
+arch/blackfin/cpu/gpio.c:int bfin_gpio_direction_output(unsigned gpio, int value)
+arch/nios2/include/asm/gpio.h:static inline int gpio_direction_output(unsigned gpio, int value)
+arch/nios2/include/asm/gpio.h:extern int gpio_direction_output(unsigned gpio, int value);
+arch/arm/include/asm/arch-s5pc2xx/gpio.h:void s5p_gpio_direction_output(struct s5p_gpio_bank *bank, int gpio, int en);
+arch/arm/include/asm/gpio.h:int gpio_direction_output(int gp, int value);
+arch/arm/include/asm/arch-s5pc1xx/gpio.h:void s5p_gpio_direction_output(struct s5p_gpio_bank *bank, int gpio, int en);
+arch/arm/include/asm/arch-kirkwood/gpio.h:int kw_gpio_direction_output(unsigned pin, int value);
+board/efikamx/efikamx.c:	gpio_direction_output(IOMUX_TO_GPIO(MX51_PIN_NANDF_CS0), 1);
+board/efikamx/efikamx.c:	gpio_direction_output(IOMUX_TO_GPIO(MX51_PIN_CSPI1_SS0), 0);
+board/efikamx/efikamx.c:	gpio_direction_output(IOMUX_TO_GPIO(MX51_PIN_CSPI1_SS1), 1);
+board/efikamx/efikamx.c:	gpio_direction_output(IOMUX_TO_GPIO(MX51_PIN_CSI1_D9), 0);
+board/efikamx/efikamx.c:	gpio_direction_output(IOMUX_TO_GPIO(MX51_PIN_CSI1_VSYNC), 0);
+board/efikamx/efikamx.c:	gpio_direction_output(IOMUX_TO_GPIO(MX51_PIN_CSI1_HSYNC), 0);
+board/bct-brettl2/bct-brettl2.c:	gpio_direction_output(GPIO_PF2, 0);
+board/bct-brettl2/bct-brettl2.c:	gpio_direction_output(GPIO_PF2, 1);
+board/bct-brettl2/bct-brettl2.c:	gpio_direction_output(GPIO_PF5, 1);
+board/bct-brettl2/bct-brettl2.c:	gpio_direction_output(GPIO_PF6, 0);
+board/bct-brettl2/bct-brettl2.c:	gpio_direction_output(GPIO_PF15, 0);
+board/bct-brettl2/smsc9303.c:	gpio_direction_output(GPIO_PG10, 0);
+board/bct-brettl2/smsc9303.c:	gpio_direction_output(GPIO_PG10, 1);
+board/bf527-ezkit/bf527-ezkit.c:	gpio_direction_output(GPIO_PG13, 1);
+board/bf527-sdp/bf527-sdp.c:	gpio_direction_output(GPIO_PG0, 0);
+board/syteco/zmx25/zmx25.c:	gpio_direction_output(MXC_GPIO_PORT_TO_NUM(3, 15), 1);
+board/syteco/zmx25/zmx25.c:	gpio_direction_output(MXC_GPIO_PORT_TO_NUM(1, 28), 1);
+board/syteco/zmx25/zmx25.c:	gpio_direction_output(MXC_GPIO_PORT_TO_NUM(1, 7), 0);
+board/syteco/zmx25/zmx25.c:	gpio_direction_output(MXC_GPIO_PORT_TO_NUM(1, 6), 0);
+board/syteco/zmx25/zmx25.c:	gpio_direction_output(MXC_GPIO_PORT_TO_NUM(4, 21), 0);
+board/syteco/zmx25/zmx25.c:	gpio_direction_output(MXC_GPIO_PORT_TO_NUM(1, 29), 0);
+board/syteco/zmx25/zmx25.c:	gpio_direction_output(MXC_GPIO_PORT_TO_NUM(3, 16), 0);
+board/cm-bf537e/gpio_cfi_flash.c:	gpio_direction_output(GPIO_PIN_1, 0);
+board/cm-bf537e/gpio_cfi_flash.c:	gpio_direction_output(GPIO_PIN_2, 0);
+board/cm-bf537e/gpio_cfi_flash.c:	gpio_direction_output(GPIO_PIN_3, 0);
+board/bf537-stamp/post.c:		gpio_direction_output(leds[i], 0);
+board/bf533-stamp/bf533-stamp.c:	gpio_direction_output(GPIO_PF0, device_id == ETHERNET);
+board/bf533-stamp/bf533-stamp.c:	gpio_direction_output(GPIO_PF1, 0);
+board/bf533-stamp/bf533-stamp.c:		gpio_direction_output(GPIO_PF2, LED1);
+board/bf533-stamp/bf533-stamp.c:		gpio_direction_output(GPIO_PF3, LED2);
+board/bf533-stamp/bf533-stamp.c:		gpio_direction_output(GPIO_PF4, LED3);
+board/blackstamp/blackstamp.c:	gpio_direction_output(GPIO_PF0, device_id == ETHERNET);
+board/ttcontrol/vision2/vision2.c:		gpio_direction_output(89, 0);
+board/ttcontrol/vision2/vision2.c:		gpio_direction_output(75, 0);
+board/ttcontrol/vision2/vision2.c:		gpio_direction_output(74, 1);
+board/ttcontrol/vision2/vision2.c:		gpio_direction_output(95, 1);
+board/ttcontrol/vision2/vision2.c:		gpio_direction_output(59, 0);
+board/ttcontrol/vision2/vision2.c:		gpio_direction_output(60, 0);
+board/ttcontrol/vision2/vision2.c:		gpio_direction_output(61, 0);
+board/ttcontrol/vision2/vision2.c:		gpio_direction_output(55, 1);
+board/ttcontrol/vision2/vision2.c:	gpio_direction_output(4, 1);
+board/ttcontrol/vision2/vision2.c:	gpio_direction_output(7, 0);
+board/ttcontrol/vision2/vision2.c:		gpi
