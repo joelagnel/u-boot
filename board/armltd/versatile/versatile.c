@@ -88,6 +88,12 @@ int misc_init_r (void)
 ******************************/
 int dram_init (void)
 {
+<<<<<<< HEAD
+=======
+	/* dram_init must store complete ramsize in gd->ram_size */
+	gd->ram_size = get_ram_size((void *)CONFIG_SYS_SDRAM_BASE,
+				PHYS_SDRAM_1_SIZE);
+>>>>>>> 689d0fa... ARM: versatile: drop warnings
 	return 0;
 }
 
