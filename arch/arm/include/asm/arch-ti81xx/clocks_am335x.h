@@ -23,27 +23,39 @@
 
 /* Put the pll config values over here */
 
-/* Core PLL Fdll = 1 GHZ, */
-#define COREPLL_M      125     /* 125 * n */
-#define COREPLL_N      5       /* (n -1 ) */
+#define OSC	24
 
-#define COREPLL_M4     4       /* CORE_CLKOUTM4 = 200 MHZ */
-#define COREPLL_M5     3       /* CORE_CLKOUTM5 = 250 MHZ */
-#define COREPLL_M6     1       /* CORE_CLKOUTM6 = 500 MHZ */
+/* MAIN PLL Fdll = 1 GHZ, */
+#define MPUPLL_M	550	/* 125 * n */
+#define MPUPLL_N	23	/* (n -1 ) */
+#define MPUPLL_M2	1
+
+/* Core PLL Fdll = 1 GHZ, */
+#define COREPLL_M      1000	/* 125 * n */
+#define COREPLL_N      23	/* (n -1 ) */
+
+#define COREPLL_M4	10	/* CORE_CLKOUTM4 = 200 MHZ */
+#define COREPLL_M5	8	/* CORE_CLKOUTM5 = 250 MHZ */
+#define COREPLL_M6	4	/* CORE_CLKOUTM6 = 500 MHZ */
 
 /*
  * USB PHY clock is 960 MHZ. Since, this comes directly from Fdll, Fdll
  * frequency needs to be set to 960 MHZ. Hence,
  * For clkout = 192 MHZ, Fdll = 960 MHZ, divider values are given below
  */
-#define PERPLL_M       80      /* M = 40 * (N + 1) */
-#define PERPLL_N       1
-#define PERPLL_M2      5
+#define PERPLL_M	960
+#define PERPLL_N	23
+#define PERPLL_M2	5
 
-/* DDR Freq is 200 MHZ */
+/* DDR Freq is 166 MHZ for now*/
 /* Set Fdll = 400 MHZ , Fdll = M * 2 * CLKINP/ N + 1; clkout = Fdll /(2 * M2) */
-#define DDRPLL_M	25	/* M/N + 1 = 25/3 */
-#define DDRPLL_N	2
+#if	(CONFIG_AM335X_DDR_IS_MDDR == 1)
+#define DDRPLL_M	166	/* M/N + 1 = 25/3 */
+#else
+#define DDRPLL_M	200
+#endif
+
+#define DDRPLL_N	23
 #define DDRPLL_M2	1
 
 #endif	/* endif _CLOCKS_AM335X_H_ */
