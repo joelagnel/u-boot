@@ -283,7 +283,6 @@ static void config_emif(void)
 	__raw_writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG);
 	__raw_writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG2);
 }
-#endif
 
 static void config_am335x_mddr(void)
 {
@@ -332,12 +331,11 @@ static void config_am335x_ddr2(void)
 
 static void config_am335x_ddr(void)
 {
-#if (CONFIG_AM335X_CONFIG_MDDR == 1)
 	config_am335x_mddr(); /* Do DDR settings for 13x13 */
-#else
-	config_am335x_ddr2(); /* TODO DDR settings for 15x15 */
-#endif
+	/* config_am335x_ddr2(); */  /* TODO DDR settings for 15x15 */
 }
+
+#endif
 
 /*
  * early system init of muxing and clocks.

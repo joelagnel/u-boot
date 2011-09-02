@@ -23,7 +23,6 @@
 #include <asm/arch/hardware.h>
 
 #define CONFIG_AM335X_HSMMC_INSTANCE	0	/* 0 - MMC0, 1 - MMC1 */
-#define CONFIG_EVM_IS_IABOARD		1
 
 /* In the 1st stage we have just 110K, so cut down wherever possible */
 #ifdef CONFIG_AM335X_MIN_CONFIG
@@ -36,7 +35,6 @@
 #define CONFIG_CMD_LOADY	/* loady */
 #define CONFIG_SETUP_PLL
 #define CONFIG_AM335X_CONFIG_DDR
-#define CONFIG_AM335X_CONFIG_MDDR	1	/* Do DDR settings */
 #define CONFIG_ENV_SIZE			0x400
 #define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (8 * 1024))
 #define CONFIG_SYS_PROMPT		"TI-MIN#"
@@ -256,11 +254,7 @@
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_REG_SIZE	(-4)
 #define CONFIG_SYS_NS16550_CLK		(48000000)
-#if (CONFIG_EVM_IS_IABOARD == 1)
-#define CONFIG_SYS_NS16550_COM4		0x481A6000	/* Base EVM has UART3 */
-#else
 #define CONFIG_SYS_NS16550_COM1		0x44e09000	/* Base EVM has UART0 */
-#endif
 
 #define CONFIG_BAUDRATE			115200
 #define CONFIG_SYS_BAUDRATE_TABLE	{ 110, 300, 600, 1200, 2400, \
@@ -270,11 +264,7 @@
  * select serial console configuration
  */
 #define CONFIG_SERIAL1			1
-#if (CONFIG_EVM_IS_IABOARD == 1)
-#define CONFIG_CONS_INDEX		4
-#else
 #define CONFIG_CONS_INDEX		1
-#endif
 #define CONFIG_SYS_CONSOLE_INFO_QUIET
 
 #if defined(CONFIG_NO_ETH)
