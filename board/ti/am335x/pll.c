@@ -29,7 +29,7 @@
 #define PLL_LOCK_MODE	0x7
 #define PLL_MULTIPLIER_SHIFT	 8
 
-void interface_clocks_enable(void)
+static void interface_clocks_enable(void)
 {
 	/* Enable all the Interconnect Modules */
 	__raw_writel(PRCM_MOD_EN, CM_PER_L3_CLKCTRL);
@@ -51,7 +51,7 @@ void interface_clocks_enable(void)
 	while (__raw_readl(CM_PER_L4HS_CLKCTRL) != PRCM_MOD_EN);
 }
 
-void power_domain_transition_enable(void)
+static void power_domain_transition_enable(void)
 {
 	/*
 	 * Force power domain wake up transition
@@ -72,7 +72,7 @@ void power_domain_transition_enable(void)
 /*
  * Enable the module clock and the power domain for required peripherals
  */
-void per_clocks_enable(void)
+static void per_clocks_enable(void)
 {
 	/* Enable the module clock */
 	__raw_writel(PRCM_MOD_EN, CM_PER_TIMER2_CLKCTRL);
@@ -120,56 +120,124 @@ void per_clocks_enable(void)
 	while (__raw_readl(CM_PER_SPI1_CLKCTRL) != PRCM_MOD_EN);
 }
 
-void core_pll_config(void)
+static void mpu_pll_config(void)
 {
+	u32 clkmode, clksel, div_m2, idlest_dpll;
+
+	clkmode = __raw_readl(CM_CLKMODE_DPLL_MPU);
+	clksel = __raw_readl(CM_CLKSEL_DPLL_MPU);
+	div_m2 = __raw_readl(CM_DIV_M2_DPLL_MPU);
+
+	/* Set the PLL to bypass Mode */
+	__raw_writel(PLL_BYPASS_MODE, CM_CLKMODE_DPLL_MPU);
+
+	while(__raw_readl(CM_IDLEST_DPLL_MPU) != 0x00000100);
+
+	clksel = clksel & (~0x7ffff);
+	clksel = clksel | ((MPUPLL_M << 0x8) | MPUPLL_N);
+	__raw_writel(clksel, CM_CLKSEL_DPLL_MPU);
+
+	div_m2 = div_m2 & ~0x1f;
+	div_m2 = div_m2 | MPUPLL_M2;
+	__raw_writel(div_m2, CM_DIV_M2_DPLL_MPU);
+
+	clkmode = clkmode | 0x7;
+	__raw_writel(clkmode, CM_CLKMODE_DPLL_MPU);
+
+	while(__raw_readl(CM_IDLEST_DPLL_MPU) != 0x1);
+}
+
+static void core_pll_config(void)
+{
+	u32 clkmode, clksel, div_m4, div_m5, div_m6, idlest_dpll;
+
+	clkmode = __raw_readl(CM_CLKMODE_DPLL_CORE);
+	clksel = __raw_readl(CM_CLKSEL_DPLL_CORE);
+	div_m4 = __raw_readl(CM_DIV_M4_DPLL_CORE);
+	div_m5 = __raw_readl(CM_DIV_M5_DPLL_CORE);
+	div_m6 = __raw_readl(CM_DIV_M6_DPLL_CORE);
+
 	/* Set the PLL to bypass Mode */
 	__raw_writel(PLL_BYPASS_MODE, CM_CLKMODE_DPLL_CORE);
 
-	/* Set the divider values */
-	__raw_writel(COREPLL_M << PLL_MULTIPLIER_SHIFT | COREPLL_N,
-		CM_CLKSEL_DPLL_CORE);
+	while(__raw_readl(CM_IDLEST_DPLL_CORE) != 0x00000100);
 
-	/* Set the HSdiv Values */
-	__raw_writel(COREPLL_M4, CM_DIV_M4_DPLL_CORE);
+	clksel = clksel & (~0x7ffff);
+	clksel = clksel | ((COREPLL_M << 0x8) | COREPLL_N);
+	__raw_writel(clksel, CM_CLKSEL_DPLL_CORE);
 
-	__raw_writel(COREPLL_M5, CM_DIV_M5_DPLL_CORE);
+	div_m4 = div_m4 & ~0x1f;
+	div_m4 = div_m4 | COREPLL_M4;
+	__raw_writel(div_m4, CM_DIV_M4_DPLL_CORE);
 
-	__raw_writel(COREPLL_M6, CM_DIV_M6_DPLL_CORE);
+	div_m5 = div_m5 & ~0x1f;
+	div_m5 = div_m5 | COREPLL_M5;
+	__raw_writel(div_m5, CM_DIV_M5_DPLL_CORE);
 
-	/* Set the PLL to Lock Mode */
-	__raw_writel(PLL_LOCK_MODE, CM_CLKMODE_DPLL_CORE);
+	div_m6 = div_m6 & ~0x1f;
+	div_m6 = div_m6 | COREPLL_M6;
+	__raw_writel(div_m6, CM_DIV_M6_DPLL_CORE);
+
+
+	clkmode = clkmode | 0x7;
+	__raw_writel(clkmode, CM_CLKMODE_DPLL_CORE);
+
+	while(__raw_readl(CM_IDLEST_DPLL_CORE) != 0x1);
 }
 
-void per_pll_config(void)
+static void per_pll_config(void)
 {
+	u32 clkmode, clksel, div_m2, idlest_dpll;
+
+	clkmode = __raw_readl(CM_CLKMODE_DPLL_PER);
+	clksel = __raw_readl(CM_CLKSEL_DPLL_PER);
+	div_m2 = __raw_readl(CM_DIV_M2_DPLL_PER);
+
 	/* Set the PLL to bypass Mode */
 	__raw_writel(PLL_BYPASS_MODE, CM_CLKMODE_DPLL_PER);
 
-	/* Set the divider values */
-	__raw_writel(PERPLL_M << PLL_MULTIPLIER_SHIFT | PERPLL_N,
-		CM_CLKSEL_DPLL_PER);
+	while(__raw_readl(CM_IDLEST_DPLL_PER) != 0x00000100);
 
-	/* Set the M2 divider value */
-	__raw_writel(PERPLL_M2, CM_DIV_M2_DPLL_PER);
+	clksel = clksel & (~0x7ffff);
+	clksel = clksel | ((PERPLL_M << 0x8) | PERPLL_N);
+	__raw_writel(clksel, CM_CLKSEL_DPLL_PER);
 
-	/* Set the PLL to Lock Mode */
-	__raw_writel(PLL_LOCK_MODE, CM_CLKMODE_DPLL_PER);
+	div_m2 = div_m2 & ~0x7f;
+	div_m2 = div_m2 | PERPLL_M2;
+	__raw_writel(div_m2, CM_DIV_M2_DPLL_PER);
+
+	clkmode = clkmode | 0x7;
+	__raw_writel(clkmode, CM_CLKMODE_DPLL_PER);
+
+	while(__raw_readl(CM_IDLEST_DPLL_PER) != 0x1);
 }
 
-void ddr_pll_config(void)
+static void ddr_pll_config(void)
 {
+	u32 clkmode, clksel, div_m2, idlest_dpll;
+
+	clkmode = __raw_readl(CM_CLKMODE_DPLL_DDR);
+	clksel = __raw_readl(CM_CLKSEL_DPLL_DDR);
+	div_m2 = __raw_readl(CM_DIV_M2_DPLL_DDR);
+
 	/* Set the PLL to bypass Mode */
-	__raw_writel(PLL_BYPASS_MODE, CM_CLKMODE_DPLL_DDR);
+	clkmode = (clkmode & 0xfffffff8) | 0x00000004;
+	__raw_writel(clkmode, CM_CLKMODE_DPLL_DDR);
 
-	/* Set the divider values */
-	__raw_writel((DDRPLL_M << PLL_MULTIPLIER_SHIFT) | DDRPLL_N,
-		CM_CLKSEL_DPLL_DDR);
+	while ((__raw_readl(CM_IDLEST_DPLL_DDR) & 0x00000100) != 0x00000100);
 
-	/* Set the M2 divider value */
-	__raw_writel(DDRPLL_M2, CM_DIV_M2_DPLL_DDR);
+	clksel = clksel & (~0x7ffff);
+	clksel = clksel | ((DDRPLL_M << 0x8) | DDRPLL_N);
+	__raw_writel(clksel, CM_CLKSEL_DPLL_DDR);
 
-	/* Set the PLL to Lock Mode */
-	__raw_writel(PLL_LOCK_MODE, CM_CLKMODE_DPLL_DDR);
+	div_m2 = div_m2 & 0xFFFFFFE0;
+	div_m2 = div_m2 | DDRPLL_M2;
+	__raw_writel(div_m2, CM_DIV_M2_DPLL_DDR);
+
+	clkmode = (clkmode & 0xfffffff8) | 0x7;
+	__raw_writel(clkmode, CM_CLKMODE_DPLL_DDR);
+
+	while ((__raw_readl(CM_IDLEST_DPLL_DDR) & 0x00000001) != 0x1);
 }
 
 void enable_ddr_clocks(void)
@@ -192,6 +260,7 @@ void enable_ddr_clocks(void)
  */
 void pll_init()
 {
+	mpu_pll_config();
 	core_pll_config();
 	per_pll_config();
 	ddr_pll_config();

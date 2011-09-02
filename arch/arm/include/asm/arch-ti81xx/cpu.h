@@ -244,11 +244,13 @@ struct gptimer {
 #define CM_DIV_M4_DPLL_CORE		(CM_WKUP + 0x80)
 #define CM_DIV_M5_DPLL_CORE		(CM_WKUP + 0x84)
 #define CM_DIV_M6_DPLL_CORE		(CM_WKUP + 0xD8)
+#define CM_IDLEST_DPLL_CORE		(CM_WKUP + 0x5c)
 
 /* Peripheral PLL */
 #define CM_CLKSEL_DPLL_PER		(CM_WKUP + 0x9c)
 #define CM_CLKMODE_DPLL_PER		(CM_WKUP + 0x8c)
 #define CM_DIV_M2_DPLL_PER		(CM_WKUP + 0xAC)
+#define CM_IDLEST_DPLL_PER		(CM_WKUP + 0x70)
 
 /* Display PLL */
 #define CM_CLKSEL_DPLL_DISP		(CM_WKUP + 0x54)
@@ -259,11 +261,13 @@ struct gptimer {
 #define CM_CLKSEL_DPLL_DDR		(CM_WKUP + 0x40)
 #define CM_CLKMODE_DPLL_DDR		(CM_WKUP + 0x94)
 #define CM_DIV_M2_DPLL_DDR		(CM_WKUP + 0xA0)
+#define CM_IDLEST_DPLL_DDR		(CM_WKUP + 0x34)
 
 /* MPU PLL */
 #define CM_CLKSEL_DPLL_MPU		(CM_WKUP + 0x2c)
 #define CM_CLKMODE_DPLL_MPU		(CM_WKUP + 0x88)
 #define CM_DIV_M2_DPLL_MPU		(CM_WKUP + 0xA8)
+#define CM_IDLEST_DPLL_MPU		(CM_WKUP + 0x20)
 
 /* TIMER Clock Source Select */
 #define CLKSEL_TIMER2_CLK		(CM_DPLL + 0x8)
