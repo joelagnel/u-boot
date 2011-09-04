@@ -217,7 +217,7 @@
 	"rdaddr=0x81000000\0" \
 	"usbtty=cdc_acm\0" \
 	"usbethaddr=de:ad:be:ef\0" \
-	"bootfile=uImage.beagle\0" \
+	"bootfile=uImage\0" \
 	"console=ttyO2,115200n8\0" \
 	"mpurate=auto\0" \
 	"buddy=none "\
@@ -272,13 +272,47 @@
 	"mmcboot=echo Booting from mmc ...; " \
 		"run mmcargs; " \
 		"bootm ${loadaddr}\0" \
+	"le=mmc rescan 0;run loadbootenv;run importbootenv;\0" \
+	"nfsargs=setenv bootargs console=${console} " \
+		"${optargs} " \
+		"mpurate=${mpurate} " \
+		"buddy=${buddy} "\
+		"camera=${camera} "\
+		"vram=${vram} " \
+		"omapfb.mode=dvi:${dvimode} " \
+		"omapdss.def_disp=${defaultdisplay} " \
+		"root=/dev/nfs " \
+		"ip=${ipaddr}::${netmask} " \
+		"nfsroot=${nfsroot}\0" \
+	"nfsboot=run le;" \
+		"usb start;" \
+		"run nfsargs;" \
+		"tftpboot ${loadaddr} ${serverip}:uImage;" \
+		"bootm ${loadaddr}\0" \
+	"dhcpargs=setenv bootargs console=${console} " \
+		"${optargs} " \
+		"mpurate=${mpurate} " \
+		"buddy=${buddy} "\
+		"camera=${camera} "\
+		"vram=${vram} " \
+		"omapfb.mode=dvi:${dvimode} " \
+		"omapdss.def_disp=${defaultdisplay} " \
+		"root=/dev/nfs " \
+		"ip=dhcp " \
+		"nfsroot=${nfsroot}\0" \
+	"dhcpboot=run le;" \
+		"usb start;" \
+		"setenv ip;" \
+		"run dhcpargs;" \
+		"dhcp;" \
+		"bootm ${loadaddr}\0" \
 	"nandboot=echo Booting from nand ...; " \
 		"run nandargs; " \
 		"nand read ${loadaddr} 280000 400000; " \
 		"bootm ${loadaddr}\0" \
 	"ramboot=echo Booting from ramdisk ...; " \
 		"run ramargs; " \
-		"bootm ${loadaddr}\0" \
+		"bootm ${loadaddr}\0"
 
 #define CONFIG_BOOTCOMMAND \
 	"if mmc rescan ${mmcdev}; then " \
