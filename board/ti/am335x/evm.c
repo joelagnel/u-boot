@@ -34,6 +34,15 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
+#undef EVM_EEPROM_DEBUG
+
+/*define above EVM_EEPROM_DEBUG to get debug printf's for evm config display */
+#ifdef	EVM_EEPROM_DEBUG
+#define PRINTD(fmt,args...)	printf (fmt ,##args)
+#else
+#define PRINTD(fmt,args...)
+#endif
+
 /* UART Defines */
 #define UART_SYSCFG_OFFSET	(0x54)
 #define UART_SYSSTS_OFFSET	(0x58)
@@ -582,6 +591,11 @@ int board_late_init(void)
 /* Display the board info */
 int checkboard(void)
 {
+#ifdef	EVM_EEPROM_DEBUG
+    unsigned int cntr;
+    unsigned char *valPtr;
+#endif
+
 #ifdef CONFIG_AM335X_MIN_CONFIG
 	if (board_id == GP_BOARD) {
 #ifdef CONFIG_NAND
@@ -596,6 +610,29 @@ int checkboard(void)
 #endif
 	}
 #endif
+
+#ifdef	EVM_EEPROM_DEBUG
+    PRINTD("EVM Configuration - ");
+    PRINTD("\tBoard id %x, profile %x, db %d\n", board_id, profile,
+						daughter_board_connected);
+    PRINTD("Base Board EEPROM Data\n");
+    valPtr = (unsigned char *)&header;
+    for(cntr = 0; cntr < sizeof(header); cntr++) {
+            if(cntr % 16 == 0)
+                    PRINTD("\n0x%02x :", cntr);
+
+            PRINTD(" 0x%02x", (unsigned int)valPtr[cntr]);
+    }
+    PRINTD("\n\n");
+
+    PRINTD("Board identification from EEPROM contents:\n");
+    PRINTD("\tBoard name   : %.8s\n", header.name);
+    PRINTD("\tBoard version: %.4s\n", header.version);
+    PRINTD("\tBoard serial : %.12s\n", header.serial);
+    PRINTD("\tBoard config : %.6s\n\n", header.config);
+#endif
+
+
 	return 0;
 }
 
