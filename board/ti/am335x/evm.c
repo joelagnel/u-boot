@@ -43,6 +43,12 @@ DECLARE_GLOBAL_DATA_PTR;
 #define PRINTD(fmt,args...)
 #endif
 
+#ifndef	CONFIG_AM335X_MIN_CONFIG
+#define PRINT_FULL(fmt,args...)	printf (fmt ,##args)
+#else
+#define PRINT_FULL(fmt,args...)
+#endif
+
 /* UART Defines */
 #define UART_SYSCFG_OFFSET	(0x54)
 #define UART_SYSSTS_OFFSET	(0x58)
@@ -437,10 +443,10 @@ static void detect_daughter_board(void)
 {
 	/* Check if daughter board is conneted */
 	if (i2c_probe(I2C_DAUGHTER_BOARD_ADDR)) {
-		//printf("No daughter card present\n");
+		PRINT_FULL("No daughter card present\n");
 		return;
 	} else {
-		//printf("Found a daughter card connected\n");
+		PRINT_FULL("Found a daughter card connected\n");
 		daughter_board_connected = 1;
 	}
 }
@@ -525,21 +531,21 @@ int board_init(void)
 
 	/* Check if baseboard eeprom is available */
 	if (i2c_probe(I2C_BASE_BOARD_ADDR)) {
-		//printf("Could not probe the EEPROM; something fundamentally "
-		//	"wrong on the I2C bus.\n");
+		PRINT_FULL("Could not probe the EEPROM; something fundamentally "
+			"wrong on the I2C bus.\n");
 		return 1;
 	}
 
 	/* read the eeprom using i2c */
 	if (i2c_read(I2C_BASE_BOARD_ADDR, 0, 2, (uchar *)&header,
 							sizeof(header))) {
-		//printf("Could not read the EEPROM; something fundamentally"
-		//	" wrong on the I2C bus.\n");
+		PRINT_FULL("Could not read the EEPROM; something fundamentally"
+			" wrong on the I2C bus.\n");
 		return 1;
 	}
 
 	if (header.magic != 0xEE3355AA) {
-		//printf("Incorrect magic number in EEPROM\n");
+		PRINT_FULL("Incorrect magic number in EEPROM\n");
 		return 0;
 	}
 
@@ -554,8 +560,8 @@ int board_init(void)
 	} else if (!strncmp("SKU#03", header.config, 6)) {
 		board_id = IPP_BOARD;
 	} else {
-		//printf("Did not find a recognized configuration, "
-		//	"assuming just a base board\n");
+		PRINT_FULL("Did not find a recognized configuration, "
+			"assuming just a base board\n");
 	}
 
 	configure_evm_pin_mux(board_id, profile, daughter_board_connected);
