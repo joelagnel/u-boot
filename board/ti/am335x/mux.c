@@ -453,10 +453,12 @@ static struct module_pin_mux spi0_pin_mux[] = {
 };
 
 static struct module_pin_mux spi1_pin_mux[] = {
-	{OFFSET(mcasp0_aclkx), MODE(3)   },  /*SPI1_SCLK */
-	{OFFSET(mcasp0_fsx), MODE(3) },    /*SPI1_D0 */
-	{OFFSET(mcasp0_axr0), MODE(3) | RXACTIVE },   /*SPI1_D1 */
-	{OFFSET(mcasp0_ahclkr), MODE(3) }, /*SPI1_CS0 */
+	{OFFSET(mcasp0_aclkx), MODE(3) | PULLUDEN | RXACTIVE},	/*SPI0_SCLK */
+	{OFFSET(mcasp0_fsx), MODE(3) | PULLUDEN | PULLUP_EN |
+							RXACTIVE}, /*SPI0_D0 */
+	{OFFSET(mcasp0_axr0), MODE(3) | PULLUDEN | RXACTIVE}, /*SPI0_D1 */
+	{OFFSET(mcasp0_ahclkr), MODE(3) | PULLUDEN | PULLUP_EN |
+							RXACTIVE}, /*SPI0_CS0 */
 	{-1},
 };
 #endif
