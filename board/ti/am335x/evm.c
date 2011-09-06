@@ -370,9 +370,6 @@ static void config_am335x_mddr(void)
 /*  void DDR2_EMIF_Config(void); */
 static void config_am335x_ddr2(void)
 {
-/*#if 1
-	DDR2_EMIF_Config();
-#else*/
 	int data_macro_0 = 0;
 	int data_macro_1 = 1;
 
@@ -398,7 +395,6 @@ static void config_am335x_ddr2(void)
 	__raw_writel(__raw_readl(DDR_CKE_CTRL) | 0x00000001, DDR_CKE_CTRL);
 
 	config_emif_ddr2();
-/* #endif */
 }
 
 static void config_am335x_ddr(void)
