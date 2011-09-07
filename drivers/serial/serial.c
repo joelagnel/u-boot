@@ -322,7 +322,6 @@ serial_setbrg(void)
 #endif
 
 #if defined(CONFIG_SERIAL_MULTI)
-
 DECLARE_ESERIAL_FUNCTIONS(1);
 struct serial_device eserial1_device =
 	INIT_ESERIAL_STRUCTURE(1, "eserial0");

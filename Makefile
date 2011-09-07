@@ -398,6 +398,10 @@ $(obj)u-boot.ubl:       $(obj)u-boot-nand.bin
 		$(obj)tools/mkimage -n $(UBL_CONFIG) -T ublimage \
 		-e $(CONFIG_SYS_TEXT_BASE) -d $< $@
 
+$(obj)u-boot.ti:	$(obj)u-boot.bin
+		$(obj)tools/mkimage -T tiimage \
+		-e $(TI_LOAD_ADDR) -n $(TI_DEVICE) -d $< $(obj)$(TI_IMAGE)
+
 GEN_UBOOT = \
 		UNDEF_SYM=`$(OBJDUMP) -x $(LIBBOARD) $(LIBS) | \
 		sed  -n -e 's/.*\($(SYM_PREFIX)__u_boot_cmd_.*\)/-u\1/p'|sort|uniq`;\

@@ -159,6 +159,7 @@
 #define IH_TYPE_IMXIMAGE	10	/* Freescale IMXBoot Image	*/
 #define IH_TYPE_UBLIMAGE	11	/* Davinci UBL Image		*/
 #define IH_TYPE_OMAPIMAGE	12	/* TI OMAP Config Header Image	*/
+#define IH_TYPE_TIIMAGE		13	/* Texas Instruments Boot Image */
 
 /*
  * Compression Types
