@@ -13,11 +13,13 @@
 # GNU General Public License for more details.
 #
 
-sinclude $(OBJTREE)/board/$(BOARDDIR)/config.tmp
+#sinclude $(OBJTREE)/board/$(BOARDDIR)/config.tmp
+CONFIG_SYS_TEXT_BASE = 0x80700000
+TI_IMAGE = u-boot.min.uart
 # This will be used by mkimage extension to select header for image
 TI_DEVICE = ti81xx
 # ROM code will load u-boot to this address
 TI_LOAD_ADDR = 0x402f0400
 # TEXT_BASE for the 2 stages is different and comes from the Makefile
 CROSS_COMPILE:= arm-none-linux-gnueabi-
-LDSCRIPT:=board/ti/am335x/u-boot.lds
+#LDSCRIPT:=board/ti/am335x/u-boot.lds

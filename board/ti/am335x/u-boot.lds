@@ -21,8 +21,8 @@ SECTIONS
 	. = ALIGN(4);
 	.text	:
 	{
-	  arch/arm/cpu/arm_cortexa8/start.o	(.text)
-	  arch/arm/cpu/arm_cortexa8/ti81xx/lowlevel_init.o	(.text)
+	  arch/arm/cpu/armv7/start.o	(.text)
+	  arch/arm/cpu/armv7/am335x/lowlevel_init.o	(.text)
 	  *(.text)
 	}
 	. = ALIGN(4);

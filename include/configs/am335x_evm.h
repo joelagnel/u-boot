@@ -231,7 +231,6 @@
 #define CONFIG_SYS_TIMERBASE		0x48040000	/* Use Timer2 */
 
 /* NS16550 Configuration */
-#define CONFIG_SERIAL_MULTI     	1
 #define CONFIG_SYS_NS16550
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_REG_SIZE	(-4)
@@ -376,7 +375,7 @@ extern unsigned int boot_flash_type;
 # define CONFIG_SYS_I2C_SLAVE		1
 # define CONFIG_SYS_I2C_BUS		0
 # define CONFIG_SYS_I2C_BUS_SELECT	1
-# define CONFIG_DRIVER_TI81XX_I2C	1
+# define CONFIG_DRIVER_AM335X_I2C	1
 
 /* HSMMC support */
 #ifdef CONFIG_MMC
@@ -394,5 +393,8 @@ extern unsigned int boot_flash_type;
 /* Unsupported features */
 #undef CONFIG_USE_IRQ
 
+/*TODO */
+#define CONFIG_SYS_SDRAM_BASE 1
+#define CONFIG_SYS_INIT_SP_ADDR 1
 
  #endif	/* ! __CONFIG_AM335X_EVM_H */

@@ -54,6 +54,8 @@ DECLARE_GLOBAL_DATA_PTR;
 #define TCLR_REG		0x38
 
 static volatile int board_id = BASE_BOARD;
+static unsigned char daughter_board_connected = FALSE;
+static unsigned char profile = PROFILE_NONE;
 
 static void init_timer(void)
 {
@@ -395,16 +397,6 @@ int board_evm_init(void)
 }
 #endif
 
-struct serial_device *default_serial_console(void)
-{
-
-	if (board_id != IA_BOARD) {
-		return &eserial1_device;	/* UART0 */
-	} else {
-		return &eserial4_device;	/* UART3 */
-	}
-}
-
 int board_init(void)
 {
 
@@ -418,6 +410,12 @@ int board_init(void)
 
 	gpmc_init();
 
+	return 0;
+}
+
+/* Display the board info */
+int checkboard(void)
+{
 	return 0;
 }
 
