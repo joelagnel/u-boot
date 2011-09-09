@@ -38,7 +38,7 @@ CFLAGS	+= -DCONFIG_SPL_BUILD -DCONFIG_NAND_SPL
 
 SOBJS	= start.o _udivsi3.o _divsi3.o
 COBJS	= cpu.o davinci_nand.o ns16550.o div0.o davinci_pinmux.o psc.o	\
-	misc.o hawkboard_nand_spl.o nand_boot.o
+	misc.o hawkboard_nand_spl.o nand_boot.o memsize.o
 
 SRCS	:= $(addprefix $(obj),$(SOBJS:.o=.S) $(COBJS:.o=.c))
 OBJS	:= $(addprefix $(obj),$(SOBJS) $(COBJS))
@@ -125,6 +125,10 @@ $(obj)psc.c:
 	@rm -f $@
 	ln -s $(TOPDIR)/arch/arm/cpu/arm926ejs/davinci/psc.c $@
 
+# from comon directory
+$(obj)memsize.c:
+	@rm -f $@
+	ln -s $(TOPDIR)/common/memsize.c $@
 
 #########################################################################
 
