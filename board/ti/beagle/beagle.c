@@ -371,7 +371,7 @@ void set_muxconf_regs(void)
 	MUX_BEAGLE();
 }
 
-#ifdef CONFIG_GENERIC_MMC
+#if defined(CONFIG_GENERIC_MMC) && !defined(CONFIG_SPL_BUILD)
 int board_mmc_init(bd_t *bis)
 {
 	omap_mmc_init(0);
@@ -480,6 +480,7 @@ int ehci_hcd_init(void)
 
 #endif /* CONFIG_USB_EHCI */
 
+#ifndef CONFIG_SPL_BUILD
 /*
  * This command returns the status of the user button on beagle xM
  * Input - none
@@ -534,3 +535,4 @@ U_BOOT_CMD(
 	"Return the status of the BeagleBoard USER button",
 	""
 );
+#endif

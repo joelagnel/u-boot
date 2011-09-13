@@ -391,4 +391,36 @@
 
 #define CONFIG_OMAP3_SPI
 
+/* Defines for SPL */
+#define CONFIG_SPL
+#define CONFIG_SPL_TEXT_BASE		0x40200800
+#define CONFIG_SPL_MAX_SIZE		(38 * 1024)
+#define CONFIG_SPL_STACK		LOW_LEVEL_SRAM_STACK
+
+#define CONFIG_SPL_BSS_START_ADDR	0x80000000
+#define CONFIG_SPL_BSS_MAX_SIZE		0x80000		/* 512 KB */
+
+#define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR	0x300 /* address 0x60000 */
+#define CONFIG_SYS_U_BOOT_MAX_SIZE_SECTORS	0x200 /* 256 KB */
+#define CONFIG_SYS_MMC_SD_FAT_BOOT_PARTITION	1
+#define CONFIG_SPL_FAT_LOAD_PAYLOAD_NAME	"u-boot.img"
+
+#define CONFIG_SPL_LIBCOMMON_SUPPORT
+#define CONFIG_SPL_LIBDISK_SUPPORT
+#define CONFIG_SPL_I2C_SUPPORT
+#define CONFIG_SPL_LIBGENERIC_SUPPORT
+#define CONFIG_SPL_MMC_SUPPORT
+#define CONFIG_SPL_FAT_SUPPORT
+#define CONFIG_SPL_SERIAL_SUPPORT
+#define CONFIG_SPL_POWER_SUPPORT
+#define CONFIG_SPL_LDSCRIPT		"$(CPUDIR)/omap-common/u-boot-spl.lds"
+
+/*
+ * 1MB into the SDRAM to allow for SPL's bss at the beginning of SDRAM
+ * 64 bytes before this address should be set aside for u-boot.img's
+ * header. That is 0x800FFFC0--0x80100000 should not be used for any
+ * other needs.
+ */
+#define CONFIG_SYS_TEXT_BASE		0x80100000
+
 #endif /* __CONFIG_H */
