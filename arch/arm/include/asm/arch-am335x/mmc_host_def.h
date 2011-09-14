@@ -33,7 +33,9 @@
 #elif defined(CONFIG_TI814X)
 # define OMAP_HSMMC_BASE		0x481D8100
 #elif defined(CONFIG_AM335X)
-# define OMAP_HSMMC_BASE        	CONFIG_AM335X_HSMMC_BASE
+# define OMAP_HSMMC1_BASE       0x48060100
+# define OMAP_HSMMC2_BASE       0x481D8100
+# define OMAP_HSMMC3_BASE       0x481D8100	/* This is just to satisfy the build */
 #endif
 
 typedef struct hsmmc {
