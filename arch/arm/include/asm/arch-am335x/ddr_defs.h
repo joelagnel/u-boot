@@ -327,7 +327,7 @@
 #define DDR2_RATIO		0x80	/* for mDDR */
 #define CMD_FORCE		0x00	/* common #def */
 #define CMD_DELAY		0x00
-#if	(CONFIG_AM335X_DDR_IS_MDDR == 1)
+#if    (CONFIG_AM335X_EVM_IS_13x13 == 1)
 #define EMIF_READ_LATENCY	0x05
 #define EMIF_TIM1		0x04446249
 #define EMIF_TIM2		0x101731C0
