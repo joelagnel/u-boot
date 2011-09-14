@@ -92,6 +92,7 @@
 #else
 #define CONFIG_NOR
 #endif
+#undef CONFIG_NAND
 
 #define CONFIG_SPI			1
 
