@@ -343,7 +343,6 @@ extern unsigned int boot_flash_type;
 
 /* SPI support */
 #ifdef CONFIG_SPI
-#define BOARD_LATE_INIT               1
 #define CONFIG_OMAP3_SPI
 #define CONFIG_MTD_DEVICE
 #define CONFIG_SPI_FLASH
