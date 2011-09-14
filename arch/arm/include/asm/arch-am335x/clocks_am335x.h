@@ -49,7 +49,7 @@
 
 /* DDR Freq is 166 MHZ for now*/
 /* Set Fdll = 400 MHZ , Fdll = M * 2 * CLKINP/ N + 1; clkout = Fdll /(2 * M2) */
-#if	(CONFIG_AM335X_DDR_IS_MDDR == 1)
+#if    (CONFIG_AM335X_EVM_IS_13x13 == 1)
 #define DDRPLL_M	166	/* M/N + 1 = 25/3 */
 #else
 #define DDRPLL_M	200
