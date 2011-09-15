@@ -393,7 +393,7 @@ extern unsigned int boot_flash_type;
 /* Unsupported features */
 #undef CONFIG_USE_IRQ
 
-#define CONFIG_SYS_SDRAM_BASE 1
+#define CONFIG_SYS_SDRAM_BASE		PHYS_DRAM_1
 #define CONFIG_SYS_INIT_RAM_ADDR	0x402f0400
 #define CONFIG_SYS_INIT_RAM_SIZE	0x800
 #define CONFIG_SYS_INIT_SP_ADDR		(CONFIG_SYS_INIT_RAM_ADDR + \
