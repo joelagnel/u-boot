@@ -53,7 +53,7 @@ DECLARE_GLOBAL_DATA_PTR;
 #define TIOCP_CFG_REG		0x10
 #define TCLR_REG		0x38
 
-static volatile int board_id = BASE_BOARD;
+static volatile int board_id = GP_BOARD;
 static unsigned char daughter_board_connected = FALSE;
 static unsigned char profile = PROFILE_NONE;
 
