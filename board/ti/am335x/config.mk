@@ -14,7 +14,12 @@
 #
 
 #sinclude $(OBJTREE)/board/$(BOARDDIR)/config.tmp
+ifdef CONFIG_PRELOADER
 CONFIG_SYS_TEXT_BASE = 0x80700000
+else
+CONFIG_SYS_TEXT_BASE = 0x80800000
+endif
+
 TI_IMAGE = u-boot.min.uart
 # This will be used by mkimage extension to select header for image
 TI_DEVICE = ti81xx
