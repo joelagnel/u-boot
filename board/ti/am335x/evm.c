@@ -71,10 +71,6 @@ static void init_timer(void)
 
 int dram_init(void)
 {
-	/* Fill up board info */
-	gd->bd->bi_dram[0].start = PHYS_DRAM_1;
-	gd->bd->bi_dram[0].size = PHYS_DRAM_1_SIZE;
-
 	gd->ram_size = PHYS_DRAM_1_SIZE;
 	return 0;
 }
