@@ -53,7 +53,7 @@
 #if	(CONFIG_AM335X_EVM_IS_13x13 == 1)
 #define DDRPLL_M	166	/* M/N + 1 = 25/3 */
 #else
-#define DDRPLL_M	200
+#define DDRPLL_M	266
 #endif
 
 #define DDRPLL_N	23
