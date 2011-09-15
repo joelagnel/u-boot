@@ -384,8 +384,9 @@ extern unsigned int boot_flash_type;
 #else
 # define CONFIG_AM335X_HSMMC_BASE    0x481D8100
 #endif
-# define CONFIG_OMAP3_MMC	1
 # define CONFIG_CMD_MMC		1
+# define CONFIG_GENERIC_MMC		1
+# define CONFIG_OMAP_HSMMC		1
 # define CONFIG_DOS_PARTITION	1
 # define CONFIG_CMD_FAT		1
 #endif
