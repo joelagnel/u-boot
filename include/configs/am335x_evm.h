@@ -396,8 +396,14 @@ extern unsigned int boot_flash_type;
 #undef CONFIG_USE_IRQ
 
 #define CONFIG_SYS_SDRAM_BASE		PHYS_DRAM_1
-#define CONFIG_SYS_INIT_RAM_ADDR	0x402f0400
-#define CONFIG_SYS_INIT_RAM_SIZE	0x800
+/* 
+ * Internal RAM, range 0x402F0000 - 0x402FFFFF
+ * 0   - 1KB   - reserved
+ * 2   - 110KB - free
+ * 111 - 128KB - in use by Boot ROM
+ */
+#define CONFIG_SYS_INIT_RAM_ADDR	0x402f0400	/* Start at 2KB */
+#define CONFIG_SYS_INIT_RAM_SIZE	0x1b400     /* End at 110KB */
 #define CONFIG_SYS_INIT_SP_ADDR		(CONFIG_SYS_INIT_RAM_ADDR + \
 					 CONFIG_SYS_INIT_RAM_SIZE - \
 					 GENERATED_GBL_DATA_SIZE)
