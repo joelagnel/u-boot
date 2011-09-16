@@ -191,6 +191,8 @@
 
 
 
+# define CONFIG_CMD_EXT2		/* EXT2 Support			*/
+
 #endif /* CONFIG_AM335X_MIN_CONFIG */
 
 #define CONFIG_DISPLAY_BOARDINFO
