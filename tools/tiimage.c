@@ -35,6 +35,7 @@
 #endif
 #define __ASM_STUB_PROCESSOR_H__
 #include <config.h>
+#undef CONFIG_LMB
 #undef __ASSEMBLY__
 
 #include "mkimage.h"
