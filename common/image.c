@@ -146,6 +146,7 @@ static const table_entry_t uimage_type[] = {
 	{	IH_TYPE_KWBIMAGE,   "kwbimage",   "Kirkwood Boot Image",},
 	{	IH_TYPE_IMXIMAGE,   "imximage",   "Freescale i.MX Boot Image",},
 	{	IH_TYPE_UBLIMAGE,   "ublimage",   "Davinci UBL image",},
+	{   IH_TYPE_TIIMAGE,    "tiimage",    "Texas Instruments Boot Image",},
 	{	-1,		    "",		  "",			},
 };
 
