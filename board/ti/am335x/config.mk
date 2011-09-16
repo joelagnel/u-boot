@@ -21,7 +21,7 @@ else
 CONFIG_SYS_TEXT_BASE = 0x80800000
 endif
 
-TI_IMAGE = u-boot.min.uart
+TI_IMAGE = u-boot.min
 # This will be used by mkimage extension to select header for image
 TI_DEVICE = ti81xx
 # ROM code will load u-boot to this address
