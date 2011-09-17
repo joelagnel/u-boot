@@ -1,0 +1,11 @@
+This directory holds merge conflicts that were encountered when rebasing from the v2011.06
+staging tree (with Joel's fixes to make second stage working) to v2011.09-rc1 in mainline.
+
+Status of rebase:
+Sep 17: All merge conflicts resolved, not build tested.
+
+This could potentially break the second stage fixes. The idea behind rebasing is to pull
+in all the latest SPL and arm fixes to start off on a good base for the first stage work.
+However after this rebase, second stage might need work as well depending on what changed.
+
+

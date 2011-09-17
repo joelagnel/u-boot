@@ -1,0 +1,113 @@
+diff --cc Makefile
+index e9ba6a4,3645405..0000000
+--- a/Makefile
++++ b/Makefile
+@@@ -394,9 -400,9 +394,15 @@@ $(obj)u-boot.sha1:	$(obj)u-boot.bi
+  $(obj)u-boot.dis:	$(obj)u-boot
+  		$(OBJDUMP) -d $< > $@
+  
+++<<<<<<< HEAD
+ +$(obj)u-boot.ubl:       $(obj)u-boot-nand.bin
+ +		$(obj)tools/mkimage -n $(UBL_CONFIG) -T ublimage \
+ +		-e $(CONFIG_SYS_TEXT_BASE) -d $< $@
+++=======
++ $(obj)u-boot.ti:	$(obj)u-boot.bin
++ 		$(obj)tools/mkimage -T tiimage \
++ 		-e $(TI_LOAD_ADDR) -n $(TI_DEVICE) -d $< $(obj)$(TI_IMAGE)
+++>>>>>>> am335x: Renaming to armv7
+  
+  GEN_UBOOT = \
+  		UNDEF_SYM=`$(OBJDUMP) -x $(LIBBOARD) $(LIBS) | \
+diff --cc drivers/i2c/omap24xx_i2c.c
+index 966ffc4,1a98d36..0000000
+--- a/drivers/i2c/omap24xx_i2c.c
++++ b/drivers/i2c/omap24xx_i2c.c
+@@@ -394,15 -510,15 +510,22 @@@ int i2c_write(uchar chip, uint addr, in
+  	return 0;
+  }
+  
+- static void wait_for_bb (void)
++ static u32 wait_for_bb (void)
+  {
+- 	int timeout = I2C_TIMEOUT;
+- 	u16 stat;
++ 	int timeout = 10;
++ 	u32 stat;
+  
+++<<<<<<< HEAD
+ +	writew(0xFFFF, &i2c_base->stat);	/* clear current interrupts...*/
+ +	while ((stat = readw (&i2c_base->stat) & I2C_STAT_BB) && timeout--) {
+ +		writew (stat, &i2c_base->stat);
+ +		udelay(1000);
+++=======
++ 	writew(0xFFFF, (i2c_base + I2C_STAT_OFS));	 /* clear current interruts...*/
++ 	while ((stat = readw ((i2c_base + I2C_STAT_OFS)) & I2C_STAT_BB) && timeout--) {
++ 		writew (stat, (i2c_base + I2C_STAT_OFS));
++ 		udelay (50000);
+++>>>>>>> am335x: Renaming to armv7
+  	}
+  
+  	if (timeout <= 0) {
+diff --cc drivers/serial/serial.c
+index 0d56e78,c1c726f..0000000
+--- a/drivers/serial/serial.c
++++ b/drivers/serial/serial.c
+@@@ -322,33 -322,16 +322,37 @@@ serial_setbrg(void
+  #endif
+  
+  #if defined(CONFIG_SERIAL_MULTI)
+- 
+  DECLARE_ESERIAL_FUNCTIONS(1);
+  struct serial_device eserial1_device =
+ -	INIT_ESERIAL_STRUCTURE(1,"eserial0","EUART1");
+ +	INIT_ESERIAL_STRUCTURE(1, "eserial0");
+  DECLARE_ESERIAL_FUNCTIONS(2);
+  struct serial_device eserial2_device =
+ -	INIT_ESERIAL_STRUCTURE(2,"eserial1","EUART2");
+ +	INIT_ESERIAL_STRUCTURE(2, "eserial1");
+  DECLARE_ESERIAL_FUNCTIONS(3);
+  struct serial_device eserial3_device =
+ -	INIT_ESERIAL_STRUCTURE(3,"eserial2","EUART3");
+ +	INIT_ESERIAL_STRUCTURE(3, "eserial2");
+  DECLARE_ESERIAL_FUNCTIONS(4);
+  struct serial_device eserial4_device =
+++<<<<<<< HEAD
+ +	INIT_ESERIAL_STRUCTURE(4, "eserial3");
+ +
+ +__weak struct serial_device *default_serial_console(void)
+ +{
+ +#if CONFIG_CONS_INDEX == 1
+ +	return &eserial1_device;
+ +#elif CONFIG_CONS_INDEX == 2
+ +	return &eserial2_device;
+ +#elif CONFIG_CONS_INDEX == 3
+ +	return &eserial3_device;
+ +#elif CONFIG_CONS_INDEX == 4
+ +	return &eserial4_device;
+ +#else
+ +#error "Bad CONFIG_CONS_INDEX."
+ +#endif
+ +}
+ +
+ +#endif /* CONFIG_SERIAL_MULTI */
+++=======
++ 	INIT_ESERIAL_STRUCTURE(4,"eserial3","EUART4");
++ #endif
+++>>>>>>> am335x: Renaming to armv7
+diff --cc include/image.h
+index 352e4a0,9dce97f..0000000
+--- a/include/image.h
++++ b/include/image.h
+@@@ -157,8 -157,7 +157,12 @@@
+  #define IH_TYPE_FLATDT		8	/* Binary Flat Device Tree Blob	*/
+  #define IH_TYPE_KWBIMAGE	9	/* Kirkwood Boot Image		*/
+  #define IH_TYPE_IMXIMAGE	10	/* Freescale IMXBoot Image	*/
+++<<<<<<< HEAD
+ +#define IH_TYPE_UBLIMAGE	11	/* Davinci UBL Image		*/
+ +#define IH_TYPE_OMAPIMAGE	12	/* TI OMAP Config Header Image	*/
+++=======
++ #define IH_TYPE_TIIMAGE		11	/* Texas Instruments Boot Image */
+++>>>>>>> am335x: Renaming to armv7
+  
+  /*
+   * Compression Types

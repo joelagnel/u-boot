@@ -1,0 +1,36 @@
+diff --cc common/image.c
+index d38ce4a,22f156c..0000000
+--- a/common/image.c
++++ b/common/image.c
+@@@ -145,7 -141,7 +145,11 @@@ static const table_entry_t uimage_type[
+  	{	IH_TYPE_FLATDT,     "flat_dt",    "Flat Device Tree",	},
+  	{	IH_TYPE_KWBIMAGE,   "kwbimage",   "Kirkwood Boot Image",},
+  	{	IH_TYPE_IMXIMAGE,   "imximage",   "Freescale i.MX Boot Image",},
+++<<<<<<< HEAD
+ +	{	IH_TYPE_UBLIMAGE,   "ublimage",   "Davinci UBL image",},
+++=======
++ 	{   IH_TYPE_TIIMAGE,    "tiimage",    "Texas Instruments Boot Image",},
+++>>>>>>> 3a5a331... [required for first stage loader, should go away with SPL]
+  	{	-1,		    "",		  "",			},
+  };
+  
+diff --cc tools/Makefile
+index fc741d3,3717fdc..0000000
+--- a/tools/Makefile
++++ b/tools/Makefile
+@@@ -85,10 -85,10 +85,14 @@@ OBJ_FILES-$(CONFIG_BUILD_ENVCRC) += env
+  NOPED_OBJ_FILES-y += fit_image.o
+  OBJ_FILES-$(CONFIG_CMD_NET) += gen_eth_addr.o
+  OBJ_FILES-$(CONFIG_CMD_LOADS) += img2srec.o
+ -OBJ_FILES-$(CONFIG_INCA_IP) += inca-swap-bytes.o
+ +OBJ_FILES-$(CONFIG_XWAY_SWAP_BYTES) += xway-swap-bytes.o
+  NOPED_OBJ_FILES-y += kwbimage.o
+  NOPED_OBJ_FILES-y += imximage.o
+++<<<<<<< HEAD
+ +NOPED_OBJ_FILES-y += omapimage.o
+++=======
++ NOPED_OBJ_FILES-y += tiimage.o
+++>>>>>>> 3a5a331... [required for first stage loader, should go away with SPL]
+  NOPED_OBJ_FILES-y += mkimage.o
+  OBJ_FILES-$(CONFIG_NETCONSOLE) += ncb.o
+  NOPED_OBJ_FILES-y += os_support.o
