@@ -25,18 +25,9 @@
 #ifndef _TIIMAGE_H_
 #define _TIIMAGE_H_
 
-#if defined(CONFIG_AM335X)
-struct ti_header {
-#if !defined(CONFIG_AM335X_PERIPHERAL_BOOT) && defined(CONFIG_AM335X_MIN_CONFIG)
-	uint32_t image_size;
-	uint32_t load_addr;
-#endif
-};
-#else
 struct ti_header {
 	uint32_t image_size;
 	uint32_t load_addr;
 };
-#endif
 
 #endif /* _TIIMAGE_H_ */
