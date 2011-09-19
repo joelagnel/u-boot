@@ -441,8 +441,12 @@ int i2c_write(uchar chip, uint addr, int alen,
 			i2c_error = 1;
 
 		if (!i2c_error) {
+#if defined(CONFIG_OMAP243X) || defined(CONFIG_OMAP34XX) \
+			|| defined(CONFIG_TI81XX)
+			for (i =  0; i < len; i++) {
+#else
 			for (i = ((alen > 1) ? 0 : 1); i < len; i++) {
-
+#endif
 				if (status & I2C_STAT_XRDY) {
 #if defined(CONFIG_OMAP243X) || defined(CONFIG_OMAP34XX) \
 			       || defined(CONFIG_TI81XX)
