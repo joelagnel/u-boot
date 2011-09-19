@@ -24,6 +24,7 @@
 #include <asm/arch/sys_proto.h>
 #include <asm/arch/mem.h>
 #include <asm/arch/nand.h>
+#include <asm/arch/clock.h>
 #include <linux/mtd/nand.h>
 #include <nand.h>
 #include <net.h>
@@ -31,6 +32,7 @@
 #include <netdev.h>
 #include <spi_flash.h>
 #include "common_def.h"
+#include "pmic.h"
 #include <i2c.h>
 #include <serial.h>
 
@@ -294,6 +296,80 @@ static void init_timer(void)
 }
 #endif
 
+
+/*
+ * MPU voltage switching for MPU frequency switching.
+ */
+#ifdef CONFIG_AM335X_MIN_CONFIG
+int  mpu_voltage_update( unsigned char vdd2_op_vol_sel)
+{
+	uchar buf[4]	= {0};
+	char res = 0;
+
+	/* select SR PMIC I2C instance */
+	if (i2c_read(PMIC_SR_I2C_ADDR, PMIC_DEVCTRL_REG, 1, buf, 1)) {
+		res = 1;
+		goto err_i2c_rw;
+	} else {
+		buf[0] &= ~PMIC_DEVCTRL_REG_SR_CTL_I2C_MASK;
+
+		if (i2c_write(PMIC_SR_I2C_ADDR, PMIC_DEVCTRL_REG, 1, buf, 1)){
+		res = 1;
+		goto err_i2c_rw;
+		}
+	}
+
+	/*  Configure VDD2 */
+	buf[0] = PMIC_VDD2_REG_VGAIN_SEL_X1 | PMIC_VDD2_REG_ILMAX_1_5_A |
+		PMIC_VDD2_REG_TSTEP_12_5 | PMIC_VDD2_REG_ST_ON_HI_POW;
+
+	if (i2c_write(PMIC_SR_I2C_ADDR, PMIC_VDD2_REG, 1, buf, 1)) {
+		res = 1;
+		goto err_i2c_rw;
+	}
+
+	/* Select VDD2 OP   */
+	if (i2c_read(PMIC_SR_I2C_ADDR, PMIC_VDD2_OP_REG, 1, buf, 1)) {
+		res = 1;
+		goto err_i2c_rw;
+	} else {
+		buf[0] &= ~PMIC_VDD2_OP_REG_CMD_MASK;
+
+		if (i2c_write(PMIC_SR_I2C_ADDR, PMIC_VDD2_OP_REG, 1, buf, 1)) {
+		res = 1;
+		goto err_i2c_rw;
+		}
+	}
+
+	/* Configure VDD2 OP  Voltage */
+	if (i2c_read(PMIC_SR_I2C_ADDR, PMIC_VDD2_OP_REG, 1, buf, 1)) {
+		res = 1;
+		goto err_i2c_rw;
+	} else {
+		buf[0] &= ~PMIC_VDD2_OP_REG_SEL_MASK;
+		buf[0] |= vdd2_op_vol_sel;
+
+		if (i2c_write(PMIC_SR_I2C_ADDR, PMIC_VDD2_OP_REG, 1, buf, 1)) {
+		res = 1;
+		goto err_i2c_rw;
+		}
+	}
+
+	if (i2c_read(PMIC_SR_I2C_ADDR, PMIC_VDD2_OP_REG, 1, buf, 1)) {
+		res = 1;
+		goto err_i2c_rw;
+	} else {
+		if( (buf[0] & PMIC_VDD2_OP_REG_SEL_MASK ) != vdd2_op_vol_sel) {
+		res = 1;
+		goto err_i2c_rw;
+		}
+	}
+
+err_i2c_rw:
+	return res;
+}
+#endif
+
 /*
  * early system init of muxing and clocks.
  */
@@ -408,6 +484,16 @@ int board_init(void)
 	enable_i2c0_pin_mux();
 
 	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
+
+#ifdef CONFIG_AM335X_MIN_CONFIG
+	/* PMIC voltage is configuring for frequency scaling */
+	if (!i2c_probe(PMIC_SR_I2C_ADDR)) {
+		if (!mpu_voltage_update(PMIC_VDD2_OP_REG_SEL_1_2)) {
+			/* Frequency switching for OPP 120 */
+			mpu_pll_config(MPUPLL_M_600);
+		}
+	}
+#endif
 
 	/* Check if baseboard eeprom is available */
 	if (i2c_probe(I2C_BASE_BOARD_ADDR)) {

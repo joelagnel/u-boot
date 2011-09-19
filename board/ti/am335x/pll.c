@@ -139,7 +139,7 @@ static void per_clocks_enable(void)
 	while (__raw_readl(CM_PER_SPI1_CLKCTRL) != PRCM_MOD_EN);
 }
 
-static void mpu_pll_config(void)
+void mpu_pll_config(int mpupll_M )
 {
 	u32 clkmode, clksel, div_m2;
 
@@ -153,7 +153,7 @@ static void mpu_pll_config(void)
 	while(__raw_readl(CM_IDLEST_DPLL_MPU) != 0x00000100);
 
 	clksel = clksel & (~0x7ffff);
-	clksel = clksel | ((MPUPLL_M << 0x8) | MPUPLL_N);
+	clksel = clksel | ((mpupll_M << 0x8) | MPUPLL_N);
 	__raw_writel(clksel, CM_CLKSEL_DPLL_MPU);
 
 	div_m2 = div_m2 & ~0x1f;
@@ -279,7 +279,7 @@ void enable_ddr_clocks(void)
  */
 void pll_init()
 {
-	mpu_pll_config();
+	mpu_pll_config(MPUPLL_M_550);
 	core_pll_config();
 	per_pll_config();
 	ddr_pll_config();
