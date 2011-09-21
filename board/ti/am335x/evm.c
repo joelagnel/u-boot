@@ -132,18 +132,6 @@ extern void cpsw_eth_set_mac_addr(const u_int8_t *addr);
 static unsigned char daughter_board_connected;
 static volatile int board_id = BASE_BOARD;
 
-static void init_timer(void)
-{
-	/* Reset the Timer */
-	__raw_writel(0x2, (DM_TIMER2_BASE + TSICR_REG));
-
-	/* Wait until the reset is done */
-	while (__raw_readl(DM_TIMER2_BASE + TIOCP_CFG_REG) & 1);
-
-	/* Start the Timer */
-	__raw_writel(0x1, (DM_TIMER2_BASE + TCLR_REG));
-}
-
 int dram_init(void)
 {
 	gd->ram_size = PHYS_DRAM_1_SIZE;
@@ -173,11 +161,9 @@ int misc_init_r(void)
 
 static void Data_Macro_Config(int dataMacroNum)
 {
-	u32 BaseAddrOffset;
+	u32 BaseAddrOffset = 0x00;;
 
-	if (dataMacroNum == 0)
-		BaseAddrOffset = 0x00;
-	else if (dataMacroNum == 1)
+	if (dataMacroNum == 1)
 		BaseAddrOffset = 0xA4;
 
 	__raw_writel(((DDR2_RD_DQS<<30)|(DDR2_RD_DQS<<20)
@@ -465,6 +451,18 @@ static void detect_daughter_board_profile(void)
  * Basic board specific setup
  */
 #ifdef CONFIG_AM335X_MIN_CONFIG
+static void init_timer(void)
+{
+	/* Reset the Timer */
+	__raw_writel(0x2, (DM_TIMER2_BASE + TSICR_REG));
+
+	/* Wait until the reset is done */
+	while (__raw_readl(DM_TIMER2_BASE + TIOCP_CFG_REG) & 1);
+
+	/* Start the Timer */
+	__raw_writel(0x1, (DM_TIMER2_BASE + TCLR_REG));
+}
+
 int board_min_init(void)
 {
 	u32 regVal;
@@ -892,7 +890,7 @@ int board_eth_init(bd_t *bis)
  * Command to switch between NAND HW and SW ecc
  *****************************************************************************/
 extern void ti81xx_nand_switch_ecc(nand_ecc_modes_t hardware, int32_t mode);
-static int do_switch_ecc(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
+static int do_switch_ecc(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
 {
 	int type = 0;
 	if (argc < 2)
