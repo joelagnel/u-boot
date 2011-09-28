@@ -338,15 +338,16 @@
 #define DDR2_RD_DQS		0x40
 #define DDR2_PHY_FIFO_WE	0x56
 #else
-#define EMIF_READ_LATENCY	0x04
-#define EMIF_TIM1		0x0666B3D6
-#define EMIF_TIM2		0x143731DA
-#define	EMIF_TIM3		0x00000347
-#define EMIF_SDCFG		0x40805332
-#define EMIF_SDREF		0x0000081a
-#define DDR2_DLL_LOCK_DIFF	0x0
-#define DDR2_RD_DQS		0x12
-#define DDR2_PHY_FIFO_WE	0x80
+/* Memory configuration for BeagleBone */
+#define EMIF_READ_LATENCY      0x05
+#define EMIF_TIM1              0x066692da
+#define EMIF_TIM2              0x36293213
+#define EMIF_TIM3               0x00000278
+#define EMIF_SDCFG             0x40805732
+#define EMIF_SDREF             0x0000030c
+#define DDR2_DLL_LOCK_DIFF     0x0
+#define DDR2_RD_DQS            0x40
+#define DDR2_PHY_FIFO_WE       0x80
 #endif
 #define	DDR2_INVERT_CLKOUT	0x00
 #define	DDR2_WR_DQS		0x00
