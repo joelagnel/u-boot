@@ -311,6 +311,7 @@ struct gptimer {
 #define CM_PER_UART3_CLKCTRL		(CM_PER + 0x74) /* UART3 */
 #define CM_PER_I2C1_CLKCTRL		(CM_PER + 0x48) /* I2C1 */
 #define CM_PER_I2C2_CLKCTRL		(CM_PER + 0x44) /* I2C2 */
+#define CM_WKUP_GPIO0_CLKCTRL		(CM_WKUP + 0x8) /* GPIO0 */
 
 #define CM_PER_MMC0_CLKCTRL     	(CM_PER + 0x3C)
 #define CM_PER_MMC1_CLKCTRL     	(CM_PER + 0xF4)
