@@ -520,43 +520,6 @@ int board_init(void)
 
 	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
 
-	/* Check if baseboard eeprom is available */
-	if (i2c_probe(I2C_BASE_BOARD_ADDR)) {
-		PRINT_FULL("Could not probe the EEPROM; something fundamentally "
-			"wrong on the I2C bus.\n");
-		goto err_out;
-	}
-
-	/* read the eeprom using i2c */
-	if (i2c_read(I2C_BASE_BOARD_ADDR, 0, 2, (uchar *)&header,
-							sizeof(header))) {
-		PRINT_FULL("Could not read the EEPROM; something fundamentally"
-			" wrong on the I2C bus.\n");
-		goto err_out;
-	}
-
-	if (header.magic != 0xEE3355AA) {
-		PRINT_FULL("Incorrect magic number in EEPROM\n");
-		goto err_out;
-	}
-
-	detect_daughter_board();
-
-	if (!strncmp("SKU#01", header.config, 6)) {
-		board_id = GP_BOARD;
-		detect_daughter_board_profile();
-	} else if (!strncmp("SKU#02", header.config, 6)) {
-		board_id = IA_BOARD;
-		detect_daughter_board_profile();
-	} else if (!strncmp("SKU#03", header.config, 6)) {
-		board_id = IPP_BOARD;
-	} else {
-		PRINT_FULL("Did not find a recognized configuration, "
-			"assuming General purpose EVM in Profile 0 with "
-			"Daughter board\n");
-		goto err_out;
-	}
-
 	configure_evm_pin_mux(board_id, profile, daughter_board_connected);
 
 #ifdef CONFIG_AM335X_MIN_CONFIG
