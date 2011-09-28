@@ -65,7 +65,7 @@
 #define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (32 * 1024))
 #define CONFIG_ENV_OVERWRITE
 #define CONFIG_SYS_LONGHELP
-#define CONFIG_SYS_PROMPT		"AM335X_EVM# "
+#define CONFIG_SYS_PROMPT		"BeagleBone# "
 /* Use HUSH parser to allow command parsing */
 #define CONFIG_SYS_HUSH_PARSER
 #define CONFIG_SYS_PROMPT_HUSH_PS2	"> "
@@ -89,9 +89,8 @@
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"verify=yes\0" \
 	"bootfile=uImage\0" \
-	"brd_mem=62M\0" \
-	"loadaddr=0x81000000\0" \
-	"script_addr=0x80900000\0" \
+	"loadaddr=0x82000000\0" \
+	"script_addr=0x81900000\0" \
 	"console=ttyO0,115200n8\0" \
 	"mmc_root=/dev/mmcblk0p2 rw\0" \
 	"nand_root=/dev/mtdblock4 rw\0" \
@@ -112,14 +111,13 @@
 	"nfsopts=nolock\0" \
 	"static_ip=${ipaddr}:${serverip}:${gatewayip}:${netmask}:${hostname}" \
 			"::off\0" \
-	"ip_method=dhcp\0" \
+	"ip_method=none\0" \
 	"loadbootscript=fatload mmc 0 ${script_addr} boot.scr\0" \
 	"bootscript= echo Running bootscript from MMC/SD to set the ENV...; " \
 		"source ${script_addr}\0" \
 	"mmc_load_uimage=fatload mmc 0 ${loadaddr} ${bootfile}\0" \
 	"bootargs_defaults=setenv bootargs " \
-		"console=${console} " \
-		 "mem=${brd_mem}\0" \
+		"console=${console}\0 " \
 	"mmc_args=run bootargs_defaults;" \
 		"setenv bootargs ${bootargs} " \
 		"root=${mmc_root} " \
