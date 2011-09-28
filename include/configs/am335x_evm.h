@@ -74,7 +74,7 @@
 #define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (32 * 1024))
 #define CONFIG_ENV_OVERWRITE
 #define CONFIG_SYS_LONGHELP
-#define CONFIG_SYS_PROMPT		"AM335X_EVM#"
+#define CONFIG_SYS_PROMPT		"AM335X_BeagleBone#"
 /* Use HUSH parser to allow command parsing */
 #define CONFIG_SYS_HUSH_PARSER
 #define CONFIG_SYS_PROMPT_HUSH_PS2	"> "
