@@ -638,6 +638,7 @@ static void phy_init(char *name, int addr)
 	unsigned int   cntr = 0;
 	unsigned short phyid1, phyid2;
 
+printf("phy_init name %s\n", name);
 	/* This is done as a workaround to support TLK110 rev1.0 phy */
 	/* Reading phy identification register 1 */
 	if (miiphy_read(name, addr, PHY_PHYIDR1, &phyid1) != 0) {
@@ -650,6 +651,7 @@ static void phy_init(char *name, int addr)
 		printf("failed to read phyid2\n");
 		return;
 	}
+	printf("phyid1 %X phyid2 %X\n", phyid1, phyid2);
 	if ((phyid1 == TLK110_PHYIDR1) && (phyid2 == TLK110_PHYIDR2)) {
 		miiphy_read(name, addr, TLK110_COARSEGAIN_REG, &val);
 		val |= TLK110_COARSEGAIN_VAL;
@@ -850,8 +852,8 @@ int board_eth_init(bd_t *bis)
 	}
 
 	/* set mii mode to rgmii in in device configure register */
-	if (board_id != IA_BOARD)
-		__raw_writel(RGMII_MODE_ENABLE, MAC_MII_SEL);
+	//if (board_id != IA_BOARD)
+	//	__raw_writel(RGMII_MODE_ENABLE, MAC_MII_SEL);
 
 	if (board_id == IA_BOARD) {
 		cpsw_slaves[0].phy_id = 30;

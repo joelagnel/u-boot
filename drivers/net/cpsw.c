@@ -464,7 +464,7 @@ static int cpsw_mdio_read(char *devname, unsigned char phy_id,
 {
 	u32 reg;
 
-	if (phy_reg & ~PHY_REG_MASK || phy_id & ~PHY_ID_MASK)
+	if (phy_reg & ~PHY_REG_MASK || phy_id & ~PHY_ID_MASK) 
 		return -EINVAL;
 
 	wait_for_user_access();
@@ -481,6 +481,7 @@ static int cpsw_mdio_write(char *devname, unsigned char phy_id,
 			   unsigned short phy_reg, unsigned short data)
 {
 	u32 reg;
+
 
 	if (phy_reg & ~PHY_REG_MASK || phy_id & ~PHY_ID_MASK)
 		return -EINVAL;
@@ -511,6 +512,7 @@ static void cpsw_mdio_init(char *name, u32 mdio_base, u32 div)
 	 */
 	udelay(1000);
 
+printf("cpsw_mdio_init\n");
 	miiphy_register(name, cpsw_mdio_read, cpsw_mdio_write);
 }
 
@@ -725,6 +727,7 @@ static int cpsw_init(struct eth_device *dev, bd_t *bis)
 	struct cpsw_priv	*priv = dev->priv;
 	int i, ret;
 
+printf("cpsw_init start\n");
 	priv->data.control(1);
 
 	/* soft reset the controller and initialize priv */
@@ -786,6 +789,7 @@ static int cpsw_init(struct eth_device *dev, bd_t *bis)
 	/* clear dma state */
 	soft_reset(priv->dma_regs + CPDMA_SOFTRESET);
 
+printf("after soft_reset\n");
 	if (priv->data.version == CPSW_CTRL_VERSION_2) {
 		for (i = 0; i < priv->data.channels; i++) {
 			__raw_writel(0, priv->dma_regs + CPDMA_RXHDP_VER2 + 4
@@ -827,6 +831,7 @@ static int cpsw_init(struct eth_device *dev, bd_t *bis)
 		}
 	}
 
+printf("return 0\n");
 	return 0;
 }
 

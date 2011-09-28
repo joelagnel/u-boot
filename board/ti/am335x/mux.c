@@ -362,6 +362,20 @@ static struct module_pin_mux mii1_pin_mux[] = {
 	{OFFSET(mdio_clk), MODE(0) | PULLUP_EN},	/* MDIO_CLK */
 	{-1},
 };
+
+static struct module_pin_mux rmii1_pin_mux[] = {
+	{OFFSET(mii1_rxerr), MODE(1) | RXACTIVE},	/* RMII1_RXERR */
+	{OFFSET(mii1_txen), MODE(1)},			/* RMII1_TXEN */
+	{OFFSET(mii1_txd1), MODE(1)},			/* RMII1_TXD1 */
+	{OFFSET(mii1_txd0), MODE(1)},			/* RMII1_TXD0 */
+	{OFFSET(mii1_rxclk), MODE(0) | RXACTIVE},	/* MII1_RXCLK */
+	{OFFSET(mii1_rxd1), MODE(1) | RXACTIVE},	/* RMII1_RXD1 */
+	{OFFSET(mii1_rxd0), MODE(1) | RXACTIVE},	/* RMII1_RXD0 */
+	{OFFSET(mdio_data), MODE(0) | RXACTIVE | PULLUP_EN}, /* MDIO_DATA */
+	{OFFSET(mdio_clk), MODE(0) | PULLUP_EN},	/* MDIO_CLK */
+	{OFFSET(rmii1_refclk), MODE(0) | RXACTIVE},	/* RMII1_REFCLK */
+	{-1},
+};
 #endif
 
 #ifdef CONFIG_NOR
@@ -477,9 +491,9 @@ static struct evm_pin_mux general_purpose_evm_pin_mux[] = {
 	{nand_pin_mux, PROFILE_ALL & ~PROFILE_2 & ~PROFILE_3, DEV_ON_DGHTR_BRD},
 #endif
 #ifndef CONFIG_NO_ETH
-	{rgmii1_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
-	{rgmii2_pin_mux, PROFILE_1 | PROFILE_2 | PROFILE_4 | PROFILE_6,
-							DEV_ON_DGHTR_BRD},
+	{rmii1_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
+	//{rgmii2_pin_mux, PROFILE_1 | PROFILE_2 | PROFILE_4 | PROFILE_6,
+	//						DEV_ON_DGHTR_BRD},
 #endif
 #ifdef CONFIG_NOR
 	{nor_pin_mux, PROFILE_3, DEV_ON_DGHTR_BRD},
@@ -510,7 +524,7 @@ static struct evm_pin_mux ia_motor_control_evm_pin_mux[] = {
 	{spi1_pin_mux, PROFILE_ALL, DEV_ON_DGHTR_BRD},
 #endif
 #ifndef CONFIG_NO_ETH
-	{mii1_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
+	{rmii1_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
 #endif
 	{uart3_pin_mux, PROFILE_ALL, DEV_ON_DGHTR_BRD},
 	{0},
@@ -524,8 +538,8 @@ static struct evm_pin_mux ip_phone_evm_pin_mux[] = {
 	{nand_pin_mux, PROFILE_0, DEV_ON_BASEBOARD},
 #endif
 #ifndef CONFIG_NO_ETH
-	{rgmii1_pin_mux, PROFILE_0, DEV_ON_BASEBOARD},
-	{rgmii2_pin_mux, PROFILE_0, DEV_ON_DGHTR_BRD},
+	{rmii1_pin_mux, PROFILE_0, DEV_ON_BASEBOARD},
+	//{rgmii2_pin_mux, PROFILE_0, DEV_ON_DGHTR_BRD},
 #endif
 #ifdef CONFIG_MMC
 	{mmc0_pin_mux, PROFILE_0, DEV_ON_BASEBOARD},
@@ -541,7 +555,7 @@ static struct evm_pin_mux low_cost_evm_pin_mux[] = {
 	{nand_pin_mux, PROFILE_NONE, DEV_ON_BASEBOARD},
 #endif
 #ifndef CONFIG_NO_ETH
-	{rgmii1_pin_mux, PROFILE_NONE, DEV_ON_BASEBOARD},
+	{rmii1_pin_mux, PROFILE_NONE, DEV_ON_BASEBOARD},
 #endif
 #ifdef CONFIG_MMC
 	{mmc0_pin_mux, PROFILE_NONE, DEV_ON_BASEBOARD},
