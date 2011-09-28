@@ -106,7 +106,7 @@
 	"nand_root=/dev/mtdblock4 rw\0" \
 	"spi_root=/dev/mtdblock4 rw\0" \
 	"nor_root=/dev/mtdblock3 rw\0" \
-	"mmc_root_fs_type=ext2 rootwait\0" \
+	"mmc_root_fs_type=ext3 rootwait\0" \
 	"nand_root_fs_type=jffs2\0" \
 	"spi_root_fs_type=jffs2\0" \
 	"nor_root_fs_type=jffs2\0" \
