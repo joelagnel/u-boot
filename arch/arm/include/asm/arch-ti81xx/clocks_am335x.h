@@ -26,7 +26,7 @@
 #define OSC	24
 
 /* MAIN PLL Fdll = 1 GHZ, */
-#define MPUPLL_M	550	/* 125 * n */
+#define MPUPLL_M	500	/* 125 * n */
 #define MPUPLL_N	23	/* (n -1 ) */
 #define MPUPLL_M2	1
 
