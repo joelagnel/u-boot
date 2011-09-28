@@ -48,6 +48,13 @@ static void interface_clocks_enable(void)
 
 	__raw_writel(PRCM_MOD_EN, CM_PER_L4HS_CLKCTRL);
 	while (__raw_readl(CM_PER_L4HS_CLKCTRL) != PRCM_MOD_EN);
+
+	__raw_writel(PRCM_MOD_EN, CM_PER_SPI1_CLKCTRL);
+	while (__raw_readl(CM_PER_SPI1_CLKCTRL) != PRCM_MOD_EN);
+
+	/* GPIO0 */
+	__raw_writel(PRCM_MOD_EN, CM_WKUP_GPIO0_CLKCTRL);
+	while (__raw_readl(CM_WKUP_GPIO0_CLKCTRL) != PRCM_MOD_EN);
 }
 
 static void power_domain_transition_enable(void)
