@@ -623,3 +623,7 @@ void enable_i2c0_pin_mux(void)
 	configure_module_pin_mux(i2c0_pin_mux);
 }
 
+void enable_uart0_pin_mux(void)
+{
+	configure_module_pin_mux(uart0_pin_mux);
+}

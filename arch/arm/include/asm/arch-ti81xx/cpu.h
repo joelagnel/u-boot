@@ -83,6 +83,10 @@ struct gptimer {
 #define HS_DEVICE			0x2
 #define GP_DEVICE			0x3
 
+/* rom boot device/mode id */
+#define BOOT_DEVICE_OFFSET		8
+#define BOOT_DEVICE_MASK		0xff
+
 /* cpu-id for TI81XX family */
 #define TI8168				0xb81e
 #define AM335X				0xB944

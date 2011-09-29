@@ -49,6 +49,9 @@ LIBS-$(CONFIG_SPL_LIBGENERIC_SUPPORT) += lib/libgeneric.o
 LIBS-$(CONFIG_SPL_POWER_SUPPORT) += drivers/power/libpower.o
 LIBS-$(CONFIG_SPL_NAND_SUPPORT) += drivers/mtd/nand/libnand.o
 
+ifeq ($(SOC),ti81xx)
+LIBS-y += $(CPUDIR)/omap-common/libomap-common.o
+endif
 ifeq ($(SOC),omap3)
 LIBS-y += $(CPUDIR)/omap-common/libomap-common.o
 endif
@@ -88,6 +91,11 @@ LDPPFLAGS += \
 	  sed -ne 's/GNU ld version \([0-9][0-9]*\)\.\([0-9][0-9]*\).*/-DLD_MAJOR=\1 -DLD_MINOR=\2/p')
 
 ifdef CONFIG_OMAP
+$(OBJTREE)/MLO:	$(obj)u-boot-spl.bin
+	$(OBJTREE)/tools/mkimage -T omapimage \
+		-a $(CONFIG_SPL_TEXT_BASE) -d $< $@
+endif
+ifdef CONFIG_TI81XX
 $(OBJTREE)/MLO:	$(obj)u-boot-spl.bin
 	$(OBJTREE)/tools/mkimage -T omapimage \
 		-a $(CONFIG_SPL_TEXT_BASE) -d $< $@

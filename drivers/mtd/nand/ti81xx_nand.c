@@ -50,10 +50,12 @@ struct nand_bch_priv {
 #define ECC_BCH16_NIBBLES	52
 
 static uint8_t cs;
+#ifndef CONFIG_SPL_BUILD
 static struct nand_ecclayout hw_nand_oob = GPMC_NAND_HW_ECC_LAYOUT_KERNEL;
 static struct nand_ecclayout hw_bch4_nand_oob = GPMC_NAND_HW_BCH4_ECC_LAYOUT;
-static struct nand_ecclayout hw_bch8_nand_oob = GPMC_NAND_HW_BCH8_ECC_LAYOUT;
 static struct nand_ecclayout hw_bch16_nand_oob = GPMC_NAND_HW_BCH16_ECC_LAYOUT;
+#endif
+static struct nand_ecclayout hw_bch8_nand_oob = GPMC_NAND_HW_BCH8_ECC_LAYOUT;
 
 
 static struct nand_bch_priv bch_priv = {
@@ -225,6 +227,7 @@ static void ti81xx_hwecc_init_bch(struct nand_chip *chip, int32_t mode)
 }
 
 
+#ifndef CONFIG_SPL_BUILD
 /*
  * ti81xx_hwecc_init - Initialize the Hardware ECC for NAND flash in
  *                   GPMC controller
@@ -254,6 +257,7 @@ static uint32_t gen_true_ecc(uint8_t *ecc_buf)
 	return ecc_buf[0] | (ecc_buf[1] << 16) | ((ecc_buf[2] & 0xF0) << 20) |
 		((ecc_buf[2] & 0x0F) << 8);
 }
+#endif
 
 /*
  * ti81xx_rotate_ecc_bch - Rotate the syndrome bytes
@@ -367,7 +371,13 @@ static int ti81xx_correct_data_bch(struct mtd_info *mtd, uint8_t *dat,
 
 	/* use elm module to check for errors */
 	if (elm_check_error(syndrome, bch->nibbles, &error_count, error_loc) != 0) {
+#ifndef CONFIG_SPL_BUILD
+		/* This currently sees all pages as being completely full of
+		 * uncorrectable errors.  The suspicion is that this is due
+		 * to limitations in the elm support we have in U-Boot today
+		 */
 		printf("ECC: uncorrectable.\n");
+#endif
 		return -1;
 	}
 
@@ -379,7 +389,7 @@ static int ti81xx_correct_data_bch(struct mtd_info *mtd, uint8_t *dat,
 	return 0;
 }
 
-
+#ifndef CONFIG_SPL_BUILD
 /*
  * ti81xx_correct_data - Compares the ecc read from nand spare area with ECC
  * registers values and corrects one bit error if it has occured
@@ -444,6 +454,7 @@ static int ti81xx_correct_data(struct mtd_info *mtd, uint8_t *dat,
 	}
 	return 0;
 }
+#endif
 
 /*
  *  ti81xx_calculate_ecc_bch - Read BCH ECC result
@@ -484,7 +495,7 @@ static int ti81xx_calculate_ecc_bch(struct mtd_info *mtd, const uint8_t *dat,
 	return ret;
 }
 
-
+#ifndef CONFIG_SPL_BUILD
 /*
  *  ti81xx_calculate_ecc - Generate non-inverted ECC bytes.
  *
@@ -629,7 +640,7 @@ static int ti81xx_read_page_bch(struct mtd_info *mtd, struct nand_chip *chip,
 	}
 	return 0;
 }
-
+#endif
 
 /*
  * ti81xx_enable_ecc_bch- This function enables the bch h/w ecc functionality
@@ -646,7 +657,7 @@ static void ti81xx_enable_ecc_bch(struct mtd_info *mtd, int32_t mode)
 	writel((readl(&gpmc_cfg->ecc_config) | 0x1), &gpmc_cfg->ecc_config);
 }
 
-
+#ifndef CONFIG_SPL_BUILD
 /*
  * ti81xx_enable_ecc - This function enables the hardware ecc functionality
  * @mtd:        MTD device structure
@@ -678,6 +689,7 @@ static void ti81xx_enable_ecc(struct mtd_info *mtd, int32_t mode)
 		break;
 	}
 }
+
 /*
  * __ti81xx_nand_switch_ecc - switch the ECC operation ib/w h/w ecc
  * (i.e. hamming / bch) and s/w ecc.
@@ -778,7 +790,6 @@ no_support:
 	return;
 }
 
-
 /*
  * ti81xx_nand_switch_ecc - switch the ECC operation ib/w h/w ecc
  * (i.e. hamming / bch) and s/w ecc.
@@ -816,6 +827,15 @@ void ti81xx_nand_switch_ecc(nand_ecc_modes_t hardware, int32_t mode)
 	nand->options &= ~NAND_OWN_BUFFERS;
 	return;
 }
+#endif
+
+#ifdef CONFIG_SPL_BUILD
+/* Check wait pin as dev ready indicator */
+static int ti81xx_spl_dev_ready(struct mtd_info *mtd)
+{
+	return gpmc_cfg->status & (1 << 8);
+}
+#endif
 
 /*
  * Board-specific NAND initialization. The following members of the
@@ -873,18 +893,39 @@ int board_nand_init(struct nand_chip *nand)
 
 	nand->chip_delay = 100;
 
-	/* fallback ecc info, this will be overridden by 
-	 * ti81xx_nand_switch_ecc() below to 1-bit h/w ecc
-	 */
-	nand->priv = &bch_priv;
-	nand->ecc.mode = NAND_ECC_SOFT;
-
 	/* required in case of BCH */
 	elm_init();
 
+	/* BCH info that will be correct for SPL or overridden otherwise. */
+	nand->priv = &bch_priv;
+
+#ifndef CONFIG_SPL_BUILD
+	/* For undocumented reasons we need to currently keep our environment
+	 * in 1-bit ECC so we configure ourself thusly. */
 	nand_curr_device = 0;
 	ti81xx_nand_switch_ecc(NAND_ECC_HW, 0);
+#else
+	/* The NAND chip present requires that we have written data in with
+	 * at least 4-bit ECC so we configure outself for that in SPL.
+	 */
+	nand->ecc.mode = NAND_ECC_HW_SYNDROME;
+	nand->ecc.layout = &hw_bch8_nand_oob;
+	nand->ecc.size = CONFIG_SYS_NAND_ECCSIZE;
+	nand->ecc.bytes = CONFIG_SYS_NAND_ECCBYTES;
+	nand->ecc.steps = CONFIG_SYS_NAND_ECCSTEPS;
+	nand->ecc.total = CONFIG_SYS_NAND_ECCTOTAL;
+	nand->ecc.hwctl = ti81xx_enable_ecc_bch;
+	nand->ecc.correct = ti81xx_correct_data_bch;
+	nand->ecc.calculate = ti81xx_calculate_ecc_bch;
+
+	if (nand->options & NAND_BUSWIDTH_16)
+		nand->read_buf = nand_read_buf16;
+	else
+		nand->read_buf = nand_read_buf;
+	nand->dev_ready = ti81xx_spl_dev_ready;
+
+	ti81xx_hwecc_init_bch(nand, NAND_ECC_READ);
+#endif
 
 	return 0;
 }
-

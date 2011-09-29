@@ -19,11 +19,11 @@
 
 /* The objective is to keep only the overall memory map here
  * The break-up of the memory map for individual modules registers should
- * in a diff file like cpu.h so that when this is the only place
- * where change is needed for new SoCs when the ip is the same
+ * be in a different file like cpu.h so that this is the only place
+ * where change is needed for new SoCs when the IP is otherwise the same
  */
 #ifdef CONFIG_AM335X
-#define SRAM0_START			0x402f0400
+#define SRAM0_START			0x402F0400
 #else
 #define SRAM0_START			0x40300000
 #endif

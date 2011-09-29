@@ -39,6 +39,7 @@ extern void pll_init(void);
 extern void enable_ddr_clocks(void);
 
 extern void enable_i2c0_pin_mux(void);
+extern void enable_uart0_pin_mux(void);
 extern void configure_evm_pin_mux(unsigned char daughter_board_id,
 					unsigned short daughter_board_profile,
 					unsigned int daughter_board_flag);

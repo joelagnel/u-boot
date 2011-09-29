@@ -16,29 +16,12 @@
 #define CONFIG_AM335X
 #define CONFIG_TI81XX
 #define CONFIG_SYS_NO_FLASH
-#define CONFIG_SYS_TEXT_BASE		0x80800000
 #define CONFIG_NAND_ENV
 
 #include <asm/arch/cpu.h>		/* get chip and board defs */
 #include <asm/arch/hardware.h>
 
 #define CONFIG_AM335X_HSMMC_INSTANCE	0	/* 0 - MMC0, 1 - MMC1 */
-
-/* In the 1st stage we have just 110K, so cut down wherever possible */
-#ifdef CONFIG_AM335X_MIN_CONFIG
-#define CONFIG_CMD_MEMORY	/* for mtest */
-#undef CONFIG_GZIP
-#undef CONFIG_ZLIB
-
-#undef CONFIG_SYS_HUSH_PARSER
-#define CONFIG_CMD_LOADB	/* loadb			*/
-#define CONFIG_CMD_LOADY	/* loady */
-#define CONFIG_SETUP_PLL
-#define CONFIG_AM335X_CONFIG_DDR
-#define CONFIG_AM335X_EVM_IS_13x13	0	/* 1 = 13x13, 0 = 15x15 */
-#define CONFIG_ENV_SIZE			0x400
-#define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (8 * 1024))
-#define CONFIG_SYS_PROMPT		"TI-MIN#"
 
 /* set to negative value for no autoboot */
 #define CONFIG_BOOTDELAY		3
@@ -72,12 +55,7 @@
 	"bootcmd=mmc rescan; fatload mmc 0 0x80800000 u-boot.bin; go 0x80800000\0"
 #endif
 
-#else /* u-boot Full / Second stage u-boot */
-
 #include <config_cmd_default.h>
-
-/* 1st stage would have done the basic init */
-#define CONFIG_SKIP_LOWLEVEL_INIT
 
 #define CONFIG_ENV_SIZE			0x2000
 #define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (32 * 1024))
@@ -197,10 +175,6 @@
 		"run nand_boot; " \
 	"fi"
 
-
-
-#endif /* CONFIG_AM335X_MIN_CONFIG */
-
 #define CONFIG_DISPLAY_BOARDINFO
 #define CONFIG_MISC_INIT_R
 #define CONFIG_SYS_AUTOLOAD		"yes"
@@ -240,6 +214,72 @@
 					 CONFIG_SYS_INIT_RAM_SIZE - \
 					 GENERATED_GBL_DATA_SIZE)
 
+/* Defines for SPL */
+#define CONFIG_SPL
+#define CONFIG_SPL_TEXT_BASE		0x402F0400
+#define CONFIG_SPL_MAX_SIZE		(46 * 1024)
+#define CONFIG_SPL_STACK		LOW_LEVEL_SRAM_STACK
+
+#define CONFIG_SPL_BSS_START_ADDR	0x80000000
+#define CONFIG_SPL_BSS_MAX_SIZE		0x80000		/* 512 KB */
+
+#define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR	0x300 /* address 0x60000 */
+#define CONFIG_SYS_U_BOOT_MAX_SIZE_SECTORS	0x200 /* 256 KB */
+#define CONFIG_SYS_MMC_SD_FAT_BOOT_PARTITION	1
+#define CONFIG_SPL_FAT_LOAD_PAYLOAD_NAME	"u-boot.img"
+#define CONFIG_SPL_MMC_SUPPORT
+#define CONFIG_SPL_FAT_SUPPORT
+
+#define CONFIG_SPL_LIBCOMMON_SUPPORT
+#define CONFIG_SPL_LIBDISK_SUPPORT
+#define CONFIG_SPL_I2C_SUPPORT
+#define CONFIG_SPL_LIBGENERIC_SUPPORT
+#define CONFIG_SPL_SERIAL_SUPPORT
+#define CONFIG_SPL_POWER_SUPPORT
+#define CONFIG_SPL_LDSCRIPT		"$(CPUDIR)/omap-common/u-boot-spl.lds"
+
+/* NAND boot config */
+#define CONFIG_SPL_NAND_SIMPLE
+#define CONFIG_SPL_NAND_SUPPORT
+#define CONFIG_SYS_NAND_5_ADDR_CYCLE
+#define CONFIG_SYS_NAND_PAGE_COUNT	(CONFIG_SYS_NAND_BLOCK_SIZE / \
+					 CONFIG_SYS_NAND_PAGE_SIZE)
+#define CONFIG_SYS_NAND_PAGE_SIZE	2048
+#define CONFIG_SYS_NAND_OOBSIZE		64
+#define CONFIG_SYS_NAND_BLOCK_SIZE	(128*1024)
+#define CONFIG_SYS_NAND_BAD_BLOCK_POS	NAND_LARGE_BADBLOCK_POS
+#define CONFIG_SYS_NAND_ECCPOS		{ 2, 3, 4, 5, 6, 7, 8, 9, \
+					 10, 11, 12, 13, 14, 15, 16, 17, \
+					 18, 19, 20, 21, 22, 23, 24, 25, \
+					 26, 27, 28, 29, 30, 31, 32, 33, \
+					 34, 35, 36, 37, 38, 39, 40, 41, \
+					 42, 43, 44, 45, 46, 47, 48, 49, \
+					 50, 51, 52, 53, 54, 55, 56, 57, }
+
+#define CONFIG_SYS_NAND_ECCSIZE		512
+#define CONFIG_SYS_NAND_ECCBYTES	14
+
+#define CONFIG_SYS_NAND_ECCSTEPS	4
+#define CONFIG_SYS_NAND_ECCTOTAL       (CONFIG_SYS_NAND_ECCBYTES * \
+						CONFIG_SYS_NAND_ECCSTEPS)
+
+#define CONFIG_SYS_NAND_U_BOOT_START   CONFIG_SYS_TEXT_BASE
+
+#define CONFIG_SYS_NAND_U_BOOT_OFFS	0x80000
+
+/*
+ * 1MB into the SDRAM to allow for SPL's bss at the beginning of SDRAM
+ * 64 bytes before this address should be set aside for u-boot.img's
+ * header. That is 0x800FFFC0--0x80800000 should not be used for any
+ * other needs.
+ */
+#define CONFIG_SYS_TEXT_BASE		0x80800000 /* 0x80100000 */
+
+/* Since SPL did all of this for us, we don't need to do it twice. */
+#ifndef CONFIG_SPL_BUILD
+#define CONFIG_SKIP_LOWLEVEL_INIT
+#endif
+
 /**
  * Clock related defines
  */
@@ -250,7 +290,6 @@
 #define CONFIG_SYS_HZ			1000
 
 /* NS16550 Configuration */
-#define CONFIG_SERIAL_MULTI     	1
 #define CONFIG_SYS_NS16550
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_REG_SIZE	(-4)

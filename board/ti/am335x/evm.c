@@ -15,6 +15,7 @@
 
 #include <common.h>
 #include <asm/cache.h>
+#include <asm/omap_common.h>
 #include <asm/io.h>
 #include <asm/arch/cpu.h>
 #include <asm/arch/ddr_defs.h>
@@ -35,7 +36,7 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
-#undef EVM_EEPROM_DEBUG
+#define EVM_EEPROM_DEBUG
 
 /*define above EVM_EEPROM_DEBUG to get debug printf's for evm config display */
 #ifdef	EVM_EEPROM_DEBUG
@@ -44,7 +45,7 @@ DECLARE_GLOBAL_DATA_PTR;
 #define PRINTD(fmt,args...)
 #endif
 
-#ifndef	CONFIG_AM335X_MIN_CONFIG
+#ifndef	CONFIG_SPL_BUILD
 #define PRINT_FULL(fmt,args...)	printf (fmt ,##args)
 #else
 #define PRINT_FULL(fmt,args...)
@@ -133,6 +134,11 @@ extern void cpsw_eth_set_mac_addr(const u_int8_t *addr);
 static unsigned char daughter_board_connected;
 static volatile int board_id = BASE_BOARD;
 
+/*
+ * dram_init:
+ * At this point we have initialized the i2c bus and can read the
+ * EEPROM which will tell us what board and revision we are on.
+ */
 int dram_init(void)
 {
 	gd->ram_size = PHYS_DRAM_1_SIZE;
@@ -147,19 +153,7 @@ void dram_init_banksize (void)
 	gd->bd->bi_dram[0].size = PHYS_DRAM_1_SIZE;
 }
 
-int misc_init_r(void)
-{
-#ifdef CONFIG_AM335X_MIN_CONFIG
-	printf("The 2nd stage U-Boot will now be auto-loaded\n");
-	printf("Please do not interrupt the countdown till TIAM335X_EVM prompt \
-		if 2nd stage is already flashed\n");
-#endif
-
-	return 0;
-}
-
-#ifdef CONFIG_AM335X_CONFIG_DDR
-
+#ifdef CONFIG_SPL_BUILD
 static void Data_Macro_Config(int dataMacroNum)
 {
 	u32 BaseAddrOffset = 0x00;;
@@ -235,61 +229,6 @@ static void config_vtp(void)
 	while ((__raw_readl(VTP0_CTRL_REG) & VTP_CTRL_READY) != VTP_CTRL_READY);
 }
 
-static void config_emif(void)
-{
-	u32 i;
-
-	__raw_writel(__raw_readl(VTP0_CTRL_REG) | VTP_CTRL_ENABLE,
-			VTP0_CTRL_REG);
-	__raw_writel(__raw_readl(VTP0_CTRL_REG) & (~VTP_CTRL_START_EN),
-			VTP0_CTRL_REG);
-	 __raw_writel(__raw_readl(VTP0_CTRL_REG) | VTP_CTRL_START_EN,
-			VTP0_CTRL_REG);
-
-	/* Poll for READY */
-	while ((__raw_readl(VTP0_CTRL_REG) & VTP_CTRL_READY) != VTP_CTRL_READY);
-
-	__raw_writel(__raw_readl(EMIF4_0_IODFT_TLGC) | DDR_PHY_RESET,
-			EMIF4_0_IODFT_TLGC); /* Reset DDRr PHY */
-	/* Wait while PHY is ready */
-	while ((__raw_readl(EMIF4_0_SDRAM_STATUS) & DDR_PHY_READY) == 0);
-
-	__raw_writel(__raw_readl(EMIF4_0_IODFT_TLGC) | DDR_FUNCTIONAL_MODE_EN,
-			EMIF4_0_IODFT_TLGC); /* Start Functional Mode */
-
-	/*Program EMIF0 CFG Registers*/
-	__raw_writel(EMIF_READ_LATENCY, EMIF4_0_DDR_PHY_CTRL_1);
-	__raw_writel(EMIF_READ_LATENCY, EMIF4_0_DDR_PHY_CTRL_1_SHADOW);
-	__raw_writel(EMIF_READ_LATENCY, EMIF4_0_DDR_PHY_CTRL_2);
-	__raw_writel(EMIF_TIM1, EMIF4_0_SDRAM_TIM_1);
-	__raw_writel(EMIF_TIM1, EMIF4_0_SDRAM_TIM_1_SHADOW);
-	__raw_writel(EMIF_TIM2, EMIF4_0_SDRAM_TIM_2);
-	__raw_writel(EMIF_TIM2, EMIF4_0_SDRAM_TIM_2_SHADOW);
-	__raw_writel(EMIF_TIM3, EMIF4_0_SDRAM_TIM_3);
-	__raw_writel(EMIF_TIM3, EMIF4_0_SDRAM_TIM_3_SHADOW);
-
-	__raw_writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG);
-	__raw_writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG2);
-
-	/* __raw_writel(EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL);
-	__raw_writel(EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL_SHD); */
-	__raw_writel(0x00004650, EMIF4_0_SDRAM_REF_CTRL);
-	__raw_writel(0x00004650, EMIF4_0_SDRAM_REF_CTRL_SHADOW);
-
-	for(i = 0; i<10000; i++)
-	{
-
-	}
-
-	__raw_writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG);
-	__raw_writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG2);
-
-	/* __raw_writel(EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL);
-	__raw_writel(EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL_SHD); */
-	__raw_writel(EMIF_SDREF,EMIF4_0_SDRAM_REF_CTRL);
-	__raw_writel(EMIF_SDREF, EMIF4_0_SDRAM_REF_CTRL_SHADOW);
-}
-
 static void config_emif_ddr2(void)
 {
 	u32 i;
@@ -326,36 +265,8 @@ static void config_emif_ddr2(void)
 	__raw_writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG2);
 }
 
-static void config_am335x_mddr(void)
-{
-	int data_macro_0 = 0;
-	int data_macro_1 = 1;
-
-	enable_ddr_clocks();
-
-	Cmd_Macro_Config();
-
-	Data_Macro_Config(data_macro_0);
-	Data_Macro_Config(data_macro_1);
-
-	__raw_writel(PHY_RANK0_DELAY, DATA0_RANK0_DELAYS_0);
-	__raw_writel(PHY_RANK0_DELAY, DATA1_RANK0_DELAYS_0);
-
-	/* set IO control registers */
-	__raw_writel(DDR_IOCTRL_VALUE, DDR_CMD0_IOCTRL);
-	__raw_writel(DDR_IOCTRL_VALUE, DDR_CMD1_IOCTRL);
-	__raw_writel(DDR_IOCTRL_VALUE, DDR_CMD2_IOCTRL);
-	__raw_writel(DDR_IOCTRL_VALUE, DDR_DATA0_IOCTRL);
-	__raw_writel(DDR_IOCTRL_VALUE, DDR_DATA1_IOCTRL);
-
-	__raw_writel(__raw_readl(DDR_IO_CTRL) | 0x10000000, DDR_IO_CTRL);
-	__raw_writel(__raw_readl(DDR_CKE_CTRL) | 0x00000001, DDR_CKE_CTRL);
-
-	config_emif();	/* vtp enable is here */
-}
-
 /*  void DDR2_EMIF_Config(void); */
-static void config_am335x_ddr2(void)
+static void config_am335x_ddr(void)
 {
 	int data_macro_0 = 0;
 	int data_macro_1 = 1;
@@ -384,21 +295,23 @@ static void config_am335x_ddr2(void)
 	config_emif_ddr2();
 }
 
-static void config_am335x_ddr(void)
+static void init_timer(void)
 {
-#if	(CONFIG_AM335X_EVM_IS_13x13 ==1)
-	config_am335x_mddr(); /* Do DDR settings for 13x13 */
-#else
-	config_am335x_ddr2();
-#endif
-}
+	/* Reset the Timer */
+	__raw_writel(0x2, (DM_TIMER2_BASE + TSICR_REG));
 
+	/* Wait until the reset is done */
+	while (__raw_readl(DM_TIMER2_BASE + TIOCP_CFG_REG) & 1);
+
+	/* Start the Timer */
+	__raw_writel(0x1, (DM_TIMER2_BASE + TCLR_REG));
+}
 #endif
 
 /*
  * early system init of muxing and clocks.
  */
-void s_init(u32 in_ddr)
+void s_init(void)
 {
 	/* Can be removed as A8 comes up with L2 enabled */
 	l2_cache_enable();
@@ -411,14 +324,38 @@ void s_init(u32 in_ddr)
 	__raw_writel(0x5555, WDT_WSPR);
 	while(__raw_readl(WDT_WWPS) != 0x0);
 
+#ifdef CONFIG_SPL_BUILD
 	/* Setup the PLLs and the clocks for the peripherals */
-#ifdef CONFIG_SETUP_PLL
 	pll_init();
-#endif
 
-#ifdef CONFIG_AM335X_CONFIG_DDR
-	if (!in_ddr)
-		config_am335x_ddr();
+	/* UART softreset */
+	u32 regVal;
+	u32 uart_base = DEFAULT_UART_BASE;
+
+	enable_uart0_pin_mux();
+	/* IA Motor Control Board has default console on UART3*/
+	/* XXX: This is before we've probed / set board_id */
+	if (board_id == IA_BOARD) {
+		uart_base = UART3_BASE;
+	}
+
+	regVal = __raw_readl(uart_base + UART_SYSCFG_OFFSET);
+	regVal |= UART_RESET;
+	__raw_writel(regVal, (uart_base + UART_SYSCFG_OFFSET) );
+	while ((__raw_readl(uart_base + UART_SYSSTS_OFFSET) &
+			UART_CLK_RUNNING_MASK) != UART_CLK_RUNNING_MASK);
+
+	/* Disable smart idle */
+	regVal = __raw_readl((uart_base + UART_SYSCFG_OFFSET));
+	regVal |= UART_SMART_IDLE_EN;
+	__raw_writel(regVal, (uart_base + UART_SYSCFG_OFFSET));
+
+	/* Initialize the Timer */
+	init_timer();
+
+	preloader_console_init();
+
+	config_am335x_ddr();
 #endif
 }
 
@@ -451,47 +388,7 @@ static void detect_daughter_board_profile(void)
 /*
  * Basic board specific setup
  */
-#ifdef CONFIG_AM335X_MIN_CONFIG
-static void init_timer(void)
-{
-	/* Reset the Timer */
-	__raw_writel(0x2, (DM_TIMER2_BASE + TSICR_REG));
-
-	/* Wait until the reset is done */
-	while (__raw_readl(DM_TIMER2_BASE + TIOCP_CFG_REG) & 1);
-
-	/* Start the Timer */
-	__raw_writel(0x1, (DM_TIMER2_BASE + TCLR_REG));
-}
-
-int board_min_init(void)
-{
-	u32 regVal;
-	u32 uart_base = DEFAULT_UART_BASE;
-
-	/* IA Motor Control Board has default console on UART3*/
-	if (board_id == IA_BOARD) {
-		uart_base = UART3_BASE;
-	}
-
-	/* UART softreset */
-	regVal = __raw_readl(uart_base + UART_SYSCFG_OFFSET);
-	regVal |= UART_RESET;
-	__raw_writel(regVal, (uart_base + UART_SYSCFG_OFFSET) );
-	while ((__raw_readl(uart_base + UART_SYSSTS_OFFSET) &
-			UART_CLK_RUNNING_MASK) != UART_CLK_RUNNING_MASK);
-
-	/* Disable smart idle */
-	regVal = __raw_readl((uart_base + UART_SYSCFG_OFFSET));
-	regVal |= UART_SMART_IDLE_EN;
-	__raw_writel(regVal, (uart_base + UART_SYSCFG_OFFSET));
-
-	/* Initialize the Timer */
-	init_timer();
-
-	return 0;
-}
-#else
+#ifndef CONFIG_SPL_BUILD
 int board_evm_init(void)
 {
 	/* mach type passed to kernel */
@@ -507,6 +404,7 @@ int board_evm_init(void)
 }
 #endif
 
+#if 0
 struct serial_device *default_serial_console(void)
 {
 
@@ -516,6 +414,7 @@ struct serial_device *default_serial_console(void)
 		return &eserial4_device;	/* UART3 */
 	}
 }
+#endif
 
 int board_init(void)
 {
@@ -563,9 +462,7 @@ int board_init(void)
 
 	configure_evm_pin_mux(board_id, profile, daughter_board_connected);
 
-#ifdef CONFIG_AM335X_MIN_CONFIG
-	board_min_init();
-#else
+#ifndef CONFIG_SPL_BUILD
 	board_evm_init();
 #endif
 
@@ -584,14 +481,44 @@ err_out:
 	daughter_board_connected = 1;
 	configure_evm_pin_mux(board_id, profile, daughter_board_connected);
 
-#ifdef CONFIG_AM335X_MIN_CONFIG
-	board_min_init();
-#else
+#ifndef CONFIG_SPL_BUILD
 	board_evm_init();
 #endif
 
 	gpmc_init();
 
+	return 0;
+}
+
+int checkboard(void)
+{
+	return 0;
+}
+
+int misc_init_r(void)
+{
+#ifdef	EVM_EEPROM_DEBUG
+	unsigned int cntr;
+	unsigned char *valPtr;
+
+	PRINTD("EVM Configuration - ");
+	PRINTD("\tBoard id %x, profile %x, db %d\n", board_id, profile,
+						daughter_board_connected);
+	PRINTD("Base Board EEPROM Data\n");
+	valPtr = (unsigned char *)&header;
+	for(cntr = 0; cntr < sizeof(header); cntr++) {
+		if(cntr % 16 == 0)
+			PRINTD("\n0x%02x :", cntr);
+		PRINTD(" 0x%02x", (unsigned int)valPtr[cntr]);
+	}
+	PRINTD("\n\n");
+
+	PRINTD("Board identification from EEPROM contents:\n");
+	PRINTD("\tBoard name   : %.8s\n", header.name);
+	PRINTD("\tBoard version: %.4s\n", header.version);
+	PRINTD("\tBoard serial : %.12s\n", header.serial);
+	PRINTD("\tBoard config : %.6s\n\n", header.config);
+#endif
 	return 0;
 }
 
@@ -611,54 +538,6 @@ int board_late_init(void)
 	return 0;
 }
 #endif
-
-/* Display the board info */
-int checkboard(void)
-{
-#ifdef	EVM_EEPROM_DEBUG
-    unsigned int cntr;
-    unsigned char *valPtr;
-#endif
-
-#ifdef CONFIG_AM335X_MIN_CONFIG
-	if (board_id == GP_BOARD) {
-#ifdef CONFIG_NAND
-		if (profile & (PROFILE_2 | PROFILE_3))
-			printf("NAND: NAND device not present in selected "
-				"profile. Change the profile and reboot\n");
-#endif
-#ifdef CONFIG_NOR
-		if (!(profile & PROFILE_3))
-			printf("NOR: NOR device not present in selected "
-				"profile. Change the profile and reboot\n");
-#endif
-	}
-#endif
-
-#ifdef	EVM_EEPROM_DEBUG
-    PRINTD("EVM Configuration - ");
-    PRINTD("\tBoard id %x, profile %x, db %d\n", board_id, profile,
-						daughter_board_connected);
-    PRINTD("Base Board EEPROM Data\n");
-    valPtr = (unsigned char *)&header;
-    for(cntr = 0; cntr < sizeof(header); cntr++) {
-            if(cntr % 16 == 0)
-                    PRINTD("\n0x%02x :", cntr);
-
-            PRINTD(" 0x%02x", (unsigned int)valPtr[cntr]);
-    }
-    PRINTD("\n\n");
-
-    PRINTD("Board identification from EEPROM contents:\n");
-    PRINTD("\tBoard name   : %.8s\n", header.name);
-    PRINTD("\tBoard version: %.4s\n", header.version);
-    PRINTD("\tBoard serial : %.12s\n", header.serial);
-    PRINTD("\tBoard config : %.6s\n\n", header.config);
-#endif
-
-
-	return 0;
-}
 
 #ifdef CONFIG_DRIVER_TI_CPSW
 /* TODO : Check for the board specific PHY */
@@ -886,6 +765,7 @@ int board_eth_init(bd_t *bis)
 }
 #endif
 
+#ifndef CONFIG_SPL_BUILD
 #ifdef CONFIG_GENERIC_MMC
 int board_mmc_init(bd_t *bis)
 {
@@ -934,3 +814,4 @@ U_BOOT_CMD(
 );
 
 #endif /* CONFIG_NAND_TI81XX */
+#endif /* CONFIG_SPL_BUILD */
