@@ -98,9 +98,8 @@
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"verify=yes\0" \
 	"bootfile=uImage\0" \
-	"brd_mem=62M\0" \
-	"loadaddr=0x81000000\0" \
-	"script_addr=0x80900000\0" \
+	"loadaddr=0x82000000\0" \
+	"script_addr=0x81900000\0" \
 	"console=ttyO0,115200n8\0" \
 	"mmc_root=/dev/mmcblk0p2 rw\0" \
 	"nand_root=/dev/mtdblock4 rw\0" \
@@ -127,8 +126,7 @@
 		"source ${script_addr}\0" \
 	"mmc_load_uimage=fatload mmc 0 ${loadaddr} ${bootfile}\0" \
 	"bootargs_defaults=setenv bootargs " \
-		"console=${console} " \
-		 "mem=${brd_mem}\0" \
+		"console=${console}\0 " \
 	"mmc_args=run bootargs_defaults;" \
 		"setenv bootargs ${bootargs} " \
 		"root=${mmc_root} " \
