@@ -69,7 +69,7 @@
 #define CONFIG_MMC			1
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	 "verify=yes\0" \
-	"bootcmd=mmc init 1; fatload mmc 1 0x80800000 u-boot.bin; go 0x80800000\0"
+	"bootcmd=mmc rescan; fatload mmc 0 0x80800000 u-boot.bin; go 0x80800000\0"
 #endif
 
 #else /* u-boot Full / Second stage u-boot */
@@ -131,10 +131,10 @@
 	"static_ip=${ipaddr}:${serverip}:${gatewayip}:${netmask}:${hostname}" \
 			"::off\0" \
 	"ip_method=dhcp\0" \
-	"loadbootscript=fatload mmc 1 ${script_addr} boot.scr\0" \
+	"loadbootscript=fatload mmc 0 ${script_addr} boot.scr\0" \
 	"bootscript= echo Running bootscript from MMC/SD to set the ENV...; " \
 		"source ${script_addr}\0" \
-	"mmc_load_uimage=fatload mmc 1 ${loadaddr} ${bootfile}\0" \
+	"mmc_load_uimage=fatload mmc 0 ${loadaddr} ${bootfile}\0" \
 	"bootargs_defaults=setenv bootargs " \
 		"console=${console} " \
 		 "mem=${brd_mem}\0" \
@@ -183,7 +183,7 @@
 		"bootm ${loadaddr}\0" \
 
 #define CONFIG_BOOTCOMMAND \
-	"if mmc init 1; then " \
+	"if mmc rescan; then " \
 		"if run loadbootscript; then " \
 			"run bootscript; " \
 		"else " \
@@ -387,6 +387,7 @@
 # define CONFIG_SYS_I2C_SLAVE		1
 # define CONFIG_SYS_I2C_BUS		0
 # define CONFIG_SYS_I2C_BUS_SELECT	1
+#define CONFIG_I2C_MULTI_BUS		1
 # define CONFIG_DRIVER_TI81XX_I2C	1
 
 /* HSMMC support */
@@ -396,7 +397,8 @@
 #else
 # define CONFIG_AM335X_HSMMC_BASE    0x481D8100
 #endif
-# define CONFIG_OMAP3_MMC	1
+# define CONFIG_GENERIC_MMC
+# define CONFIG_OMAP_HSMMC
 # define CONFIG_CMD_MMC		1
 # define CONFIG_DOS_PARTITION	1
 # define CONFIG_CMD_FAT		1
