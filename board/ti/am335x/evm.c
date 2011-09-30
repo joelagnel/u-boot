@@ -759,10 +759,10 @@ static void evm_phy_init(char *name, int addr)
 	}
 	miiphy_read(name, addr, MII_BMCR, &val);
 
-	/* Setup GIG advertisement only if it is not IA board */
+	/* TODO: Disable GIG advertisement for the time being */
 	if (board_id != IA_BOARD) {
 		miiphy_read(name, addr, MII_CTRL1000, &val);
-		val |= PHY_1000BTCR_1000FD;
+		val &= ~PHY_1000BTCR_1000FD;
 		val &= ~PHY_1000BTCR_1000HD;
 		miiphy_write(name, addr, MII_CTRL1000, val);
 		miiphy_read(name, addr, MII_CTRL1000, &val);
