@@ -17,31 +17,15 @@
 #ifndef __CONFIG_TI8148_EVM_H
 #define __CONFIG_TI8148_EVM_H
 
-#define CONFIG_ARMV7
+#define CONFIG_TI81XX
+#define CONFIG_TI814X
+#define CONFIG_SYS_NO_FLASH
+#define CONFIG_NAND_ENV
 
 #include <asm/arch/cpu.h>		/* get chip and board defs */
 #include <asm/arch/hardware.h>
 
-/* In the 1st stage we have just 110K, so cut down wherever possible */
-#ifdef CONFIG_TI814X_MIN_CONFIG
 
-# define CONFIG_CMD_MEMORY	/* for mtest */
-# undef CONFIG_GZIP
-# undef CONFIG_ZLIB
-//# undef CONFIG_BOOTM_LINUX
-//# undef CONFIG_BOOTM_NETBSD
-//# undef CONFIG_BOOTM_RTEMS
-//# undef CONFIG_SREC
-//# undef CONFIG_XYZMODEM
-# undef CONFIG_SYS_HUSH_PARSER
-# define CONFIG_CMD_LOADB	/* loadb			*/
-# define CONFIG_CMD_LOADY	/* loady */
-# define CONFIG_SETUP_PLL
-# define CONFIG_TI814X_CONFIG_DDR
-# define CONFIG_ENV_SIZE			0x400
-# define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (8 * 1024))
-# define CONFIG_SYS_PROMPT		"TI-MIN#"
-# define CONFIG_BOOTDELAY		3	/* set to negative value for no autoboot */
 # if defined(CONFIG_SPI_BOOT)		/* Autoload the 2nd stage from SPI */
 #  define CONFIG_SPI			1
 #  define CONFIG_EXTRA_ENV_SETTINGS \
@@ -62,15 +46,17 @@
 
 # endif
 
-#else
-
 # include <config_cmd_default.h>
-# define CONFIG_SKIP_LOWLEVEL_INIT	/* 1st stage would have done the basic init */
+
+/* Clock Defines */
+#define V_OSCK			24000000	/* Clock output from T2 */
+#define V_SCLK			(V_OSCK >> 1)
+
 # define CONFIG_ENV_SIZE			0x2000
 # define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (32 * 1024))
 # define CONFIG_ENV_OVERWRITE
 # define CONFIG_SYS_LONGHELP
-# define CONFIG_SYS_PROMPT		"TI8148_EVM#"
+# define CONFIG_SYS_PROMPT		"TI8148_EVM# "
 # define CONFIG_SYS_HUSH_PARSER		/* Use HUSH parser to allow command parsing */
 # define CONFIG_SYS_PROMPT_HUSH_PS2	"> "
 # define CONFIG_CMDLINE_TAG        	1	/* enable passing of ATAGs  */
@@ -107,15 +93,6 @@
 	"fi"
 
 
-#endif
-
-#define CONFIG_SYS_GBL_DATA_SIZE	128	/* size in bytes reserved for
-						   initial data */
-
-#define CONFIG_MISC_INIT_R		1
-#ifndef CONFIG_TI814X_MIN_CONFIG
-# define CONFIG_TI814X_ASCIIART		1	/* The centaur */
-#endif
 #define CONFIG_SYS_AUTOLOAD		"yes"
 #define CONFIG_CMD_CACHE
 #define CONFIG_CMD_ECHO
@@ -140,9 +117,6 @@
 
 #undef  CONFIG_SYS_CLKS_IN_HZ				/* everything, incl board info, in Hz */
 #define CONFIG_SYS_LOAD_ADDR		0x81000000  	/* Default load address */
-#define CONFIG_SYS_HZ			1000        	/* 1ms clock */
-
-/* Hardware related */
 
 /**
  * Physical Memory Map
@@ -153,12 +127,79 @@
 #define PHYS_DRAM_2			0xC0000000	/* DRAM Bank #2 */
 #define PHYS_DRAM_2_SIZE		0x40000000	/* 1 GB */
 
+#define CONFIG_SYS_SDRAM_BASE		PHYS_DRAM_1
+#define CONFIG_SYS_INIT_RAM_ADDR	SRAM0_START
+#define CONFIG_SYS_INIT_RAM_SIZE	SRAM0_SIZE
+#define CONFIG_SYS_INIT_SP_ADDR		(CONFIG_SYS_INIT_RAM_ADDR + \
+					 CONFIG_SYS_INIT_RAM_SIZE - \
+					 GENERATED_GBL_DATA_SIZE)
+/* Defines for SPL */
+#define CONFIG_SPL
+#define CONFIG_SPL_TEXT_BASE		0x40300000
+#define CONFIG_SPL_MAX_SIZE		((128 - 18 - 1) * 1024)
+#define CONFIG_SPL_STACK		LOW_LEVEL_SRAM_STACK
+
+#define CONFIG_SPL_BSS_START_ADDR	0x80000000
+#define CONFIG_SPL_BSS_MAX_SIZE		0x80000		/* 512 KB */
+
+#define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR	0x300 /* address 0x60000 */
+#define CONFIG_SYS_U_BOOT_MAX_SIZE_SECTORS	0x200 /* 256 KB */
+#define CONFIG_SYS_MMC_SD_FAT_BOOT_PARTITION	1
+#define CONFIG_SPL_FAT_LOAD_PAYLOAD_NAME	"u-boot.img"
+#define CONFIG_SPL_MMC_SUPPORT
+#define CONFIG_SPL_FAT_SUPPORT
+
+#define CONFIG_SPL_LIBCOMMON_SUPPORT
+#define CONFIG_SPL_LIBDISK_SUPPORT
+#define CONFIG_SPL_I2C_SUPPORT
+#define CONFIG_SPL_LIBGENERIC_SUPPORT
+#define CONFIG_SPL_SERIAL_SUPPORT
+#define CONFIG_SPL_POWER_SUPPORT
+#define CONFIG_SPL_LDSCRIPT		"$(CPUDIR)/omap-common/u-boot-spl.lds"
+
+/* NAND boot config */
+#define CONFIG_SPL_NAND_SIMPLE
+#define CONFIG_SPL_NAND_SUPPORT
+#define CONFIG_SYS_NAND_5_ADDR_CYCLE
+#define CONFIG_SYS_NAND_PAGE_COUNT	64
+#define CONFIG_SYS_NAND_PAGE_SIZE	2048
+#define CONFIG_SYS_NAND_OOBSIZE		64
+#define CONFIG_SYS_NAND_BLOCK_SIZE	(128*1024)
+#define CONFIG_SYS_NAND_BAD_BLOCK_POS	NAND_LARGE_BADBLOCK_POS
+#define CONFIG_SYS_NAND_ECCPOS		{ 2, 3, 4, 5, 6, 7, 8, 9, \
+					 10, 11, 12, 13, 14, 15, 16, 17, \
+					 18, 19, 20, 21, 22, 23, 24, 25, \
+					 26, 27, 28, 29, 30, 31, 32, 33, \
+					 34, 35, 36, 37, 38, 39, 40, 41, \
+					 42, 43, 44, 45, 46, 47, 48, 49, \
+					 50, 51, 52, 53, 54, 55, 56, 57, }
+
+#define CONFIG_SYS_NAND_ECCSIZE		512
+#define CONFIG_SYS_NAND_ECCBYTES	14
+
+#define CONFIG_SYS_NAND_ECCSTEPS	4
+#define CONFIG_SYS_NAND_ECCTOTAL       (CONFIG_SYS_NAND_ECCBYTES * \
+						CONFIG_SYS_NAND_ECCSTEPS)
+
+#define CONFIG_SYS_NAND_U_BOOT_START   CONFIG_SYS_TEXT_BASE
+
+#define CONFIG_SYS_NAND_U_BOOT_OFFS	0x80000
+
+/*
+ * 1MB into the SDRAM to allow for SPL's bss at the beginning of SDRAM
+ * 64 bytes before this address should be set aside for u-boot.img's
+ * header. That is 0x800FFFC0--0x80800000 should not be used for any
+ * other needs.
+ */
+#define CONFIG_SYS_TEXT_BASE		0x80800000
 
 /**
  * Platform/Board specific defs
  */
 #define CONFIG_SYS_CLK_FREQ		27000000
 #define CONFIG_SYS_TIMERBASE		0x4802E000
+#define CONFIG_SYS_PTV			2	/* Divisor: 2^(PTV+1) => 8 */
+#define CONFIG_SYS_HZ			1000
 
 /*
  * NS16550 Configuration
@@ -180,14 +221,13 @@
 #define CONFIG_CONS_INDEX		1
 #define CONFIG_SYS_CONSOLE_INFO_QUIET
 
+#define CONFIG_NO_ETH
 #if defined(CONFIG_NO_ETH)
 # undef CONFIG_CMD_NET
+# undef CONFIG_CMD_NFS
 #else
 # define CONFIG_CMD_DHCP
 # define CONFIG_CMD_PING
-#endif
-
-#if defined(CONFIG_CMD_NET)
 # define CONFIG_DRIVER_TI_CPSW
 # define CONFIG_MII
 # define CONFIG_BOOTP_DEFAULT
@@ -310,19 +350,14 @@
 
 /* HSMMC support */
 #ifdef CONFIG_MMC
-# define CONFIG_OMAP3_MMC	1
-# define CONFIG_CMD_MMC		1
-# define CONFIG_DOS_PARTITION	1
-# define CONFIG_CMD_FAT		1
+# define CONFIG_GENERIC_MMC
+# define CONFIG_OMAP_HSMMC
+# define CONFIG_CMD_MMC
+# define CONFIG_DOS_PARTITION
+# define CONFIG_CMD_FAT
 #endif
 
 /* Unsupported features */
 #undef CONFIG_USE_IRQ
 
-/* additions for new relocation code, must added to all boards */
-#undef CONFIG_SYS_ARM_WITHOUT_RELOC /* This board is tested with relocation support */
-#define CONFIG_SYS_SDRAM_BASE		PHYS_SDRAM_1
-#define CONFIG_SYS_INIT_SP_ADDR		((SRAM0_START + SRAM0_SIZE - SRAM_GPMC_STACK_SIZE) - CONFIG_SYS_GBL_DATA_SIZE)
-
 #endif	  /* ! __CONFIG_TI8148_EVM_H */
-

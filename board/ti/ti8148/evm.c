@@ -36,7 +36,7 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
-#ifdef CONFIG_SETUP_PLL
+#ifdef CONFIG_SPL_BUILD
 static void pll_config(u32, u32, u32, u32, u32);
 #if 0
 static void pcie_pll_config(void);
@@ -52,8 +52,23 @@ static void iva_pll_config(void);
 static void usb_pll_config(void);
 #endif
 
-static void unlock_pll_control_mmr(void);
-static void cpsw_pad_config(void);
+int dram_init(void)
+{
+	gd->ram_size = PHYS_DRAM_1_SIZE + PHYS_DRAM_2_SIZE;
+
+	return 0;
+}
+
+void dram_init_banksize (void)
+{
+	/* Fill up board info */
+	gd->bd->bi_dram[0].start = PHYS_DRAM_1;
+	gd->bd->bi_dram[0].size = PHYS_DRAM_1_SIZE;
+
+	gd->bd->bi_dram[1].start = PHYS_DRAM_2;
+	gd->bd->bi_dram[1].size = PHYS_DRAM_2_SIZE;
+}
+
 /*
  * spinning delay to use before udelay works
  */
@@ -68,29 +83,14 @@ static inline void delay(unsigned long loops)
  */
 int board_init(void)
 {
-	u32 regVal;
-
-	/* Do the required pin-muxing before modules are setup */
-	set_muxconf_regs();
-
+#ifdef CONFIG_DRIVER_TI_CPSW
 	if (PG2_1 == get_cpu_rev()) {
 		/* setup RMII_REFCLK to be sourced from audio_pll */
 		__raw_writel(0x4,RMII_REFCLK_SRC);
 		/*program GMII_SEL register for RGMII mode */
 		__raw_writel(0x30a,GMII_SEL);
 	}
-	/* Get Timer and UART out of reset */
-
-	/* UART softreset */
-	regVal = __raw_readl(UART_SYSCFG);
-	regVal |= 0x2;
-	__raw_writel(regVal, UART_SYSCFG);
-	while( (__raw_readl(UART_SYSSTS) & 0x1) != 0x1);
-
-	/* Disable smart idle */
-	regVal = __raw_readl(UART_SYSCFG);
-	regVal |= (1<<3);
-	__raw_writel(regVal, UART_SYSCFG);
+#endif
 
 	/* mach type passed to kernel */
 	gd->bd->bi_arch_number = MACH_TYPE_TI8148EVM;
@@ -101,73 +101,7 @@ int board_init(void)
 	return 0;
 }
 
-/*
- * sets uboots idea of sdram size
- */
-int dram_init(void)
-{
-	/* Fill up board info */
-	gd->bd->bi_dram[0].start = PHYS_DRAM_1;
-	gd->bd->bi_dram[0].size = PHYS_DRAM_1_SIZE;
-
-	gd->bd->bi_dram[1].start = PHYS_DRAM_2;
-	gd->bd->bi_dram[1].size = PHYS_DRAM_2_SIZE;
-
-	return 0;
-}
-
-
-int misc_init_r (void)
-{
-	#ifdef CONFIG_TI814X_MIN_CONFIG
-	printf("The 2nd stage U-Boot will now be auto-loaded\n");
-	printf("Please do not interrupt the countdown till TI8148_EVM prompt if 2nd stage is already flashed\n");
-	#endif
-
-	#ifdef CONFIG_TI814X_ASCIIART
-	int i = 0, j = 0;
-	char ti814x[28][54] = {
-"                          .:;rrr;;.                   ",
-"                    ,5#@@@@#####@@@@@@#2,             ",
-"                 ,A@@@hi;;;r5;;;;r;rrSG@@@A,          ",
-"               r@@#i;:;s222hG;rrsrrrrrr;ri#@@r        ",
-"             :@@hr:r;SG3ssrr2r;rrsrsrsrsrr;rh@@:      ",
-"            B@H;;rr;3Hs;rrr;sr;;rrsrsrsrsrsr;;H@B     ",
-"           @@s:rrs;5#;;rrrr;r#@H:;;rrsrsrsrsrr:s@@    ",
-"          @@;;srs&X#9;r;r;;,2@@@rrr:;;rrsrsrsrr;;@@   ",
-"         @@;;rrsrrs@MB#@@@@@###@@@@@@#rsrsrsrsrr;;@@  ",
-"        G@r;rrsrsr;#X;SX25Ss#@@#M@#9H9rrsrsrsrsrs;r@G ",
-"        @9:srsrsrs;2@;:;;:.X@@@@@H::;rrsrsrsrsrsrr:3@ ",
-"       X@;rrsrsrsrr;XAi;;:&@@#@Bs:rrsrsrsrsrsrsrsrr;@X",
-"       @#;rsrsrsrsrr;r2ir@@@###::rrsrsrsrsrsrsrsrsr:@@",
-"       @A:rrsrsrsrr;:2@29@@M@@@;:;rrrrsrsrsrsrsrsrs;H@",
-"       @&;rsrsrsrr;A@@@@@@###@@@s::;:;;rrsrsrsrsrsr;G@",
-"       @#:rrsrsrsr;G@5Hr25@@@#@@@#9XG9s:rrrrsrsrsrs:#@",
-"       M@;rsrsrsrs;r@&#;::S@@@@@@@M@@@@Grr:;rsrsrsr;@#",
-"       :@s;rsrsrsrr:M#Msrr;;&#@@@@@@@@@@H@@5;rsrsr;s@,",
-"        @@:rrsrsrsr;S@rrrsr;:;r3MH@@#@M5,S@@irrsrr:@@ ",
-"         @A:rrsrsrsrrrrrsrsrrr;::;@##@r:;rH@h;srr:H@  ",
-"         ;@9:rrsrsrsrrrsrsrsrsr;,S@Hi@i:;s;MX;rr:h@;  ",
-"          r@B:rrrrsrsrsrsrsrr;;sA@#i,i@h;r;S5;r:H@r   ",
-"           ,@@r;rrrsrsrsrsrr;2BM3r:;r:G@:rrr;;r@@,    ",
-"             B@Mr;rrrrsrsrsr@@S;;;rrr:5M;rr;rM@H      ",
-"              .@@@i;;rrrrsrs2i;rrrrr;r@M:;i@@@.       ",
-"                .A@@#5r;;;r;;;rrr;r:r#AsM@@H.         ",
-"                   ;&@@@@MhXS5i5SX9B@@@@G;            ",
-"                       :ihM#@@@@@##hs,                "};
-
-	for (i = 0; i<28; i++)
-	{
-		for(j = 0; j<54; j++)
-			printf("%c",ti814x[i][j]);
-			printf("\n");
-	}
-	printf("\n");
-	#endif
-	return 0;
-}
-
-#ifdef CONFIG_TI814X_CONFIG_DDR
+#ifdef CONFIG_SPL_BUILD
 static void config_ti814x_ddr(void)
 {
 	__raw_writel(0x2, CM_DEFAULT_FW_CLKCTRL);			/*Enable the Power Domain Transition of L3 Fast Domain Peripheral*/
@@ -237,9 +171,7 @@ static void config_ti814x_ddr(void)
 
 
 }
-#endif
 
-#ifdef CONFIG_SETUP_PLL
 static void audio_pll_config()
 {
 	u32 audio_osc_src, rd_osc_src = 0;
@@ -499,12 +431,12 @@ void per_clocks_enable(void)
 /*
  * inits clocks for PRCM as defined in clocks.h
  */
-void prcm_init(u32 in_ddr)
+void prcm_init(void)
 {
 	/* Enable the control module */
 	__raw_writel(0x2, CM_ALWON_CONTROL_CLKCTRL);
 
-#ifdef CONFIG_SETUP_PLL
+#ifdef CONFIG_SPL_BUILD
 	/* Setup the various plls */
 	audio_pll_config();
 	sata_pll_config();
@@ -578,7 +510,7 @@ void prcm_init(u32 in_ddr)
 #define PAD257_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0C00))
 #define PAD258_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0C04))
 
-
+#ifdef CONFIG_DRIVER_TI_CPSW
 static void cpsw_pad_config()
 {
 	volatile u32 val = 0;
@@ -747,7 +679,7 @@ static void cpsw_pad_config()
 		PAD258_CNTRL = (volatile unsigned int) (BIT(18) | BIT(0));
 	}
 }
-
+#endif
 
 /*
  * baord specific muxing of pins
@@ -770,7 +702,7 @@ void set_muxconf_regs(void)
 	__raw_writel(0x000C0040, 0x48140928);
 }
 
-void unlock_pll_control_mmr()
+static void unlock_pll_control_mmr(void)
 {
 	/* ??? */
 	__raw_writel(0x1EDA4C3D, 0x481C5040);
@@ -794,22 +726,33 @@ void s_init(u32 in_ddr)
 #endif
 	l2_cache_enable();		/* Can be removed as A8 comes up with L2 enabled */
 	unlock_pll_control_mmr();
-	prcm_init(in_ddr);		/* Setup the PLLs and the clocks for the peripherals */
-#ifdef CONFIG_TI814X_CONFIG_DDR
-	if (!in_ddr)
-		config_ti814x_ddr();	/* Do DDR settings */
-#endif
-}
+	prcm_init();		/* Setup the PLLs and the clocks for the peripherals */
 
-/*
- * Reset the board
- */
-void reset_cpu (ulong addr)
-{
-	addr = __raw_readl(PRM_DEVICE_RSTCTRL);
-	addr &= ~BIT(1);
-	addr |= BIT(1);
-	__raw_writel(addr, PRM_DEVICE_RSTCTRL);
+#ifdef CONFIG_SPL_BUILD	
+	/* Do the required pin-muxing before modules are setup */
+	set_muxconf_regs();
+
+	/* UART softreset */
+	{
+		u32 regVal;
+
+		regVal = __raw_readl(UART_SYSCFG);
+		regVal |= 0x2;
+		__raw_writel(regVal, UART_SYSCFG);
+		while( (__raw_readl(UART_SYSSTS) & 0x1) != 0x1);
+
+		/* Disable UART smart idle */
+		regVal = __raw_readl(UART_SYSCFG);
+		regVal |= (1<<3);
+		__raw_writel(regVal, UART_SYSCFG);
+	}
+
+	preloader_console_init();
+
+	config_ti814x_ddr();	/* Do DDR settings */
+
+	board_init();
+#endif /* CONFIG_SPL_BUILD */
 }
 
 #ifdef CONFIG_DRIVER_TI_CPSW
@@ -961,12 +904,21 @@ int board_eth_init(bd_t *bis)
 }
 #endif
 
+#ifndef CONFIG_SPL_BUILD
+#ifdef CONFIG_GENERIC_MMC
+int board_mmc_init(bd_t *bis)
+{
+	omap_mmc_init(0);
+	return 0;
+}
+#endif
+
 #ifdef CONFIG_NAND_TI81XX
 /******************************************************************************
  * Command to switch between NAND HW and SW ecc
  *****************************************************************************/
 extern void ti81xx_nand_switch_ecc(nand_ecc_modes_t hardware, int32_t mode);
-static int do_switch_ecc(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
+static int do_switch_ecc(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
 {
 	int type = 0;
 	if (argc < 2)
@@ -1001,4 +953,4 @@ U_BOOT_CMD(
 );
 
 #endif /* CONFIG_NAND_TI81XX */
-
+#endif /* CONFIG_SPL_BUILD */

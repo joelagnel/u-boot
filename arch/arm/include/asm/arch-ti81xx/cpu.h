@@ -500,7 +500,7 @@ struct gptimer {
 #define SRAM_GPMC_STACK_SIZE		(0x40)
 #endif
 
-#ifdef CONFIG_AM335X
+#if defined(CONFIG_AM335X) || defined(CONFIG_TI814X)
 #define SRAM0_SIZE			(0x1B400) /* 109 KB */
 #define SRAM_GPMC_STACK_SIZE		(0x40)
 #endif
