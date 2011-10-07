@@ -42,7 +42,7 @@
 #  define CONFIG_MMC			1
 #  define CONFIG_EXTRA_ENV_SETTINGS \
 	"verify=yes\0" \
-	"bootcmd=mmc init; fatload mmc 1 0x80800000 u-boot.bin; go 0x80800000\0" \
+	"bootcmd=mmc rescan; fatload mmc 0:1 0x80800000 u-boot.img; go 0x80800000\0" \
 
 # endif
 
@@ -74,24 +74,9 @@
 	"ramdisk_file=ramdisk.gz\0" \
 	"loadaddr=0x81000000\0" \
 	"script_addr=0x80900000\0" \
-	"loadbootscript=fatload mmc 1 ${script_addr} boot.scr\0" \
+	"loadbootscript=fatload mmc 0:1 ${script_addr} boot.scr\0" \
 	"bootscript= echo Running bootscript from MMC/SD to set the ENV...; " \
 		"source ${script_addr}\0" \
-
-# define CONFIG_BOOTCOMMAND \
-	"if mmc init; then " \
-		"if run loadbootscript; then " \
-			"run bootscript; " \
-		"else " \
-			"echo In case ENV on MMC/SD is required; "\
-			"echo Please put a valid script named boot.scr on the card; " \
-			"echo Refer to the User Guide on how to generate the image; " \
-		"fi; " \
-	"else " \
-		"echo Please set bootargs and bootcmd before booting the kernel; " \
-		"echo If that has already been done please ignore this message; "\
-	"fi"
-
 
 #define CONFIG_SYS_AUTOLOAD		"yes"
 #define CONFIG_CMD_CACHE
