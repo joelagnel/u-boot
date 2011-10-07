@@ -123,9 +123,9 @@
  */
 #define CONFIG_NR_DRAM_BANKS		2		/* we have 2 banks of DRAM */
 #define PHYS_DRAM_1			0x80000000	/* DRAM Bank #1 */
-#define PHYS_DRAM_1_SIZE		0x40000000	/* 1 GB */
-#define PHYS_DRAM_2			0xC0000000	/* DRAM Bank #2 */
-#define PHYS_DRAM_2_SIZE		0x40000000	/* 1 GB */
+#define PHYS_DRAM_1_SIZE		0x20000000	/* 512MB */
+#define PHYS_DRAM_2			0xA0000000	/* DRAM Bank #2 */
+#define PHYS_DRAM_2_SIZE		0x20000000	/* 512MB */
 
 #define CONFIG_SYS_SDRAM_BASE		PHYS_DRAM_1
 #define CONFIG_SYS_INIT_RAM_ADDR	SRAM0_START
