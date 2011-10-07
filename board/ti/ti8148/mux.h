@@ -13,7 +13,7 @@
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-
+static u32 pad_conf[] = {
 /* 1-4 */	BIT(0), BIT(0), BIT(0), BIT(0),
 /* -8 */	BIT(0), BIT(0), BIT(0), BIT(0),
 /* -12 */	BIT(0), BIT(0), BIT(0), BIT(0),
@@ -84,3 +84,4 @@
 /* -268 */	BIT(0), BIT(0), BIT(0), BIT(0),
 		/* 270 usb0_drvvbus, fn1, pulldn enable */
 /* -271 */	BIT(0), BIT(0), BIT(0),
+};

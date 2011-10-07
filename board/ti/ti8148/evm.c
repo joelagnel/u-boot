@@ -28,6 +28,7 @@
 #include <net.h>
 #include <miiphy.h>
 #include <netdev.h>
+#include "mux.h"
 
 #define __raw_readl(a)		(*(volatile unsigned int *)(a))
 #define __raw_writel(v, a)	(*(volatile unsigned int *)(a) = (v))
@@ -687,9 +688,6 @@ static void cpsw_pad_config()
 void set_muxconf_regs(void)
 {
 	u32 i, add, val;
-	u32 pad_conf[] = {
-#include "mux.h"
-	};
 
 	for (i = 0; i<N_PINS; i++)
 	{
