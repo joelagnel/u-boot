@@ -57,11 +57,12 @@ SECTIONS
 
 	__image_copy_end = .;
 
+	. = ALIGN(4);
+	__rel_dyn_start = .;
 	.rel.dyn : {
-		__rel_dyn_start = .;
 		*(.rel*)
-		__rel_dyn_end = .;
 	}
+	__rel_dyn_end = .;
 
 	.dynsym : {
 		__dynsym_start = .;
@@ -70,7 +71,7 @@ SECTIONS
 
 	_end = .;
 
-	.bss __rel_dyn_start (OVERLAY) : {
+	.bss  : {
 		__bss_start = .;
 		*(.bss)
 		 . = ALIGN(4);
