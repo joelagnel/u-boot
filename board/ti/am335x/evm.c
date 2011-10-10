@@ -36,21 +36,6 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
-#define EVM_EEPROM_DEBUG
-
-/*define above EVM_EEPROM_DEBUG to get debug printf's for evm config display */
-#ifdef	EVM_EEPROM_DEBUG
-#define PRINTD(fmt,args...)	printf (fmt ,##args)
-#else
-#define PRINTD(fmt,args...)
-#endif
-
-#ifndef	CONFIG_SPL_BUILD
-#define PRINT_FULL(fmt,args...)	printf (fmt ,##args)
-#else
-#define PRINT_FULL(fmt,args...)
-#endif
-
 /* UART Defines */
 #define UART_SYSCFG_OFFSET	(0x54)
 #define UART_SYSSTS_OFFSET	(0x58)
@@ -363,10 +348,10 @@ static void detect_daughter_board(void)
 {
 	/* Check if daughter board is conneted */
 	if (i2c_probe(I2C_DAUGHTER_BOARD_ADDR)) {
-		PRINT_FULL("No daughter card present\n");
+		printf("No daughter card present\n");
 		return;
 	} else {
-		PRINT_FULL("Found a daughter card connected\n");
+		printf("Found a daughter card connected\n");
 		daughter_board_connected = 1;
 	}
 }
@@ -425,7 +410,7 @@ int board_init(void)
 
 	/* Check if baseboard eeprom is available */
 	if (i2c_probe(I2C_BASE_BOARD_ADDR)) {
-		PRINT_FULL("Could not probe the EEPROM; something fundamentally "
+		printf("Could not probe the EEPROM; something fundamentally "
 			"wrong on the I2C bus.\n");
 		goto err_out;
 	}
@@ -433,13 +418,13 @@ int board_init(void)
 	/* read the eeprom using i2c */
 	if (i2c_read(I2C_BASE_BOARD_ADDR, 0, 2, (uchar *)&header,
 							sizeof(header))) {
-		PRINT_FULL("Could not read the EEPROM; something fundamentally"
+		printf("Could not read the EEPROM; something fundamentally"
 			" wrong on the I2C bus.\n");
 		goto err_out;
 	}
 
 	if (header.magic != 0xEE3355AA) {
-		PRINT_FULL("Incorrect magic number in EEPROM\n");
+		printf("Incorrect magic number in EEPROM\n");
 		goto err_out;
 	}
 
@@ -454,7 +439,7 @@ int board_init(void)
 	} else if (!strncmp("SKU#03", header.config, 6)) {
 		board_id = IPP_BOARD;
 	} else {
-		PRINT_FULL("Did not find a recognized configuration, "
+		printf("Did not find a recognized configuration, "
 			"assuming General purpose EVM in Profile 0 with "
 			"Daughter board\n");
 		goto err_out;
@@ -497,27 +482,27 @@ int checkboard(void)
 
 int misc_init_r(void)
 {
-#ifdef	EVM_EEPROM_DEBUG
+#ifdef DEBUG
 	unsigned int cntr;
 	unsigned char *valPtr;
 
-	PRINTD("EVM Configuration - ");
-	PRINTD("\tBoard id %x, profile %x, db %d\n", board_id, profile,
+	debug("EVM Configuration - ");
+	debug("\tBoard id %x, profile %x, db %d\n", board_id, profile,
 						daughter_board_connected);
-	PRINTD("Base Board EEPROM Data\n");
+	debug("Base Board EEPROM Data\n");
 	valPtr = (unsigned char *)&header;
 	for(cntr = 0; cntr < sizeof(header); cntr++) {
 		if(cntr % 16 == 0)
-			PRINTD("\n0x%02x :", cntr);
-		PRINTD(" 0x%02x", (unsigned int)valPtr[cntr]);
+			debug("\n0x%02x :", cntr);
+		debug(" 0x%02x", (unsigned int)valPtr[cntr]);
 	}
-	PRINTD("\n\n");
+	debug("\n\n");
 
-	PRINTD("Board identification from EEPROM contents:\n");
-	PRINTD("\tBoard name   : %.8s\n", header.name);
-	PRINTD("\tBoard version: %.4s\n", header.version);
-	PRINTD("\tBoard serial : %.12s\n", header.serial);
-	PRINTD("\tBoard config : %.6s\n\n", header.config);
+	debug("Board identification from EEPROM contents:\n");
+	debug("\tBoard name   : %.8s\n", header.name);
+	debug("\tBoard version: %.4s\n", header.version);
+	debug("\tBoard serial : %.12s\n", header.serial);
+	debug("\tBoard config : %.6s\n\n", header.config);
 #endif
 	return 0;
 }
@@ -725,7 +710,7 @@ int board_eth_init(bd_t *bis)
 	u_int32_t i;
 
 	if (!eth_getenv_enetaddr("ethaddr", mac_addr)) {
-		printf("<ethaddr> not set. Reading from E-fuse\n");
+		debug("<ethaddr> not set. Reading from E-fuse\n");
 		/* try reading mac address from efuse */
 		mac_lo = __raw_readl(MAC_ID0_LO);
 		mac_hi = __raw_readl(MAC_ID0_HI);
@@ -737,8 +722,8 @@ int board_eth_init(bd_t *bis)
 		mac_addr[5] = (mac_lo & 0xFF00) >> 8;
 
 		if (!is_valid_ether_addr(mac_addr)) {
-			printf("Did not find a valid mac address in e-fuse. "
-				"Trying the one present in EEPROM\n");
+			debug("Did not find a valid mac address in e-fuse. "
+					"Trying the one present in EEPROM\n");
 
 			for (i = 0; i < ETH_ALEN; i++)
 				mac_addr[i] = header.mac_addr[0][i];
