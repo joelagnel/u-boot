@@ -363,6 +363,20 @@ static struct module_pin_mux mii1_pin_mux[] = {
 	{OFFSET(mdio_clk), MODE(0) | PULLUP_EN},	/* MDIO_CLK */
 	{-1},
 };
+
+static struct module_pin_mux rmii1_pin_mux[] = {
+   {OFFSET(mii1_crs), MODE(1) | RXACTIVE},     /* RMII1_CRS */
+   {OFFSET(mii1_rxerr), MODE(1) | RXACTIVE},   /* RMII1_RXERR */
+   {OFFSET(mii1_txen), MODE(1)},           /* RMII1_TXEN */
+   {OFFSET(mii1_txd1), MODE(1)},           /* RMII1_TXD1 */
+   {OFFSET(mii1_txd0), MODE(1)},           /* RMII1_TXD0 */
+   {OFFSET(mii1_rxd1), MODE(1) | RXACTIVE},    /* RMII1_RXD1 */
+   {OFFSET(mii1_rxd0), MODE(1) | RXACTIVE},    /* RMII1_RXD0 */
+   {OFFSET(mdio_data), MODE(0) | RXACTIVE | PULLUP_EN}, /* MDIO_DATA */
+   {OFFSET(mdio_clk), MODE(0) | PULLUP_EN},    /* MDIO_CLK */
+   {OFFSET(rmii1_refclk), MODE(0) | RXACTIVE}, /* RMII1_REFCLK */
+   {-1},
+};
 #endif
 
 #ifdef CONFIG_NOR
@@ -550,7 +564,27 @@ static struct evm_pin_mux low_cost_evm_pin_mux[] = {
 	{0},
 };
 
+static struct evm_pin_mux beaglebone_pin_mux[] = {
+	{uart0_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
+	{i2c1_pin_mux, PROFILE_ALL & ~PROFILE_2 & ~PROFILE_4, DEV_ON_BASEBOARD},
+#ifdef CONFIG_NAND
+	{nand_pin_mux, PROFILE_ALL & ~PROFILE_2 & ~PROFILE_3, DEV_ON_DGHTR_BRD},
+#endif
+#ifndef CONFIG_NO_ETH
+	{rmii1_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
+#endif
+#ifdef CONFIG_MMC
+	{mmc0_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
+	{mmc1_pin_mux, PROFILE_2, DEV_ON_DGHTR_BRD},
+#endif
+#ifdef CONFIG_SPI
+	{spi0_pin_mux, PROFILE_2, DEV_ON_DGHTR_BRD},
+#endif
+	{0},
+};
+
 static struct evm_pin_mux *am335x_evm_pin_mux[] = {
+	beaglebone_pin_mux,
 	general_purpose_evm_pin_mux,
 	ia_motor_control_evm_pin_mux,
 	ip_phone_evm_pin_mux,

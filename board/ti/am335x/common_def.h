@@ -15,13 +15,12 @@
 #ifndef __COMMON_DEF_H__
 #define __COMMON_DEF_H__
 
-#define NO_OF_DAUGHTER_BOARDS	3
-
-/* EVM type */
-#define GP_BOARD	0
-#define IA_BOARD	1
-#define IPP_BOARD	2
-#define BASE_BOARD	3
+/* AM335X type */
+#define BONE_BOARD	0
+#define GP_BOARD	1
+#define IA_BOARD	2
+#define IPP_BOARD	3
+#define BASE_BOARD	4
 
 /* Profiles */
 #define PROFILE_NONE	0x0

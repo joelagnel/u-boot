@@ -442,7 +442,9 @@ int board_init(void)
 		printf("Did not find a recognized configuration, "
 			"assuming General purpose EVM in Profile 0 with "
 			"Daughter board\n");
-		goto err_out;
+		board_id = GP_BOARD;
+		profile = 1;	/* profile 0 is internally considered as 1 */
+		daughter_board_connected = 1;
 	}
 
 	configure_evm_pin_mux(board_id, profile, daughter_board_connected);
@@ -456,12 +458,12 @@ int board_init(void)
 	return 0;
 
 err_out:
-	/* in case of errors, fallback to default configuration. i.e.,
-	 * board_id = GP_BOARD
-	 * Profile = 0
-	 * daughter_board_connected = 1
-	*/
-	board_id = GP_BOARD;
+	/*
+	 * When we cannot use the EEPROM to determine what board we
+	 * are we assume BeagleBone currently as we have not yet
+	 * programmed the EEPROMs.
+	 */
+	board_id = BONE_BOARD;
 	profile = 1;	/* profile 0 is internally considered as 1 */
 	daughter_board_connected = 1;
 	configure_evm_pin_mux(board_id, profile, daughter_board_connected);
