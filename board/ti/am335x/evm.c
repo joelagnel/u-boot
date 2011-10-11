@@ -63,6 +63,7 @@ DECLARE_GLOBAL_DATA_PTR;
 
 /* RGMII mode define */
 #define RGMII_MODE_ENABLE	0xA
+#define RMII_MODE_ENABLE	0x5
 
 /* TLK110 PHY registers */
 #define TLK110_COARSEGAIN_REG	0x00A3
@@ -731,13 +732,15 @@ int board_eth_init(bd_t *bis)
 		}
 	}
 
-	/* set mii mode to rgmii in in device configure register */
-	if (board_id != IA_BOARD)
-		__raw_writel(RGMII_MODE_ENABLE, MAC_MII_SEL);
-
-	if (board_id == IA_BOARD) {
+	if (board_id == BONE_BOARD) {
+		/* Select RMII mode in control module for BeagleBone ethernet */
+		__raw_writel(RMII_MODE_ENABLE, MAC_MII_SEL);
+	} else if (board_id == IA_BOARD) {
 		cpsw_slaves[0].phy_id = 30;
 		cpsw_slaves[1].phy_id = 0;
+	} else {
+		/* set mii mode to rgmii in in device configure register */
+		__raw_writel(RGMII_MODE_ENABLE, MAC_MII_SEL);
 	}
 
 	return cpsw_register(&cpsw_data);
