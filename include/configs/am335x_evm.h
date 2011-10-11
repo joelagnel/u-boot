@@ -175,7 +175,6 @@
 		"run nand_boot; " \
 	"fi"
 
-#define CONFIG_DISPLAY_BOARDINFO
 #define CONFIG_MISC_INIT_R
 #define CONFIG_SYS_AUTOLOAD		"yes"
 #define CONFIG_CMD_CACHE

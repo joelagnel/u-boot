@@ -475,11 +475,6 @@ err_out:
 	return 0;
 }
 
-int checkboard(void)
-{
-	return 0;
-}
-
 int misc_init_r(void)
 {
 #ifdef DEBUG
