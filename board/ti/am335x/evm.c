@@ -527,18 +527,15 @@ static void evm_phy_init(char *name, int addr)
 	unsigned int cntr = 0;
 	unsigned short phyid1, phyid2;
 
-	/* This is done as a workaround to support TLK110 rev1.0 phy */
-	/* Reading phy identification register 1 */
-	if (miiphy_read(name, addr, MII_PHYSID1, &phyid1) != 0) {
-		printf("failed to read phyid1\n");
+	/* 
+	 * This is done as a workaround to support TLK110 rev1.0 PHYs.
+	 * We can only perform these reads on these PHYs (currently
+	 * only found on the IA EVM).
+	 */
+	if ((miiphy_read(name, addr, MII_PHYSID1, &phyid1) != 0) ||
+			(miiphy_read(name, addr, MII_PHYSID2, &phyid2) != 0))
 		return;
-	}
 
-	/* Reading phy identification register 2 */
-	if (miiphy_read(name, addr, MII_PHYSID2, &phyid2) != 0) {
-		printf("failed to read phyid2\n");
-		return;
-	}
 	if ((phyid1 == TLK110_PHYIDR1) && (phyid2 == TLK110_PHYIDR2)) {
 		miiphy_read(name, addr, TLK110_COARSEGAIN_REG, &val);
 		val |= TLK110_COARSEGAIN_VAL;
