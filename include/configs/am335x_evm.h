@@ -23,38 +23,6 @@
 
 #define CONFIG_AM335X_HSMMC_INSTANCE	0	/* 0 - MMC0, 1 - MMC1 */
 
-/* set to negative value for no autoboot */
-#define CONFIG_BOOTDELAY		3
-
-# if defined(CONFIG_SPI_BOOT)
-#  define CONFIG_SPI			1
-#  define CONFIG_EXTRA_ENV_SETTINGS \
-	"verify=yes\0" \
-	"spi_bus_no=0\0" \
-	"bootcmd=sf probe ${spi_bus_no}:0;sf read 0x81000000 0x20000 0x40000; \
-	go 0x81000000\0" \
-
-# elif defined(CONFIG_NAND_BOOT)
-#define CONFIG_NAND		1
-#define CONFIG_EXTRA_ENV_SETTINGS \
-	"verify=yes\0" \
-	"bootcmd=nand read 0x81000000 0x80000 0x40000; go 0x81000000\0"
-#endif
-
-#if defined(CONFIG_NOR_BOOT)
-#define CONFIG_NOR
-#define CONFIG_EXTRA_ENV_SETTINGS \
-	"verify=yes\0" \
-	"bootcmd=cp.b 0x8020000 0x81000000 0x40000; go 0x81000000\0"
-#endif
-
-#if defined(CONFIG_SD_BOOT)		/* Autoload the 2nd stage from SD */
-#define CONFIG_MMC			1
-#define CONFIG_EXTRA_ENV_SETTINGS \
-	 "verify=yes\0" \
-	"bootcmd=mmc rescan; fatload mmc 0 0x80800000 u-boot.bin; go 0x80800000\0"
-#endif
-
 #include <config_cmd_default.h>
 
 #define CONFIG_ENV_SIZE			0x2000
@@ -65,30 +33,23 @@
 /* Use HUSH parser to allow command parsing */
 #define CONFIG_SYS_HUSH_PARSER
 #define CONFIG_SYS_PROMPT_HUSH_PS2	"> "
-#define CONFIG_CMDLINE_TAG		/* enable passing of ATAGs  */
+#define CONFIG_CMDLINE_TAG		/* enable passing of ATAGs */
 #define CONFIG_SETUP_MEMORY_TAGS
 #define CONFIG_INITRD_TAG		/* Required for ramdisk support */
 
 /* set to negative value for no autoboot */
 #define CONFIG_BOOTDELAY		3
 
-#define CONFIG_MMC			1
-
-#ifndef CONFIG_NOR_BOOT
+#define CONFIG_MMC
 #define CONFIG_NAND
-#else
-#define CONFIG_NOR
-#endif
-
-#define CONFIG_SPI			1
+#define CONFIG_SPI
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
-	"verify=yes\0" \
 	"bootfile=uImage\0" \
-	"brd_mem=62M\0" \
-	"loadaddr=0x81000000\0" \
-	"script_addr=0x80900000\0" \
+	"loadaddr=0x82000000\0" \
+	"script_addr=0x81900000\0" \
 	"console=ttyO0,115200n8\0" \
+	"mmc_dev=0\0" \
 	"mmc_root=/dev/mmcblk0p2 rw\0" \
 	"nand_root=/dev/mtdblock4 rw\0" \
 	"spi_root=/dev/mtdblock4 rw\0" \
@@ -109,13 +70,13 @@
 	"static_ip=${ipaddr}:${serverip}:${gatewayip}:${netmask}:${hostname}" \
 			"::off\0" \
 	"ip_method=dhcp\0" \
-	"loadbootscript=fatload mmc 0 ${script_addr} boot.scr\0" \
-	"bootscript= echo Running bootscript from MMC/SD to set the ENV...; " \
-		"source ${script_addr}\0" \
-	"mmc_load_uimage=fatload mmc 0 ${loadaddr} ${bootfile}\0" \
+	"bootenv=uEnv.txt\0" \
+	"loadbootenv=fatload mmc ${mmc_dev} ${loadaddr} ${bootenv}\0" \
+	"importbootenv=echo Importing environment from mmc ...; " \
+		"env import -t $loadaddr $filesize\0" \
+	"mmc_load_uimage=fatload mmc ${mmc_dev} ${loadaddr} ${bootfile}\0" \
 	"bootargs_defaults=setenv bootargs " \
-		"console=${console} " \
-		 "mem=${brd_mem}\0" \
+		"console=${console}\0" \
 	"mmc_args=run bootargs_defaults;" \
 		"setenv bootargs ${bootargs} " \
 		"root=${mmc_root} " \
@@ -162,18 +123,21 @@
 
 #define CONFIG_BOOTCOMMAND \
 	"if mmc rescan; then " \
-		"if run loadbootscript; then " \
-			"run bootscript; " \
-		"else " \
-			"if run mmc_load_uimage; then " \
-				"run mmc_boot; " \
-			"else " \
-				"run nand_boot; " \
-			"fi; " \
-		"fi; " \
-	"else " \
-		"run nand_boot; " \
-	"fi"
+		"echo SD/MMC found on device ${mmc_dev};" \
+		"if run loadbootenv; then " \
+			"echo Loaded environment from ${bootenv};" \
+			"run importbootenv;" \
+		"fi;" \
+		"if test -n $uenvcmd; then " \
+			"echo Running uenvcmd ...;" \
+			"run uenvcmd;" \
+		"fi;" \
+		"if run mmc_load_uimage; then " \
+			"run mmc_args;" \
+			"bootm ${loadaddr};" \
+		"fi;" \
+	"fi;" \
+	"run nand_boot;" \
 
 #define CONFIG_MISC_INIT_R
 #define CONFIG_SYS_AUTOLOAD		"yes"
@@ -197,14 +161,12 @@
 #define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_MEMTEST_START \
 					+ (8 * 1024 * 1024))
 
-#undef  CONFIG_SYS_CLKS_IN_HZ		/* everything, incl board info, in Hz */
 #define CONFIG_SYS_LOAD_ADDR		0x81000000 /* Default load address */
-#define CONFIG_SYS_HZ			1000 /* 1ms clock */
 
  /* Physical Memory Map */
-#define CONFIG_NR_DRAM_BANKS		1		/*  1 bank of DRAM */
+#define CONFIG_NR_DRAM_BANKS		1		/* 1 bank of DRAM */
 #define PHYS_DRAM_1			0x80000000	/* DRAM Bank #1 */
-#define PHYS_DRAM_1_SIZE		0x10000000 /*(0x80000000 / 8) 256 MB */
+#define PHYS_DRAM_1_SIZE		0x10000000	/* 256 MiB */
 
 #define CONFIG_SYS_SDRAM_BASE		PHYS_DRAM_1
 #define CONFIG_SYS_INIT_RAM_ADDR	SRAM0_START
@@ -259,10 +221,10 @@
 #define CONFIG_SYS_NAND_ECCBYTES	14
 
 #define CONFIG_SYS_NAND_ECCSTEPS	4
-#define CONFIG_SYS_NAND_ECCTOTAL       (CONFIG_SYS_NAND_ECCBYTES * \
+#define	CONFIG_SYS_NAND_ECCTOTAL	(CONFIG_SYS_NAND_ECCBYTES * \
 						CONFIG_SYS_NAND_ECCSTEPS)
 
-#define CONFIG_SYS_NAND_U_BOOT_START   CONFIG_SYS_TEXT_BASE
+#define	CONFIG_SYS_NAND_U_BOOT_START	CONFIG_SYS_TEXT_BASE
 
 #define CONFIG_SYS_NAND_U_BOOT_OFFS	0x80000
 
@@ -369,9 +331,7 @@
  */
 #if defined(CONFIG_NOR)
 # undef CONFIG_ENV_IS_NOWHERE
-# ifdef CONFIG_SYS_MALLOC_LEN
-#  undef CONFIG_SYS_MALLOC_LEN
-# endif
+# undef CONFIG_SYS_MALLOC_LEN
 # define CONFIG_SYS_FLASH_USE_BUFFER_WRITE 1
 # define CONFIG_SYS_MALLOC_LEN		(0x100000)
 # define CONFIG_SYS_FLASH_CFI
@@ -393,53 +353,50 @@
 
 /* SPI support */
 #ifdef CONFIG_SPI
-#define BOARD_LATE_INIT               1
+#define BOARD_LATE_INIT
 #define CONFIG_OMAP3_SPI
 #define CONFIG_MTD_DEVICE
 #define CONFIG_SPI_FLASH
 #define CONFIG_SPI_FLASH_WINBOND
 #define CONFIG_CMD_SF
-#define CONFIG_SF_DEFAULT_SPEED	(75000000)
+#define CONFIG_SF_DEFAULT_SPEED		(75000000)
 #endif
 
 /* ENV in SPI */
 #if defined(CONFIG_SPI_ENV)
 # undef CONFIG_ENV_IS_NOWHERE
-# define CONFIG_ENV_IS_IN_SPI_FLASH   1
-# define CONFIG_SYS_FLASH_BASE       (0)
-# define SPI_FLASH_ERASE_SIZE        (4 * 1024) /* sector size of SPI flash */
-# define CONFIG_SYS_ENV_SECT_SIZE    (2 * SPI_FLASH_ERASE_SIZE) /* env size */
-# define CONFIG_ENV_SECT_SIZE        (CONFIG_SYS_ENV_SECT_SIZE)
-# define CONFIG_ENV_OFFSET           (96 * SPI_FLASH_ERASE_SIZE)
-# define CONFIG_ENV_ADDR             (CONFIG_ENV_OFFSET)
-# define CONFIG_SYS_MAX_FLASH_SECT   (1024) /* no of sectors in SPI flash */
-# define CONFIG_SYS_MAX_FLASH_BANKS  (1)
+# define CONFIG_ENV_IS_IN_SPI_FLASH
+# define CONFIG_SYS_FLASH_BASE		(0)
+# define SPI_FLASH_ERASE_SIZE		(4 * 1024) /* sector size */
+# define CONFIG_SYS_ENV_SECT_SIZE	(2 * SPI_FLASH_ERASE_SIZE)
+# define CONFIG_ENV_SECT_SIZE		(CONFIG_SYS_ENV_SECT_SIZE)
+# define CONFIG_ENV_OFFSET		(96 * SPI_FLASH_ERASE_SIZE)
+# define CONFIG_ENV_ADDR		(CONFIG_ENV_OFFSET)
+# define CONFIG_SYS_MAX_FLASH_SECT	(1024) /* # of sectors in SPI flash */
+# define CONFIG_SYS_MAX_FLASH_BANKS	(1)
 #endif /* SPI support */
 
 /* I2C */
-# define CONFIG_I2C
-# define CONFIG_CMD_I2C
-# define CONFIG_HARD_I2C		1
-# define CONFIG_I2C_MULTI_BUS		1
-# define CONFIG_SYS_I2C_SPEED		100000
-# define CONFIG_SYS_I2C_SLAVE		1
-# define CONFIG_SYS_I2C_BUS		0
-# define CONFIG_SYS_I2C_BUS_SELECT	1
-#define CONFIG_I2C_MULTI_BUS		1
-# define CONFIG_DRIVER_TI81XX_I2C	1
+#define CONFIG_I2C
+#define CONFIG_CMD_I2C
+#define CONFIG_HARD_I2C
+#define CONFIG_SYS_I2C_SPEED		100000
+#define CONFIG_SYS_I2C_SLAVE		1
+#define CONFIG_I2C_MULTI_BUS
+#define CONFIG_DRIVER_TI81XX_I2C
 
 /* HSMMC support */
 #ifdef CONFIG_MMC
 #if (CONFIG_AM335X_HSMMC_INSTANCE == 0)
-# define CONFIG_AM335X_HSMMC_BASE    0x48060100
+#define CONFIG_AM335X_HSMMC_BASE	0x48060100
 #else
-# define CONFIG_AM335X_HSMMC_BASE    0x481D8100
+#define CONFIG_AM335X_HSMMC_BASE	0x481D8100
 #endif
-# define CONFIG_GENERIC_MMC
-# define CONFIG_OMAP_HSMMC
-# define CONFIG_CMD_MMC		1
-# define CONFIG_DOS_PARTITION	1
-# define CONFIG_CMD_FAT		1
+#define CONFIG_GENERIC_MMC
+#define CONFIG_OMAP_HSMMC
+#define CONFIG_CMD_MMC
+#define CONFIG_DOS_PARTITION
+#define CONFIG_CMD_FAT
 #endif
 
 /* Unsupported features */
