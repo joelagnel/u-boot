@@ -58,6 +58,7 @@ void preloader_console_init(void);
 #define BOOT_DEVICE_NAND	5 
 #define BOOT_DEVICE_MMC1	8
 #define BOOT_DEVICE_MMC2	0 /* eMMC, TODO */
+#define BOOT_DEVICE_UART	65
 #endif
 
 /* Boot type */
@@ -89,5 +90,8 @@ void spl_nand_load_image(void);
 
 /* MMC SPL functions */
 void spl_mmc_load_image(void);
+
+/* YMODEM SPL functions */
+void spl_ymodem_load_image(void);
 
 #endif /* _OMAP_COMMON_H_ */
