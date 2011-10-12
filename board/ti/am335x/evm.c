@@ -300,7 +300,7 @@ static void init_timer(void)
 /*
  * MPU voltage switching for MPU frequency switching.
  */
-#ifdef CONFIG_AM335X_MIN_CONFIG
+#ifdef CONFIG_SPL_BUILD
 int  mpu_voltage_update( unsigned char vdd1_op_vol_sel)
 {
 	uchar buf[4]	= {0};
@@ -418,6 +418,19 @@ void s_init(void)
 	preloader_console_init();
 
 	config_am335x_ddr();
+
+	/* Configure the i2c0 pin mux */
+	enable_i2c0_pin_mux();
+
+	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
+
+	/* PMIC voltage is configuring for frequency scaling */
+	if (!i2c_probe(PMIC_SR_I2C_ADDR)) {
+		if (!mpu_voltage_update(PMIC_OP_REG_SEL_1_2)) {
+			/* Frequency switching for OPP 120 */
+			mpu_pll_config(MPUPLL_M_600);
+		}
+	}
 #endif
 }
 
@@ -484,16 +497,6 @@ int board_init(void)
 	enable_i2c0_pin_mux();
 
 	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
-
-#ifdef CONFIG_AM335X_MIN_CONFIG
-	/* PMIC voltage is configuring for frequency scaling */
-	if (!i2c_probe(PMIC_SR_I2C_ADDR)) {
-		if (!mpu_voltage_update(PMIC_OP_REG_SEL_1_2)) {
-			/* Frequency switching for OPP 120 */
-			mpu_pll_config(MPUPLL_M_600);
-		}
-	}
-#endif
 
 	/* Check if baseboard eeprom is available */
 	if (i2c_probe(I2C_BASE_BOARD_ADDR)) {
