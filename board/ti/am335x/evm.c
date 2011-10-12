@@ -301,72 +301,52 @@ static void init_timer(void)
  * MPU voltage switching for MPU frequency switching.
  */
 #ifdef CONFIG_SPL_BUILD
-int  mpu_voltage_update( unsigned char vdd1_op_vol_sel)
+int mpu_voltage_update(unsigned char vdd1_op_vol_sel)
 {
-	uchar buf[4]	= {0};
-	char res = 0;
+	uchar buf[4];
 
 	/* select SR PMIC I2C instance */
-	if (i2c_read(PMIC_SR_I2C_ADDR, PMIC_DEVCTRL_REG, 1, buf, 1)) {
-		res = 1;
-		goto err_i2c_rw;
-	} else {
-		buf[0] &= ~PMIC_DEVCTRL_REG_SR_CTL_I2C_MASK;
+	if (i2c_read(PMIC_SR_I2C_ADDR, PMIC_DEVCTRL_REG, 1, buf, 1))
+		return 1;
 
-		if (i2c_write(PMIC_SR_I2C_ADDR, PMIC_DEVCTRL_REG, 1, buf, 1)){
-		res = 1;
-		goto err_i2c_rw;
-		}
-	}
+	buf[0] &= ~PMIC_DEVCTRL_REG_SR_CTL_I2C_MASK;
+
+	if (i2c_write(PMIC_SR_I2C_ADDR, PMIC_DEVCTRL_REG, 1, buf, 1))
+		return 1;
 
 	/*  Configure VDD1 */
 	buf[0] = PMIC_REG_VGAIN_SEL_X1 | PMIC_REG_ILMAX_1_5_A |
 		PMIC_REG_TSTEP_12_5 | PMIC_REG_ST_ON_HI_POW;
 
-	if (i2c_write(PMIC_SR_I2C_ADDR, PMIC_VDD1_REG, 1, buf, 1)) {
-		res = 1;
-		goto err_i2c_rw;
-	}
+	if (i2c_write(PMIC_SR_I2C_ADDR, PMIC_VDD1_REG, 1, buf, 1))
+		return 1;
 
 	/* Select VDD1 OP   */
-	if (i2c_read(PMIC_SR_I2C_ADDR, PMIC_VDD1_OP_REG, 1, buf, 1)) {
-		res = 1;
-		goto err_i2c_rw;
-	} else {
-		buf[0] &= ~PMIC_OP_REG_CMD_MASK;
+	if (i2c_read(PMIC_SR_I2C_ADDR, PMIC_VDD1_OP_REG, 1, buf, 1))
+		return 1;
 
-		if (i2c_write(PMIC_SR_I2C_ADDR, PMIC_VDD1_OP_REG, 1, buf, 1)) {
-		res = 1;
-		goto err_i2c_rw;
-		}
-	}
+	buf[0] &= ~PMIC_OP_REG_CMD_MASK;
+
+	if (i2c_write(PMIC_SR_I2C_ADDR, PMIC_VDD1_OP_REG, 1, buf, 1))
+		return 1;
 
 	/* Configure VDD1 OP  Voltage */
-	if (i2c_read(PMIC_SR_I2C_ADDR, PMIC_VDD1_OP_REG, 1, buf, 1)) {
-		res = 1;
-		goto err_i2c_rw;
-	} else {
-		buf[0] &= ~PMIC_OP_REG_SEL_MASK;
-		buf[0] |= vdd1_op_vol_sel;
+	if (i2c_read(PMIC_SR_I2C_ADDR, PMIC_VDD1_OP_REG, 1, buf, 1))
+		return 1;
 
-		if (i2c_write(PMIC_SR_I2C_ADDR, PMIC_VDD1_OP_REG, 1, buf, 1)) {
-		res = 1;
-		goto err_i2c_rw;
-		}
-	}
+	buf[0] &= ~PMIC_OP_REG_SEL_MASK;
+	buf[0] |= vdd1_op_vol_sel;
 
-	if (i2c_read(PMIC_SR_I2C_ADDR, PMIC_VDD1_OP_REG, 1, buf, 1)) {
-		res = 1;
-		goto err_i2c_rw;
-	} else {
-		if( (buf[0] & PMIC_OP_REG_SEL_MASK ) != vdd1_op_vol_sel) {
-		res = 1;
-		goto err_i2c_rw;
-		}
-	}
+	if (i2c_write(PMIC_SR_I2C_ADDR, PMIC_VDD1_OP_REG, 1, buf, 1))
+		return 1;
 
-err_i2c_rw:
-	return res;
+	if (i2c_read(PMIC_SR_I2C_ADDR, PMIC_VDD1_OP_REG, 1, buf, 1))
+		return 1;
+
+	if ((buf[0] & PMIC_OP_REG_SEL_MASK ) != vdd1_op_vol_sel)
+		return 1;
+
+	return 0;
 }
 #endif
 

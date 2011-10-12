@@ -139,7 +139,7 @@ static void per_clocks_enable(void)
 	while (__raw_readl(CM_PER_SPI1_CLKCTRL) != PRCM_MOD_EN);
 }
 
-void mpu_pll_config(int mpupll_M )
+void mpu_pll_config(int mpupll_M)
 {
 	u32 clkmode, clksel, div_m2;
 

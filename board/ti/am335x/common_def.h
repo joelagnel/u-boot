@@ -35,7 +35,7 @@
 #define PROFILE_ALL	0xFF
 
 extern void pll_init(void);
-extern void mpu_pll_config(int mpupll_M );
+extern void mpu_pll_config(int mpupll_M);
 extern void enable_ddr_clocks(void);
 
 extern void enable_i2c0_pin_mux(void);

@@ -28,13 +28,13 @@
 /* MAIN PLL Fdll = 1 GHZ, */
 #define MPUPLL_M_500	500	/* 125 * n */
 #define MPUPLL_M_550	550	/* 125 * n */
-#define MPUPLL_M_600    600	/* 125 * n */
+#define MPUPLL_M_600	600	/* 125 * n */
 #define MPUPLL_N	23	/* (n -1 ) */
 #define MPUPLL_M2	1
 
 /* Core PLL Fdll = 1 GHZ, */
-#define COREPLL_M      1000	/* 125 * n */
-#define COREPLL_N      23	/* (n -1 ) */
+#define COREPLL_M	1000	/* 125 * n */
+#define COREPLL_N	23	/* (n -1 ) */
 
 #define COREPLL_M4	10	/* CORE_CLKOUTM4 = 200 MHZ */
 #define COREPLL_M5	8	/* CORE_CLKOUTM5 = 250 MHZ */
