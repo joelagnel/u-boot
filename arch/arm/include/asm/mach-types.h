@@ -3314,6 +3314,7 @@ extern unsigned int __machine_arch_type;
 #define MACH_TYPE_GOFLEXHOME           3338
 #define MACH_TYPE_TIAM335EVM           3589
 #define MACH_TYPE_TIAM335IAEVM         3684
+#define MACH_TYPE_BEAGLEBONE           3808
 
 #ifdef CONFIG_ARCH_EBSA110
 # ifdef machine_arch_type
@@ -42925,6 +42926,18 @@ extern unsigned int __machine_arch_type;
 # define machine_is_tiam335evm() (machine_arch_type == MACH_TYPE_TIAM335EVM)
 #else
 # define machine_is_tiam335evm() (0)
+#endif
+
+#ifdef CONFIG_MACH_BEAGLEBONE
+# ifdef machine_arch_type
+#  undef machine_arch_type
+#  define machine_arch_type     __machine_arch_type
+# else
+#  define machine_arch_type     MACH_TYPE_BEAGLEBONE
+# endif
+# define machine_is_beaglebone() (machine_arch_type == MACH_TYPE_BEAGLEBONE)
+#else
+# define machine_is_beaglebone() (0)
 #endif
 
 /*
