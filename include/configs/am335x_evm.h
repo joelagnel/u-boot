@@ -74,7 +74,8 @@
 	"loadbootenv=fatload mmc ${mmc_dev} ${loadaddr} ${bootenv}\0" \
 	"importbootenv=echo Importing environment from mmc ...; " \
 		"env import -t $loadaddr $filesize\0" \
-	"mmc_load_uimage=fatload mmc ${mmc_dev} ${loadaddr} ${bootfile}\0" \
+	"mmc_load_uimage_fat=fatload mmc ${mmc_dev} ${loadaddr} ${bootfile}\0" \
+	"mmc_load_uimage=ext2load mmc 0:2 ${loadaddr} /boot/${bootfile}\0" \
 	"bootargs_defaults=setenv bootargs " \
 		"console=${console}\0" \
 	"mmc_args=run bootargs_defaults;" \
