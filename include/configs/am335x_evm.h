@@ -38,7 +38,7 @@
 #define CONFIG_INITRD_TAG		/* Required for ramdisk support */
 
 /* set to negative value for no autoboot */
-#define CONFIG_BOOTDELAY		3
+#define CONFIG_BOOTDELAY		1
 
 #define CONFIG_MMC
 #define CONFIG_NAND
