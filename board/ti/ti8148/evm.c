@@ -512,7 +512,7 @@ void prcm_init(void)
 #define PAD258_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0C04))
 
 #ifdef CONFIG_DRIVER_TI_CPSW
-static void cpsw_pad_config()
+static void cpsw_pad_config(void)
 {
 	volatile u32 val = 0;
 
@@ -759,7 +759,7 @@ void s_init(u32 in_ddr)
 #define PHY_CONF_TXCLKEN       (1 << 5)
 
 /* TODO : Check for the board specific PHY */
-static void phy_init(char *name, int addr)
+static void evm_phy_init(char *name, int addr)
 {
 	unsigned short val;
 	unsigned int   cntr = 0;
@@ -775,55 +775,55 @@ static void phy_init(char *name, int addr)
 	miiphy_read(name, addr, PHY_CONF_REG, &val);
 
 	/* Enable Autonegotiation */
-	if (miiphy_read(name, addr, PHY_BMCR, &val) != 0) {
+	if (miiphy_read(name, addr, MII_BMCR, &val) != 0) {
 		printf("failed to read bmcr\n");
 		return;
 	}
-	val |= PHY_BMCR_DPLX | PHY_BMCR_AUTON | PHY_BMCR_100_MBPS;
-	if (miiphy_write(name, addr, PHY_BMCR, val) != 0) {
+	val |= BMCR_FULLDPLX | BMCR_ANENABLE | BMCR_SPEED100;
+	if (miiphy_write(name, addr, MII_BMCR, val) != 0) {
 		printf("failed to write bmcr\n");
 		return;
 	}
-	miiphy_read(name, addr, PHY_BMCR, &val);
+	miiphy_read(name, addr, MII_BMCR, &val);
 
 	/* Setup GIG advertisement */
-	miiphy_read(name, addr, PHY_1000BTCR, &val);
+	miiphy_read(name, addr, MII_CTRL1000, &val);
 	val |= PHY_1000BTCR_1000FD;
 	val &= ~PHY_1000BTCR_1000HD;
-	miiphy_write(name, addr, PHY_1000BTCR, val);
-	miiphy_read(name, addr, PHY_1000BTCR, &val);
+	miiphy_write(name, addr, MII_CTRL1000, val);
+	miiphy_read(name, addr, MII_CTRL1000, &val);
 
 	/* Setup general advertisement */
-	if (miiphy_read(name, addr, PHY_ANAR, &val) != 0) {
+	if (miiphy_read(name, addr, MII_ADVERTISE, &val) != 0) {
 		printf("failed to read anar\n");
 		return;
 	}
-	val |= (PHY_ANLPAR_10 | PHY_ANLPAR_10FD | PHY_ANLPAR_TX | PHY_ANLPAR_TXFD);
-	if (miiphy_write(name, addr, PHY_ANAR, val) != 0) {
+	val |= (LPA_10HALF | LPA_10FULL | LPA_100HALF | LPA_100FULL);
+	if (miiphy_write(name, addr, MII_ADVERTISE, val) != 0) {
 		printf("failed to write anar\n");
 		return;
 	}
-	miiphy_read(name, addr, PHY_ANAR, &val);
+	miiphy_read(name, addr, MII_ADVERTISE, &val);
 
 	/* Restart auto negotiation*/
-	miiphy_read(name, addr, PHY_BMCR, &val);
-	val |= PHY_BMCR_RST_NEG;
-	miiphy_write(name, addr, PHY_BMCR, val);
+	miiphy_read(name, addr, MII_BMCR, &val);
+	val |= BMCR_ANRESTART;
+	miiphy_write(name, addr, MII_BMCR, val);
 
        /*check AutoNegotiate complete - it can take upto 3 secs*/
        do{
                udelay(40000);
                cntr++;
 
-               if (!miiphy_read(name, addr, PHY_BMSR, &val)){
-                       if(val & PHY_BMSR_AUTN_COMP)
+               if (!miiphy_read(name, addr, MII_BMSR, &val)){
+                       if(val & BMSR_ANEGCOMPLETE)
                                break;
                }
 
        }while(cntr < 250);
 
-       if (!miiphy_read(name, addr, PHY_BMSR, &val)) {
-               if (!(val & PHY_BMSR_AUTN_COMP))
+       if (!miiphy_read(name, addr, MII_BMSR, &val)) {
+               if (!(val & BMSR_ANEGCOMPLETE))
                        printf("Auto negotitation failed\n");
        }
 
@@ -864,7 +864,7 @@ static struct cpsw_platform_data cpsw_data = {
 	.hw_stats_reg_ofs       = 0x400,
 	.mac_control            = (1 << 5) /* MIIEN      */,
 	.control                = cpsw_control,
-	.phy_init               = phy_init,
+	.phy_init               = evm_phy_init,
 	.host_port_num		= 0,
 };
 

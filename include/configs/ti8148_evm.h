@@ -207,7 +207,6 @@
 #define CONFIG_CONS_INDEX		1
 #define CONFIG_SYS_CONSOLE_INFO_QUIET
 
-#define CONFIG_NO_ETH
 #if defined(CONFIG_NO_ETH)
 # undef CONFIG_CMD_NET
 # undef CONFIG_CMD_NFS
