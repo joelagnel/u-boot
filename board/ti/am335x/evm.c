@@ -480,8 +480,18 @@ int board_init(void)
 	}
 
 	if (header.magic != 0xEE3355AA) {
-		printf("Incorrect magic number in EEPROM\n");
-		goto err_out;
+		/* read the eeprom using i2c again, but use only a 1 byte address */
+		if (i2c_read(I2C_BASE_BOARD_ADDR, 0, 1, (uchar *)&header,
+								sizeof(header))) {
+			printf("Could not read the EEPROM; something fundamentally"
+				" wrong on the I2C bus.\n");
+			goto err_out;
+		}
+
+		if (header.magic != 0xEE3355AA) {
+			printf("Incorrect magic number in EEPROM\n");
+			goto err_out;
+		}
 	}
 
 	detect_daughter_board();
