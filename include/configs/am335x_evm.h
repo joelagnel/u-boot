@@ -50,7 +50,7 @@
 	"script_addr=0x81900000\0" \
 	"console=ttyO0,115200n8\0" \
 	"mmc_dev=0\0" \
-	"mmc_root=/dev/mmcblk0p2 rw\0" \
+	"mmc_root=/dev/mmcblk0p2 ro\0" \
 	"nand_root=/dev/mtdblock4 rw\0" \
 	"spi_root=/dev/mtdblock4 rw\0" \
 	"nor_root=/dev/mtdblock3 rw\0" \
