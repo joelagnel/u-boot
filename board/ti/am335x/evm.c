@@ -305,22 +305,6 @@ int mpu_voltage_update(unsigned char vdd1_op_vol_sel)
 {
 	uchar buf[4];
 
-	/* select SR PMIC I2C instance */
-	if (i2c_read(PMIC_SR_I2C_ADDR, PMIC_DEVCTRL_REG, 1, buf, 1))
-		return 1;
-
-	buf[0] &= ~PMIC_DEVCTRL_REG_SR_CTL_I2C_MASK;
-
-	if (i2c_write(PMIC_SR_I2C_ADDR, PMIC_DEVCTRL_REG, 1, buf, 1))
-		return 1;
-
-	/*  Configure VDD1 */
-	buf[0] = PMIC_REG_VGAIN_SEL_X1 | PMIC_REG_ILMAX_1_5_A |
-		PMIC_REG_TSTEP_12_5 | PMIC_REG_ST_ON_HI_POW;
-
-	if (i2c_write(PMIC_SR_I2C_ADDR, PMIC_VDD1_REG, 1, buf, 1))
-		return 1;
-
 	/* Select VDD1 OP   */
 	if (i2c_read(PMIC_SR_I2C_ADDR, PMIC_VDD1_OP_REG, 1, buf, 1))
 		return 1;
