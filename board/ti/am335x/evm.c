@@ -479,6 +479,7 @@ int board_init(void)
 		goto err_out;
 	}
 
+	printf("EEPROM ID:\n magic: %#08x\n name: %8s\n version: %4s\n serial: %12s\n config: %32s\n mac_addr: %s\n", header.magic, header.name, header.version, header.serial, header.config, header.mac_addr);
 	if (header.magic != 0xEE3355AA) {
 		/* read the eeprom using i2c again, but use only a 1 byte address */
 		if (i2c_read(I2C_BASE_BOARD_ADDR, 0, 1, (uchar *)&header,
@@ -506,11 +507,10 @@ int board_init(void)
 		board_id = IPP_BOARD;
 	} else {
 		printf("Did not find a recognized configuration, "
-			"assuming General purpose EVM in Profile 0 with "
-			"Daughter board\n");
-		board_id = GP_BOARD;
+			"assuming BeagleBone\n");
+		board_id = BONE_BOARD;
 		profile = 1;	/* profile 0 is internally considered as 1 */
-		daughter_board_connected = 1;
+		daughter_board_connected = 0;
 	}
 
 	configure_evm_pin_mux(board_id, profile, daughter_board_connected);
