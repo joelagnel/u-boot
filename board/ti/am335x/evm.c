@@ -661,7 +661,13 @@ static void evm_phy_init(char *name, int addr)
 		printf("failed to read bmcr\n");
 		return;
 	}
-	val |= BMCR_FULLDPLX | BMCR_ANENABLE | BMCR_SPEED100;
+
+	if (board_id == BONE_BOARD) {
+		val &= ~(BMCR_FULLDPLX | BMCR_ANENABLE | BMCR_SPEED100);
+		val |= BMCR_FULLDPLX;
+	} else
+		val |= BMCR_FULLDPLX | BMCR_ANENABLE | BMCR_SPEED100;
+
 	if (miiphy_write(name, addr, MII_BMCR, val) != 0) {
 		printf("failed to write bmcr\n");
 		return;
@@ -669,7 +675,7 @@ static void evm_phy_init(char *name, int addr)
 	miiphy_read(name, addr, MII_BMCR, &val);
 
 	/* TODO: Disable GIG advertisement for the time being */
-	if (board_id != IA_BOARD) {
+	if (board_id != IA_BOARD && board_id != BONE_BOARD) {
 		miiphy_read(name, addr, MII_CTRL1000, &val);
 		val &= ~PHY_1000BTCR_1000FD;
 		val &= ~PHY_1000BTCR_1000HD;
@@ -682,7 +688,12 @@ static void evm_phy_init(char *name, int addr)
 		printf("failed to read anar\n");
 		return;
 	}
-	val |= (LPA_10HALF | LPA_10FULL | LPA_100HALF | LPA_100FULL);
+
+	if (board_id == BONE_BOARD)
+		val |= (LPA_10HALF | LPA_10FULL);
+	else
+		val |= (LPA_10HALF | LPA_10FULL | LPA_100HALF | LPA_100FULL);
+
 	if (miiphy_write(name, addr, MII_ADVERTISE, val) != 0) {
 		printf("failed to write anar\n");
 		return;
