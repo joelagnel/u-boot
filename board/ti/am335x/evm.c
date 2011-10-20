@@ -335,6 +335,9 @@ int mpu_voltage_update(unsigned char vdd1_op_vol_sel)
 
 void spl_board_init(void)
 {
+	/* Configure the i2c0 pin mux */
+	enable_i2c0_pin_mux();
+
 	/* PMIC voltage is configuring for frequency scaling */
 	if (!i2c_probe(PMIC_SR_I2C_ADDR)) {
 		if (!mpu_voltage_update(PMIC_OP_REG_SEL_1_2)) {
@@ -581,7 +584,7 @@ static void evm_phy_init(char *name, int addr)
 	unsigned int cntr = 0;
 	unsigned short phyid1, phyid2;
 
-	/* 
+	/*
 	 * This is done as a workaround to support TLK110 rev1.0 PHYs.
 	 * We can only perform these reads on these PHYs (currently
 	 * only found on the IA EVM).
