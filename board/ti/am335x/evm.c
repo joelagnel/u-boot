@@ -340,9 +340,9 @@ void spl_board_init(void)
 
 	/* PMIC voltage is configuring for frequency scaling */
 	if (!i2c_probe(PMIC_SR_I2C_ADDR)) {
-		if (!mpu_voltage_update(PMIC_OP_REG_SEL_1_2)) {
+		if (!mpu_voltage_update(PMIC_OP_REG_SEL_1_2_6)) {
 			/* Frequency switching for OPP 120 */
-			mpu_pll_config(MPUPLL_M_600);
+			mpu_pll_config(MPUPLL_M_720);
 		}
 	}
 }
