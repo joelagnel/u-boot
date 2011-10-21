@@ -179,6 +179,7 @@ ifdef CONFIG_SPL_BUILD
 COBJS-$(CONFIG_SPL_YMODEM_SUPPORT) += xyzModem.o
 endif
 COBJS-y += console.o
+COBJS-y += dlmalloc.o
 COBJS-y += memsize.o
 COBJS-y += stdio.o
 
