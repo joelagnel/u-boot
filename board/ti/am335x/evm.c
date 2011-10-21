@@ -608,6 +608,10 @@ int board_init(void)
 		detect_daughter_board_profile();
 	} else if (!strncmp("SKU#03", header.config, 6)) {
 		board_id = IPP_BOARD;
+	} else if (!strncmp("A335BONE", header.name, 8)) {
+		board_id = BONE_BOARD;
+		profile = 1;	/* profile 0 is internally considered as 1 */
+		daughter_board_connected = 0;
 	} else {
 		printf("Did not find a recognized configuration, "
 			"assuming General purpose EVM in Profile 0 with "
