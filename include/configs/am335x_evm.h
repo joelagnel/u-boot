@@ -247,7 +247,7 @@
  * Clock related defines
  */
 #define V_OSCK				24000000 /* Clock output from T2 */
-#define V_SCLK				(V_OSCK >> 1)
+#define V_SCLK				(V_OSCK)
 #define CONFIG_SYS_TIMERBASE		0x48040000	/* Use Timer2 */
 #define CONFIG_SYS_PTV			2	/* Divisor: 2^(PTV+1) => 8 */
 #define CONFIG_SYS_HZ			1000
