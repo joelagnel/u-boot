@@ -75,8 +75,10 @@
 	"importbootenv=echo Importing environment from mmc ...; " \
 		"env import -t $loadaddr $filesize\0" \
 	"mmc_load_uimage=fatload mmc ${mmc_dev} ${loadaddr} ${bootfile}\0" \
+	"optargs=\0" \
 	"bootargs_defaults=setenv bootargs " \
-		"console=${console}\0" \
+		"console=${console} " \
+		"${optargs}\0" \
 	"mmc_args=run bootargs_defaults;" \
 		"setenv bootargs ${bootargs} " \
 		"root=${mmc_root} " \
