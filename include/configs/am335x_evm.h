@@ -233,12 +233,12 @@
 #define CONFIG_SYS_NAND_U_BOOT_OFFS	0x80000
 
 /*
- * 1MB into the SDRAM to allow for SPL's bss at the beginning of SDRAM
+ * 8MB into the SDRAM to allow for SPL's bss at the beginning of SDRAM.
  * 64 bytes before this address should be set aside for u-boot.img's
- * header. That is 0x800FFFC0--0x80800000 should not be used for any
+ * header. That is 0x807FFFC0--0x80800000 should not be used for any
  * other needs.
  */
-#define CONFIG_SYS_TEXT_BASE		0x80800000 /* 0x80100000 */
+#define CONFIG_SYS_TEXT_BASE		0x80800000
 
 /* Since SPL did all of this for us, we don't need to do it twice. */
 #ifndef CONFIG_SPL_BUILD
