@@ -33,6 +33,7 @@
 #include <spi_flash.h>
 #include "common_def.h"
 #include "pmic.h"
+#include "tps65217.h"
 #include <i2c.h>
 #include <serial.h>
 
@@ -296,11 +297,86 @@ static void init_timer(void)
 }
 #endif
 
+#if defined(CONFIG_SPL_BUILD) && defined(CONFIG_SPL_BOARD_INIT)
+/**
+ *  tps65217_reg_write() - Generic function that can write a TPS65217 PMIC
+ *                         register or bit field regardless of protection
+ *                         level.
+ *
+ *  @prot_level:        Register password protection.
+ *                      use PROT_LEVEL_NONE, PROT_LEVEL_1, or PROT_LEVEL_2
+ *  @dest_reg:          Register address to write.
+ *  @dest_val:          Value to write.
+ *  @mask:              Bit mask (8 bits) to be applied.  Function will only
+ *                      change bits that are set in the bit mask.
+ *
+ *  @return:            0 for success, 1 for failure.
+ */
+int tps65217_reg_write(uchar prot_level, uchar dest_reg,
+        uchar dest_val, uchar mask)
+{
+        uchar read_val;
+        uchar xor_reg;
+
+        /* if we are affecting only a bit field, read dest_reg and apply the mask */
+        if (mask != MASK_ALL_BITS) {
+                if (i2c_read(TPS65217_CHIP_PM, dest_reg, 1, &read_val, 1))
+                        return 1;
+                read_val &= (~mask);
+                read_val |= (dest_val & mask);
+                dest_val = read_val;
+        }
+
+        if (prot_level > 0) {
+                xor_reg = dest_reg ^ PASSWORD_UNLOCK;
+                if (i2c_write(TPS65217_CHIP_PM, PASSWORD, 1, &xor_reg, 1))
+                        return 1;
+        }
+
+        if (i2c_write(TPS65217_CHIP_PM, dest_reg, 1, &dest_val, 1))
+                return 1;
+
+        if (prot_level == PROT_LEVEL_2) {
+                if (i2c_write(TPS65217_CHIP_PM, PASSWORD, 1, &xor_reg, 1))
+                        return 1;
+
+                if (i2c_write(TPS65217_CHIP_PM, dest_reg, 1, &dest_val, 1))
+                        return 1;
+        }
+
+        return 0;
+}
+
+/**
+ *  tps65217_voltage_update() - Controls output voltage setting for the DCDC1,
+ *       DCDC2, or DCDC3 control registers in the PMIC.
+ *
+ *  @dc_cntrl_reg:      DCDC Control Register address.
+ *                      Must be DEFDCDC1, DEFDCDC2, or DEFDCDC3.
+ *  @volt_sel:          Register value to set.  See PMIC TRM for value set.
+ *
+ *  @return:            0 for success, 1 for failure.
+ */
+int tps65217_voltage_update(unsigned char dc_cntrl_reg, unsigned char volt_sel)
+{
+        if ((dc_cntrl_reg != DEFDCDC1) && (dc_cntrl_reg != DEFDCDC2)
+                && (dc_cntrl_reg != DEFDCDC3))
+                return 1;
+
+        /* set voltage level */
+        if (tps65217_reg_write(PROT_LEVEL_2, dc_cntrl_reg, volt_sel, MASK_ALL_BITS))
+                return 1;
+
+        /* set GO bit to initiate voltage transition */
+        if (tps65217_reg_write(PROT_LEVEL_2, DEFSLEW, DCDC_GO, DCDC_GO))
+                return 1;
+
+        return 0;
+}
 
 /*
  * MPU voltage switching for MPU frequency switching.
  */
-#if defined(CONFIG_SPL_BUILD) && defined(CONFIG_SPL_BOARD_INIT)
 int mpu_voltage_update(unsigned char vdd1_op_vol_sel)
 {
 	uchar buf[4];
@@ -338,13 +414,32 @@ void spl_board_init(void)
 	/* Configure the i2c0 pin mux */
 	enable_i2c0_pin_mux();
 
-	/* PMIC voltage is configuring for frequency scaling */
-	if (!i2c_probe(PMIC_SR_I2C_ADDR)) {
-		if (!mpu_voltage_update(PMIC_OP_REG_SEL_1_2_6)) {
-			/* Frequency switching for OPP 120 */
-			mpu_pll_config(MPUPLL_M_720);
-		}
-	}
+        /* Using i2c_probe to differentiate between Bone and EVM */
+        if (!i2c_probe(TPS65217_CHIP_PM)) {
+                /* BeagleBone PMIC Code */
+
+                /* Increase USB current limit to 1300mA */
+                if (tps65217_reg_write(PROT_LEVEL_NONE, POWER_PATH,
+                                USB_INPUT_CUR_LIMIT_1300MA, USB_INPUT_CUR_LIMIT_MASK))
+                        printf("tps65217_reg_write failure\n");
+
+                /* Set DCDC2 (MPU) voltage to 1.275V */
+                if (!tps65217_voltage_update(DEFDCDC2, DCDC_VOLT_SEL_1275MV)) {
+                        /* Set MPU Frequency to 720MHz */
+             		mpu_pll_config(MPUPLL_M_720);
+	        } else {
+                        printf("tps65217_voltage_update failure\n");
+                }
+        } else {
+                /* EVM PMIC Code */
+	        /* PMIC voltage is configuring for frequency scaling */
+	        if (!i2c_probe(PMIC_SR_I2C_ADDR)) {
+		        if (!mpu_voltage_update(PMIC_OP_REG_SEL_1_2_6)) {
+			        /* Frequency switching for OPP 120 */
+			        mpu_pll_config(MPUPLL_M_720);
+		        }
+	        }
+        }
 }
 #endif
 
