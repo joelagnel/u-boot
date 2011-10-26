@@ -80,4 +80,7 @@
 #define USB_INPUT_CUR_LIMIT_1800MA	0x03
 
 #define DCDC_VOLT_SEL_1275MV		0x0F
+
+#define LDO_MASK			0x1F
+#define LDO_VOLTAGE_OUT_3_3		0x1F
 #endif

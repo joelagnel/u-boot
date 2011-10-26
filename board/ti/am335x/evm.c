@@ -418,9 +418,19 @@ void spl_board_init(void)
         if (!i2c_probe(TPS65217_CHIP_PM)) {
                 /* BeagleBone PMIC Code */
 
+                /* Set LDO3, LDO4 output voltage to 3.3V */
+		if (tps65217_reg_write(PROT_LEVEL_2, DEFLS1,
+					LDO_VOLTAGE_OUT_3_3, LDO_MASK))
+                        printf("tps65217_reg_write failure\n");
+
+		if (tps65217_reg_write(PROT_LEVEL_2, DEFLS2,
+					LDO_VOLTAGE_OUT_3_3, LDO_MASK))
+                        printf("tps65217_reg_write failure\n");
+
                 /* Increase USB current limit to 1300mA */
-                if (tps65217_reg_write(PROT_LEVEL_NONE, POWER_PATH,
-                                USB_INPUT_CUR_LIMIT_1300MA, USB_INPUT_CUR_LIMIT_MASK))
+		if (tps65217_reg_write(PROT_LEVEL_NONE, POWER_PATH,
+					USB_INPUT_CUR_LIMIT_1300MA,
+					USB_INPUT_CUR_LIMIT_MASK))
                         printf("tps65217_reg_write failure\n");
 
                 /* Set DCDC2 (MPU) voltage to 1.275V */
