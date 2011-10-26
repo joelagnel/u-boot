@@ -67,6 +67,7 @@ DECLARE_GLOBAL_DATA_PTR;
 /* RGMII mode define */
 #define RGMII_MODE_ENABLE	0xA
 #define RMII_MODE_ENABLE	0x5
+#define MII_MODE_ENABLE		0x0
 
 /* TLK110 PHY registers */
 #define TLK110_COARSEGAIN_REG	0x00A3
@@ -621,7 +622,7 @@ int board_init(void)
 		daughter_board_connected = 1;
 	}
 
-	configure_evm_pin_mux(board_id, profile, daughter_board_connected);
+	configure_evm_pin_mux(board_id, header.version, profile, daughter_board_connected);
 
 #ifndef CONFIG_SPL_BUILD
 	board_evm_init();
@@ -640,7 +641,7 @@ err_out:
 	board_id = BONE_BOARD;
 	profile = 1;	/* profile 0 is internally considered as 1 */
 	daughter_board_connected = 1;
-	configure_evm_pin_mux(board_id, profile, daughter_board_connected);
+	configure_evm_pin_mux(board_id, header.version, profile, daughter_board_connected);
 
 #ifndef CONFIG_SPL_BUILD
 	board_evm_init();
@@ -784,11 +785,7 @@ static void evm_phy_init(char *name, int addr)
 		return;
 	}
 
-	if (board_id == BONE_BOARD) {
-		val &= ~(BMCR_FULLDPLX | BMCR_ANENABLE | BMCR_SPEED100);
-		val |= BMCR_FULLDPLX;
-	} else
-		val |= BMCR_FULLDPLX | BMCR_ANENABLE | BMCR_SPEED100;
+	val |= BMCR_FULLDPLX | BMCR_ANENABLE | BMCR_SPEED100;
 
 	if (miiphy_write(name, addr, MII_BMCR, val) != 0) {
 		printf("failed to write bmcr\n");
@@ -811,10 +808,7 @@ static void evm_phy_init(char *name, int addr)
 		return;
 	}
 
-	if (board_id == BONE_BOARD)
-		val |= (LPA_10HALF | LPA_10FULL);
-	else
-		val |= (LPA_10HALF | LPA_10FULL | LPA_100HALF | LPA_100FULL);
+	val |= (LPA_10HALF | LPA_10FULL | LPA_100HALF | LPA_100FULL);
 
 	if (miiphy_write(name, addr, MII_ADVERTISE, val) != 0) {
 		printf("failed to write anar\n");
@@ -917,8 +911,12 @@ int board_eth_init(bd_t *bis)
 	}
 
 	if (board_id == BONE_BOARD) {
-		/* Select RMII mode in control module for BeagleBone ethernet */
-		__raw_writel(RMII_MODE_ENABLE, MAC_MII_SEL);
+		/* For beaglebone > Rev A2 , enable MII mode, for others enable RMII */
+		if (!strncmp(header.version, "00A1", 4) ||
+		    !strncmp(header.version, "00A2", 4))
+			__raw_writel(RMII_MODE_ENABLE, MAC_MII_SEL);
+		else
+			__raw_writel(MII_MODE_ENABLE, MAC_MII_SEL);
 	} else if (board_id == IA_BOARD) {
 		cpsw_slaves[0].phy_id = 30;
 		cpsw_slaves[1].phy_id = 0;

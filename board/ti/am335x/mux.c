@@ -12,6 +12,7 @@
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  */
+#include <common.h>
 #include <config.h>
 #include <asm/io.h>
 #include "common_def.h"
@@ -571,6 +572,25 @@ static struct evm_pin_mux beaglebone_pin_mux[] = {
 	{nand_pin_mux, PROFILE_ALL & ~PROFILE_2 & ~PROFILE_3, DEV_ON_DGHTR_BRD},
 #endif
 #ifndef CONFIG_NO_ETH
+	{mii1_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
+#endif
+#ifdef CONFIG_MMC
+	{mmc0_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
+	{mmc1_pin_mux, PROFILE_2, DEV_ON_DGHTR_BRD},
+#endif
+#ifdef CONFIG_SPI
+	{spi0_pin_mux, PROFILE_2, DEV_ON_DGHTR_BRD},
+#endif
+	{0},
+};
+
+static struct evm_pin_mux beaglebone_old_pin_mux[] = {
+	{uart0_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
+	{i2c1_pin_mux, PROFILE_ALL & ~PROFILE_2 & ~PROFILE_4, DEV_ON_BASEBOARD},
+#ifdef CONFIG_NAND
+	{nand_pin_mux, PROFILE_ALL & ~PROFILE_2 & ~PROFILE_3, DEV_ON_DGHTR_BRD},
+#endif
+#ifndef CONFIG_NO_ETH
 	{rmii1_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
 #endif
 #ifdef CONFIG_MMC
@@ -642,11 +662,16 @@ static void set_evm_pin_mux(struct evm_pin_mux *pin_mux,
 	}
 }
 
-void configure_evm_pin_mux(unsigned char dghtr_brd_id, unsigned short
+void configure_evm_pin_mux(unsigned char dghtr_brd_id, char version[4], unsigned short
 		profile, unsigned int daughter_board_flag)
 {
 	if (dghtr_brd_id > BASE_BOARD)
 		return;
+
+	/* Setup correct evm pinmux for older bone boards (Rev < A2) */
+	if (dghtr_brd_id == BONE_BOARD &&
+	   (!strncmp(version, "00A2", 4) || !strncmp(version, "00A1", 4)))
+		am335x_evm_pin_mux[dghtr_brd_id] = beaglebone_old_pin_mux;
 
 	set_evm_pin_mux(am335x_evm_pin_mux[dghtr_brd_id], profile,
 							daughter_board_flag);
