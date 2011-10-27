@@ -298,6 +298,43 @@ static void init_timer(void)
 }
 #endif
 
+/*
+ * Read header information from EEPROM into global structure.
+ */
+int read_eeprom(void)
+{
+        /* Check if baseboard eeprom is available */
+	if (i2c_probe(I2C_BASE_BOARD_ADDR)) {
+		printf("Could not probe the EEPROM; something fundamentally "
+			"wrong on the I2C bus.\n");
+		return 1;
+	}
+
+	/* read the eeprom using i2c */
+	if (i2c_read(I2C_BASE_BOARD_ADDR, 0, 2, (uchar *)&header,
+							sizeof(header))) {
+		printf("Could not read the EEPROM; something fundamentally"
+			" wrong on the I2C bus.\n");
+		return 1;
+	}
+
+	if (header.magic != 0xEE3355AA) {
+		/* read the eeprom using i2c again, but use only a 1 byte address */
+		if (i2c_read(I2C_BASE_BOARD_ADDR, 0, 1, (uchar *)&header,
+								sizeof(header))) {
+			printf("Could not read the EEPROM; something fundamentally"
+				" wrong on the I2C bus.\n");
+			return 1;
+		}
+
+		if (header.magic != 0xEE3355AA) {
+			printf("Incorrect magic number in EEPROM\n");
+			return 1;
+		}
+	}
+	return 0;
+}
+
 #if defined(CONFIG_SPL_BUILD) && defined(CONFIG_SPL_BOARD_INIT)
 /**
  *  tps65217_reg_write() - Generic function that can write a TPS65217 PMIC
@@ -415,42 +452,57 @@ void spl_board_init(void)
 	/* Configure the i2c0 pin mux */
 	enable_i2c0_pin_mux();
 
-        /* Using i2c_probe to differentiate between Bone and EVM */
-        if (!i2c_probe(TPS65217_CHIP_PM)) {
-                /* BeagleBone PMIC Code */
+	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
 
-                /* Set LDO3, LDO4 output voltage to 3.3V */
+	if (read_eeprom()) {
+		printf("read_eeprom() failure\n");
+		return;
+	}
+
+	if (!strncmp("A335BONE", header.name, 8)) {
+		/* BeagleBone PMIC Code */
+		if (i2c_probe(TPS65217_CHIP_PM))
+			return;
+
+		/* Only perform PMIC configurations if board rev > A1 */
+		if (!strncmp(header.version, "00A1", 4))
+			return;
+
+		/* Set LDO3, LDO4 output voltage to 3.3V */
 		if (tps65217_reg_write(PROT_LEVEL_2, DEFLS1,
-					LDO_VOLTAGE_OUT_3_3, LDO_MASK))
-                        printf("tps65217_reg_write failure\n");
+				       LDO_VOLTAGE_OUT_3_3, LDO_MASK))
+			printf("tps65217_reg_write failure\n");
 
 		if (tps65217_reg_write(PROT_LEVEL_2, DEFLS2,
-					LDO_VOLTAGE_OUT_3_3, LDO_MASK))
-                        printf("tps65217_reg_write failure\n");
+				       LDO_VOLTAGE_OUT_3_3, LDO_MASK))
+			printf("tps65217_reg_write failure\n");
 
-                /* Increase USB current limit to 1300mA */
+		/* Increase USB current limit to 1300mA */
 		if (tps65217_reg_write(PROT_LEVEL_NONE, POWER_PATH,
-					USB_INPUT_CUR_LIMIT_1300MA,
-					USB_INPUT_CUR_LIMIT_MASK))
-                        printf("tps65217_reg_write failure\n");
+				       USB_INPUT_CUR_LIMIT_1300MA,
+				       USB_INPUT_CUR_LIMIT_MASK))
+			printf("tps65217_reg_write failure\n");
 
-                /* Set DCDC2 (MPU) voltage to 1.275V */
-                if (!tps65217_voltage_update(DEFDCDC2, DCDC_VOLT_SEL_1275MV)) {
-                        /* Set MPU Frequency to 720MHz */
-             		mpu_pll_config(MPUPLL_M_720);
-	        } else {
-                        printf("tps65217_voltage_update failure\n");
-                }
-        } else {
-                /* EVM PMIC Code */
-	        /* PMIC voltage is configuring for frequency scaling */
+		/* Set DCDC2 (MPU) voltage to 1.275V */
+		if (!tps65217_voltage_update(DEFDCDC2,
+					     DCDC_VOLT_SEL_1275MV)) {
+			/* Set MPU Frequency to 720MHz */
+			mpu_pll_config(MPUPLL_M_720);
+		} else {
+			printf("tps65217_voltage_update failure\n");
+		}
+	} else {
+		/* 
+		 * EVM PMIC code.  PMIC voltage is configuring for frequency
+		 * scaling.
+		 */
 	        if (!i2c_probe(PMIC_SR_I2C_ADDR)) {
 		        if (!mpu_voltage_update(PMIC_OP_REG_SEL_1_2_6)) {
 			        /* Frequency switching for OPP 120 */
 			        mpu_pll_config(MPUPLL_M_720);
 		        }
 	        }
-        }
+	}
 }
 #endif
 
@@ -569,35 +621,8 @@ int board_init(void)
 
 	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
 
-	/* Check if baseboard eeprom is available */
-	if (i2c_probe(I2C_BASE_BOARD_ADDR)) {
-		printf("Could not probe the EEPROM; something fundamentally "
-			"wrong on the I2C bus.\n");
+	if (read_eeprom())
 		goto err_out;
-	}
-
-	/* read the eeprom using i2c */
-	if (i2c_read(I2C_BASE_BOARD_ADDR, 0, 2, (uchar *)&header,
-							sizeof(header))) {
-		printf("Could not read the EEPROM; something fundamentally"
-			" wrong on the I2C bus.\n");
-		goto err_out;
-	}
-
-	if (header.magic != 0xEE3355AA) {
-		/* read the eeprom using i2c again, but use only a 1 byte address */
-		if (i2c_read(I2C_BASE_BOARD_ADDR, 0, 1, (uchar *)&header,
-								sizeof(header))) {
-			printf("Could not read the EEPROM; something fundamentally"
-				" wrong on the I2C bus.\n");
-			goto err_out;
-		}
-
-		if (header.magic != 0xEE3355AA) {
-			printf("Incorrect magic number in EEPROM\n");
-			goto err_out;
-		}
-	}
 
 	detect_daughter_board();
 
