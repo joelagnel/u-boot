@@ -703,6 +703,11 @@ static void evm_phy_init(char *name, int addr)
 	unsigned short val;
 	unsigned int cntr = 0;
 	unsigned short phyid1, phyid2;
+	int bone_pre_a3 = 0;
+
+	if (board_id == BONE_BOARD && (!strncmp(header.version, "00A1", 4) ||
+		    !strncmp(header.version, "00A2", 4)))
+		bone_pre_a3 = 1;
 
 	/*
 	 * This is done as a workaround to support TLK110 rev1.0 PHYs.
@@ -785,7 +790,11 @@ static void evm_phy_init(char *name, int addr)
 		return;
 	}
 
-	val |= BMCR_FULLDPLX | BMCR_ANENABLE | BMCR_SPEED100;
+	if (bone_pre_a3) {
+		val &= ~(BMCR_FULLDPLX | BMCR_ANENABLE | BMCR_SPEED100);
+		val |= BMCR_FULLDPLX;
+	} else
+		val |= BMCR_FULLDPLX | BMCR_ANENABLE | BMCR_SPEED100;
 
 	if (miiphy_write(name, addr, MII_BMCR, val) != 0) {
 		printf("failed to write bmcr\n");
@@ -808,7 +817,10 @@ static void evm_phy_init(char *name, int addr)
 		return;
 	}
 
-	val |= (LPA_10HALF | LPA_10FULL | LPA_100HALF | LPA_100FULL);
+	if (bone_pre_a3)
+		val |= (LPA_10HALF | LPA_10FULL);
+	else
+		val |= (LPA_10HALF | LPA_10FULL | LPA_100HALF | LPA_100FULL);
 
 	if (miiphy_write(name, addr, MII_ADVERTISE, val) != 0) {
 		printf("failed to write anar\n");
