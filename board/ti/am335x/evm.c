@@ -336,6 +336,20 @@ int read_eeprom(void)
 }
 
 #if defined(CONFIG_SPL_BUILD) && defined(CONFIG_SPL_BOARD_INIT)
+
+/**
+ * tps65217_reg_read() - Generic function that can read a TPS65217 register
+ * @src_reg:          Source register address
+ * @src_val:          Address of destination variable
+ */
+
+unsigned char tps65217_reg_read(uchar src_reg, uchar *src_val)
+{
+	if (i2c_read(TPS65217_CHIP_PM, src_reg, 1, src_val, 1))
+		return 1;
+	return 0;
+}
+
 /**
  *  tps65217_reg_write() - Generic function that can write a TPS65217 PMIC
  *                         register or bit field regardless of protection
@@ -449,6 +463,8 @@ int mpu_voltage_update(unsigned char vdd1_op_vol_sel)
 
 void spl_board_init(void)
 {
+	uchar pmic_status_reg;
+
 	/* Configure the i2c0 pin mux */
 	enable_i2c0_pin_mux();
 
@@ -464,9 +480,17 @@ void spl_board_init(void)
 		if (i2c_probe(TPS65217_CHIP_PM))
 			return;
 
+		if (tps65217_reg_read(STATUS, &pmic_status_reg))
+			return;
+
 		/* Only perform PMIC configurations if board rev > A1 */
 		if (!strncmp(header.version, "00A1", 4))
 			return;
+
+		if (!(pmic_status_reg & PWR_SRC_AC_BITMASK)) {
+			printf("No AC power, disabling frequency switch\n");
+			return;
+		}
 
 		/* Set LDO3, LDO4 output voltage to 3.3V */
 		if (tps65217_reg_write(PROT_LEVEL_2, DEFLS1,

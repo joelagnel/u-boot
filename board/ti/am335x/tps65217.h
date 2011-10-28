@@ -83,4 +83,7 @@
 
 #define LDO_MASK			0x1F
 #define LDO_VOLTAGE_OUT_3_3		0x1F
+
+#define PWR_SRC_USB_BITMASK		0x4
+#define PWR_SRC_AC_BITMASK		0x8
 #endif
