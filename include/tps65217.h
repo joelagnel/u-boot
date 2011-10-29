@@ -86,4 +86,10 @@
 
 #define PWR_SRC_USB_BITMASK		0x4
 #define PWR_SRC_AC_BITMASK		0x8
+
+unsigned char tps65217_reg_read(uchar src_reg, uchar *src_val);
+int tps65217_reg_write(uchar prot_level, uchar dest_reg, uchar dest_val,
+                       uchar mask);
+int tps65217_voltage_update(unsigned char dc_cntrl_reg, unsigned char volt_sel);
+
 #endif

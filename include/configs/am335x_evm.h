@@ -404,6 +404,9 @@
 #define CONFIG_CMD_EXT2
 #endif
 
+/* Power Management */
+#define CONFIG_TPS65217_POWER
+
 /* Unsupported features */
 #undef CONFIG_USE_IRQ
 
