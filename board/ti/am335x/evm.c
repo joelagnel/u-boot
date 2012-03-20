@@ -1049,6 +1049,7 @@ int board_eth_init(bd_t *bis)
 int board_mmc_init(bd_t *bis)
 {
 	omap_mmc_init(0);
+	omap_mmc_init(1);
 	return 0;
 }
 #endif

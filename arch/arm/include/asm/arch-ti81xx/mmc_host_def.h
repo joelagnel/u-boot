@@ -26,14 +26,17 @@
 #define MMC_HOST_DEF_H
 
 /*
- * OMAP HSMMC register definitions
+ * OMAP HSMMC register definitions.  We have a mismatch between the driver
+ * and the documentation.  What the TRM calls 'HSMMC0' we call 'HSMMC1'
+ * and so forth.
  */
 #if defined(CONFIG_TI816X)
 # define OMAP_HSMMC1_BASE		0x48060100
 #elif defined(CONFIG_TI814X)
 # define OMAP_HSMMC1_BASE		0x481D8100
 #elif defined(CONFIG_AM335X)
-# define OMAP_HSMMC1_BASE		CONFIG_AM335X_HSMMC_BASE
+# define OMAP_HSMMC1_BASE		0x48060100
+# define OMAP_HSMMC2_BASE		0x481D8100
 #endif
 
 typedef struct hsmmc {

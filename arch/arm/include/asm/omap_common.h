@@ -57,7 +57,7 @@ void preloader_console_init(void);
 #define BOOT_DEVICE_NONE	0
 #define BOOT_DEVICE_NAND	5 
 #define BOOT_DEVICE_MMC1	8
-#define BOOT_DEVICE_MMC2	0 /* eMMC, TODO */
+#define BOOT_DEVICE_MMC2	9 /* eMMC or daughter card */
 #define BOOT_DEVICE_UART	65
 #endif
 
