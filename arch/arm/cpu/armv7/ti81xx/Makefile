@@ -18,12 +18,10 @@ include $(TOPDIR)/config.mk
 
 LIB	= $(obj)lib$(SOC).o
 
-SOBJS	:= lowlevel_init.o
 SOBJS	+= cache.o
 
 COBJS	+= mem.o
 COBJS	+= sys_info.o
-COBJS	+= board.o
 
 COBJS-$(CONFIG_NAND_TI81XX)	+= elm.o
 

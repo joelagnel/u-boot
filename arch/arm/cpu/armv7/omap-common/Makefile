@@ -46,6 +46,11 @@ COBJS	+= spl_ymodem.o
 endif
 endif
 
+ifneq ($(CONFIG_TI81XX)$(CONFIG_OMAP44XX)$(CONFIG_OMAP54XX),)
+COBJS   += boot-common.o
+SOBJS   += lowlevel_init.o
+endif
+
 SRCS	:= $(SOBJS:.o=.S) $(COBJS:.o=.c)
 OBJS	:= $(addprefix $(obj),$(SOBJS) $(COBJS))
 

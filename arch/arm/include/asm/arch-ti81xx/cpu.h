@@ -83,10 +83,6 @@ struct gptimer {
 #define HS_DEVICE			0x2
 #define GP_DEVICE			0x3
 
-/* rom boot device/mode id */
-#define BOOT_DEVICE_OFFSET		8
-#define BOOT_DEVICE_MASK		0xff
-
 /* cpu-id for TI81XX family */
 #define TI8168				0xb81e
 #define AM335X				0xB944
@@ -507,8 +503,6 @@ struct gptimer {
 #define SRAM0_SIZE			(0x1B400) /* 109 KB */
 #define SRAM_GPMC_STACK_SIZE		(0x40)
 #endif
-
-#define LOW_LEVEL_SRAM_STACK		(SRAM0_START + SRAM0_SIZE - 4)
 
 /* GPMC related */
 #define GPMC_CONFIG_CS0			(0x60)

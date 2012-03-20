@@ -17,6 +17,8 @@
 #ifndef __TI81XX_HARDWARE_H
 #define __TI81XX_HARDWARE_H
 
+#include <asm/arch/omap.h>
+
 /* The objective is to keep only the overall memory map here
  * The break-up of the memory map for individual modules registers should
  * be in a different file like cpu.h so that this is the only place
