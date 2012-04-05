@@ -16,7 +16,9 @@
 #define CONFIG_AM335X
 #define CONFIG_TI81XX
 #define CONFIG_SYS_NO_FLASH
+#ifndef CONFIG_SPI_BOOT
 #define CONFIG_NAND_ENV
+#endif
 
 #include <asm/arch/cpu.h>		/* get chip and board defs */
 #include <asm/arch/hardware.h>
@@ -189,12 +191,14 @@
 #define CONFIG_SPL_BSS_START_ADDR	0x80000000
 #define CONFIG_SPL_BSS_MAX_SIZE		0x80000		/* 512 KB */
 
+#ifndef CONFIG_SPI_BOOT
 #define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR	0x300 /* address 0x60000 */
 #define CONFIG_SYS_U_BOOT_MAX_SIZE_SECTORS	0x200 /* 256 KB */
 #define CONFIG_SYS_MMC_SD_FAT_BOOT_PARTITION	1
 #define CONFIG_SPL_FAT_LOAD_PAYLOAD_NAME	"u-boot.img"
 #define CONFIG_SPL_MMC_SUPPORT
 #define CONFIG_SPL_FAT_SUPPORT
+#endif
 
 #define CONFIG_SPL_LIBCOMMON_SUPPORT
 #define CONFIG_SPL_LIBDISK_SUPPORT
@@ -206,6 +210,7 @@
 #define CONFIG_SPL_LDSCRIPT		"$(CPUDIR)/omap-common/u-boot-spl.lds"
 
 /* NAND boot config */
+#ifndef CONFIG_SPI_BOOT
 #define CONFIG_SPL_NAND_SIMPLE
 #define CONFIG_SPL_NAND_SUPPORT
 #define CONFIG_SYS_NAND_5_ADDR_CYCLE
@@ -233,6 +238,7 @@
 #define	CONFIG_SYS_NAND_U_BOOT_START	CONFIG_SYS_TEXT_BASE
 
 #define CONFIG_SYS_NAND_U_BOOT_OFFS	0x80000
+#endif
 
 /* SPI boot config */
 #define CONFIG_SPL_SPI_SUPPORT
@@ -380,17 +386,12 @@
 #endif
 
 /* ENV in SPI */
-#if defined(CONFIG_SPI_ENV)
+#if defined(CONFIG_SPI_BOOT)
 # undef CONFIG_ENV_IS_NOWHERE
 # define CONFIG_ENV_IS_IN_SPI_FLASH
-# define CONFIG_SYS_FLASH_BASE		(0)
-# define SPI_FLASH_ERASE_SIZE		(4 * 1024) /* sector size */
-# define CONFIG_SYS_ENV_SECT_SIZE	(2 * SPI_FLASH_ERASE_SIZE)
-# define CONFIG_ENV_SECT_SIZE		(CONFIG_SYS_ENV_SECT_SIZE)
-# define CONFIG_ENV_OFFSET		(96 * SPI_FLASH_ERASE_SIZE)
-# define CONFIG_ENV_ADDR		(CONFIG_ENV_OFFSET)
-# define CONFIG_SYS_MAX_FLASH_SECT	(1024) /* # of sectors in SPI flash */
-# define CONFIG_SYS_MAX_FLASH_BANKS	(1)
+# define CONFIG_ENV_SPI_MAX_HZ		CONFIG_SF_DEFAULT_SPEED
+# define CONFIG_ENV_OFFSET		(384 << 10) /* 384 KB in */
+# define CONFIG_ENV_SECT_SIZE		(4 << 10) /* 4 KB sectors */
 #endif /* SPI support */
 
 /* I2C */
