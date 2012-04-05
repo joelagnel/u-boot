@@ -34,6 +34,7 @@
 #include <asm/omap_common.h>
 #include <asm/arch/mmc_host_def.h>
 #include <i2c.h>
+#include <spi_flash.h>
 #include <image.h>
 #include <malloc.h>
 
@@ -134,6 +135,11 @@ void board_init_r(gd_t *id, ulong dummy)
 #ifdef CONFIG_SPL_YMODEM_SUPPORT
 	case BOOT_DEVICE_UART:
 		spl_ymodem_load_image();
+		break;
+#endif
+#ifdef CONFIG_SPL_SPI_SUPPORT
+	case BOOT_DEVICE_SPI:
+		spi_boot();
 		break;
 #endif
 	default:

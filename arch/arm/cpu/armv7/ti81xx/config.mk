@@ -23,6 +23,7 @@
 #
 ifdef CONFIG_SPL_BUILD
 ALL-y	+= $(OBJTREE)/MLO
+ALL-$(CONFIG_SPL_SPI_SUPPORT) += $(OBJTREE)/MLO.spi
 else
 ALL-y	+= $(obj)u-boot.img
 endif

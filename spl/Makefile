@@ -99,6 +99,10 @@ ifdef CONFIG_TI81XX
 $(OBJTREE)/MLO:	$(obj)u-boot-spl.bin
 	$(OBJTREE)/tools/mkimage -T omapimage \
 		-a $(CONFIG_SPL_TEXT_BASE) -d $< $@
+
+$(OBJTREE)/MLO.spi: $(obj)u-boot-spl.bin
+	$(OBJTREE)/tools/mkimage -T omapimage -n byteswap-spi \
+		-a $(CONFIG_SPL_TEXT_BASE) -d $< $@
 endif
 
 ALL-y	+= $(obj)u-boot-spl.bin
