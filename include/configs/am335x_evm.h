@@ -63,7 +63,7 @@
 	"spi_src_addr=0x62000\0" \
 	"nor_src_addr=0x08080000\0" \
 	"nand_img_siz=0x500000\0" \
-	"spi_img_siz=0x280000\0" \
+	"spi_img_siz=0x380000\0" \
 	"nor_img_siz=0x280000\0" \
 	"spi_bus_no=0\0" \
 	"rootpath=/export/rootfs\0" \
@@ -233,6 +233,15 @@
 #define	CONFIG_SYS_NAND_U_BOOT_START	CONFIG_SYS_TEXT_BASE
 
 #define CONFIG_SYS_NAND_U_BOOT_OFFS	0x80000
+
+/* SPI boot config */
+#define CONFIG_SPL_SPI_SUPPORT
+#define CONFIG_SPL_SPI_FLASH_SUPPORT
+#define CONFIG_SPL_SPI_LOAD
+#define CONFIG_SPL_SPI_BUS		0
+#define CONFIG_SPL_SPI_CS		0
+#define CONFIG_SYS_SPI_U_BOOT_OFFS	0x20000
+#define CONFIG_SYS_SPI_U_BOOT_SIZE	0x40000
 
 /*
  * 1MB into the SDRAM to allow for SPL's bss at the beginning of SDRAM.
