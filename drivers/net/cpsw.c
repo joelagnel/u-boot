@@ -701,8 +701,14 @@ static int cpdma_process(struct cpsw_priv *priv, struct cpdma_chan *chan,
 	if (buffer)
 		*buffer = desc_read_ptr(desc, sw_buffer);
 
-	if (status & CPDMA_DESC_OWNER)
+	if (status & CPDMA_DESC_OWNER) {
+		if (chan_read(chan, hdp) == NULL) {
+			if (desc_read(desc, hw_mode) & CPDMA_DESC_OWNER)
+				chan_write(chan, hdp, desc);
+		}
+
 		return -EBUSY;
+	}
 
 	chan->head = desc_read_ptr(desc, hw_next);
 	chan_write(chan, cp, desc);
