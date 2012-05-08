@@ -155,72 +155,64 @@ static void Data_Macro_Config(int dataMacroNum)
 	if (dataMacroNum == 1)
 		BaseAddrOffset = 0xA4;
 
-	__raw_writel(((DDR2_RD_DQS<<30)|(DDR2_RD_DQS<<20)
+	writel(((DDR2_RD_DQS<<30)|(DDR2_RD_DQS<<20)
 			|(DDR2_RD_DQS<<10)|(DDR2_RD_DQS<<0)),
 			(DATA0_RD_DQS_SLAVE_RATIO_0 + BaseAddrOffset));
-	__raw_writel(DDR2_RD_DQS>>2,
-			(DATA0_RD_DQS_SLAVE_RATIO_1 + BaseAddrOffset));
-	__raw_writel(((DDR2_WR_DQS<<30)|(DDR2_WR_DQS<<20)
+	writel(DDR2_RD_DQS>>2, (DATA0_RD_DQS_SLAVE_RATIO_1 + BaseAddrOffset));
+	writel(((DDR2_WR_DQS<<30)|(DDR2_WR_DQS<<20)
 			|(DDR2_WR_DQS<<10)|(DDR2_WR_DQS<<0)),
 			(DATA0_WR_DQS_SLAVE_RATIO_0 + BaseAddrOffset));
-	__raw_writel(DDR2_WR_DQS>>2,
-			(DATA0_WR_DQS_SLAVE_RATIO_1 + BaseAddrOffset));
-	__raw_writel(((DDR2_PHY_WRLVL<<30)|(DDR2_PHY_WRLVL<<20)
+	writel(DDR2_WR_DQS>>2, (DATA0_WR_DQS_SLAVE_RATIO_1 + BaseAddrOffset));
+	writel(((DDR2_PHY_WRLVL<<30)|(DDR2_PHY_WRLVL<<20)
 			|(DDR2_PHY_WRLVL<<10)|(DDR2_PHY_WRLVL<<0)),
 			(DATA0_WRLVL_INIT_RATIO_0 + BaseAddrOffset));
-	__raw_writel(DDR2_PHY_WRLVL>>2,
-			(DATA0_WRLVL_INIT_RATIO_1 + BaseAddrOffset));
-	__raw_writel(((DDR2_PHY_GATELVL<<30)|(DDR2_PHY_GATELVL<<20)
+	writel(DDR2_PHY_WRLVL>>2, (DATA0_WRLVL_INIT_RATIO_1 + BaseAddrOffset));
+	writel(((DDR2_PHY_GATELVL<<30)|(DDR2_PHY_GATELVL<<20)
 			|(DDR2_PHY_GATELVL<<10)|(DDR2_PHY_GATELVL<<0)),
 			(DATA0_GATELVL_INIT_RATIO_0 + BaseAddrOffset));
-	__raw_writel(DDR2_PHY_GATELVL>>2,
-			(DATA0_GATELVL_INIT_RATIO_1 + BaseAddrOffset));
-	__raw_writel(((DDR2_PHY_FIFO_WE<<30)|(DDR2_PHY_FIFO_WE<<20)
+	writel(DDR2_PHY_GATELVL>>2, (DATA0_GATELVL_INIT_RATIO_1 + BaseAddrOffset));
+	writel(((DDR2_PHY_FIFO_WE<<30)|(DDR2_PHY_FIFO_WE<<20)
 			|(DDR2_PHY_FIFO_WE<<10)|(DDR2_PHY_FIFO_WE<<0)),
 			(DATA0_FIFO_WE_SLAVE_RATIO_0 + BaseAddrOffset));
-	__raw_writel(DDR2_PHY_FIFO_WE>>2,
+	writel(DDR2_PHY_FIFO_WE>>2,
 			(DATA0_FIFO_WE_SLAVE_RATIO_1 + BaseAddrOffset));
-	__raw_writel(((DDR2_PHY_WR_DATA<<30)|(DDR2_PHY_WR_DATA<<20)
+	writel(((DDR2_PHY_WR_DATA<<30)|(DDR2_PHY_WR_DATA<<20)
 			|(DDR2_PHY_WR_DATA<<10)|(DDR2_PHY_WR_DATA<<0)),
 			(DATA0_WR_DATA_SLAVE_RATIO_0 + BaseAddrOffset));
-	__raw_writel(DDR2_PHY_WR_DATA>>2,
+	writel(DDR2_PHY_WR_DATA>>2,
 			(DATA0_WR_DATA_SLAVE_RATIO_1 + BaseAddrOffset));
-	__raw_writel(PHY_DLL_LOCK_DIFF,
-			(DATA0_DLL_LOCK_DIFF_0 + BaseAddrOffset));
+	writel(PHY_DLL_LOCK_DIFF, (DATA0_DLL_LOCK_DIFF_0 + BaseAddrOffset));
 }
 
 static void Cmd_Macro_Config(void)
 {
-	__raw_writel(DDR2_RATIO, CMD0_CTRL_SLAVE_RATIO_0);
-	__raw_writel(CMD_FORCE, CMD0_CTRL_SLAVE_FORCE_0);
-	__raw_writel(CMD_DELAY, CMD0_CTRL_SLAVE_DELAY_0);
-	__raw_writel(DDR2_DLL_LOCK_DIFF, CMD0_DLL_LOCK_DIFF_0);
-	__raw_writel(DDR2_INVERT_CLKOUT, CMD0_INVERT_CLKOUT_0);
+	writel(DDR2_RATIO, CMD0_CTRL_SLAVE_RATIO_0);
+	writel(CMD_FORCE, CMD0_CTRL_SLAVE_FORCE_0);
+	writel(CMD_DELAY, CMD0_CTRL_SLAVE_DELAY_0);
+	writel(DDR2_DLL_LOCK_DIFF, CMD0_DLL_LOCK_DIFF_0);
+	writel(DDR2_INVERT_CLKOUT, CMD0_INVERT_CLKOUT_0);
 
-	__raw_writel(DDR2_RATIO, CMD1_CTRL_SLAVE_RATIO_0);
-	__raw_writel(CMD_FORCE, CMD1_CTRL_SLAVE_FORCE_0);
-	__raw_writel(CMD_DELAY, CMD1_CTRL_SLAVE_DELAY_0);
-	__raw_writel(DDR2_DLL_LOCK_DIFF, CMD1_DLL_LOCK_DIFF_0);
-	__raw_writel(DDR2_INVERT_CLKOUT, CMD1_INVERT_CLKOUT_0);
+	writel(DDR2_RATIO, CMD1_CTRL_SLAVE_RATIO_0);
+	writel(CMD_FORCE, CMD1_CTRL_SLAVE_FORCE_0);
+	writel(CMD_DELAY, CMD1_CTRL_SLAVE_DELAY_0);
+	writel(DDR2_DLL_LOCK_DIFF, CMD1_DLL_LOCK_DIFF_0);
+	writel(DDR2_INVERT_CLKOUT, CMD1_INVERT_CLKOUT_0);
 
-	__raw_writel(DDR2_RATIO, CMD2_CTRL_SLAVE_RATIO_0);
-	__raw_writel(CMD_FORCE, CMD2_CTRL_SLAVE_FORCE_0);
-	__raw_writel(CMD_DELAY, CMD2_CTRL_SLAVE_DELAY_0);
-	__raw_writel(DDR2_DLL_LOCK_DIFF, CMD2_DLL_LOCK_DIFF_0);
-	__raw_writel(DDR2_INVERT_CLKOUT, CMD2_INVERT_CLKOUT_0);
+	writel(DDR2_RATIO, CMD2_CTRL_SLAVE_RATIO_0);
+	writel(CMD_FORCE, CMD2_CTRL_SLAVE_FORCE_0);
+	writel(CMD_DELAY, CMD2_CTRL_SLAVE_DELAY_0);
+	writel(DDR2_DLL_LOCK_DIFF, CMD2_DLL_LOCK_DIFF_0);
+	writel(DDR2_INVERT_CLKOUT, CMD2_INVERT_CLKOUT_0);
 }
 
 static void config_vtp(void)
 {
-	__raw_writel(__raw_readl(VTP0_CTRL_REG) | VTP_CTRL_ENABLE,
-			VTP0_CTRL_REG);
-	__raw_writel(__raw_readl(VTP0_CTRL_REG) & (~VTP_CTRL_START_EN),
-			VTP0_CTRL_REG);
-	__raw_writel(__raw_readl(VTP0_CTRL_REG) | VTP_CTRL_START_EN,
-			VTP0_CTRL_REG);
+	writel(readl(VTP0_CTRL_REG) | VTP_CTRL_ENABLE, VTP0_CTRL_REG);
+	writel(readl(VTP0_CTRL_REG) & (~VTP_CTRL_START_EN), VTP0_CTRL_REG);
+	writel(readl(VTP0_CTRL_REG) | VTP_CTRL_START_EN, VTP0_CTRL_REG);
 
 	/* Poll for READY */
-	while ((__raw_readl(VTP0_CTRL_REG) & VTP_CTRL_READY) != VTP_CTRL_READY);
+	while ((readl(VTP0_CTRL_REG) & VTP_CTRL_READY) != VTP_CTRL_READY);
 }
 
 static void config_emif_ddr2(void)
@@ -228,35 +220,35 @@ static void config_emif_ddr2(void)
 	u32 i;
 
 	/*Program EMIF0 CFG Registers*/
-	__raw_writel(EMIF_READ_LATENCY, EMIF4_0_DDR_PHY_CTRL_1);
-	__raw_writel(EMIF_READ_LATENCY, EMIF4_0_DDR_PHY_CTRL_1_SHADOW);
-	__raw_writel(EMIF_READ_LATENCY, EMIF4_0_DDR_PHY_CTRL_2);
-	__raw_writel(EMIF_TIM1, EMIF4_0_SDRAM_TIM_1);
-	__raw_writel(EMIF_TIM1, EMIF4_0_SDRAM_TIM_1_SHADOW);
-	__raw_writel(EMIF_TIM2, EMIF4_0_SDRAM_TIM_2);
-	__raw_writel(EMIF_TIM2, EMIF4_0_SDRAM_TIM_2_SHADOW);
-	__raw_writel(EMIF_TIM3, EMIF4_0_SDRAM_TIM_3);
-	__raw_writel(EMIF_TIM3, EMIF4_0_SDRAM_TIM_3_SHADOW);
+	writel(EMIF_READ_LATENCY, EMIF4_0_DDR_PHY_CTRL_1);
+	writel(EMIF_READ_LATENCY, EMIF4_0_DDR_PHY_CTRL_1_SHADOW);
+	writel(EMIF_READ_LATENCY, EMIF4_0_DDR_PHY_CTRL_2);
+	writel(EMIF_TIM1, EMIF4_0_SDRAM_TIM_1);
+	writel(EMIF_TIM1, EMIF4_0_SDRAM_TIM_1_SHADOW);
+	writel(EMIF_TIM2, EMIF4_0_SDRAM_TIM_2);
+	writel(EMIF_TIM2, EMIF4_0_SDRAM_TIM_2_SHADOW);
+	writel(EMIF_TIM3, EMIF4_0_SDRAM_TIM_3);
+	writel(EMIF_TIM3, EMIF4_0_SDRAM_TIM_3_SHADOW);
 
-	__raw_writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG);
-	__raw_writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG2);
+	writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG);
+	writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG2);
 
-	/* __raw_writel(EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL);
-	__raw_writel(EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL_SHD); */
-	__raw_writel(0x00004650, EMIF4_0_SDRAM_REF_CTRL);
-	__raw_writel(0x00004650, EMIF4_0_SDRAM_REF_CTRL_SHADOW);
+	/* writel(EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL);
+	writel(EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL_SHD); */
+	writel(0x00004650, EMIF4_0_SDRAM_REF_CTRL);
+	writel(0x00004650, EMIF4_0_SDRAM_REF_CTRL_SHADOW);
 
 	for (i = 0; i < 5000; i++) {
 
 	}
 
-	/* __raw_writel(EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL);
-	__raw_writel(EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL_SHD); */
-	__raw_writel(EMIF_SDREF, EMIF4_0_SDRAM_REF_CTRL);
-	__raw_writel(EMIF_SDREF, EMIF4_0_SDRAM_REF_CTRL_SHADOW);
+	/* writel(EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL);
+	writel(EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL_SHD); */
+	writel(EMIF_SDREF, EMIF4_0_SDRAM_REF_CTRL);
+	writel(EMIF_SDREF, EMIF4_0_SDRAM_REF_CTRL_SHADOW);
 
-	__raw_writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG);
-	__raw_writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG2);
+	writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG);
+	writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG2);
 }
 
 /*  void DDR2_EMIF_Config(void); */
@@ -274,17 +266,17 @@ static void config_am335x_ddr(void)
 	Data_Macro_Config(data_macro_0);
 	Data_Macro_Config(data_macro_1);
 
-	__raw_writel(PHY_RANK0_DELAY, DATA0_RANK0_DELAYS_0);
-	__raw_writel(PHY_RANK0_DELAY, DATA1_RANK0_DELAYS_0);
+	writel(PHY_RANK0_DELAY, DATA0_RANK0_DELAYS_0);
+	writel(PHY_RANK0_DELAY, DATA1_RANK0_DELAYS_0);
 
-	__raw_writel(DDR_IOCTRL_VALUE, DDR_CMD0_IOCTRL);
-	__raw_writel(DDR_IOCTRL_VALUE, DDR_CMD1_IOCTRL);
-	__raw_writel(DDR_IOCTRL_VALUE, DDR_CMD2_IOCTRL);
-	__raw_writel(DDR_IOCTRL_VALUE, DDR_DATA0_IOCTRL);
-	__raw_writel(DDR_IOCTRL_VALUE, DDR_DATA1_IOCTRL);
+	writel(DDR_IOCTRL_VALUE, DDR_CMD0_IOCTRL);
+	writel(DDR_IOCTRL_VALUE, DDR_CMD1_IOCTRL);
+	writel(DDR_IOCTRL_VALUE, DDR_CMD2_IOCTRL);
+	writel(DDR_IOCTRL_VALUE, DDR_DATA0_IOCTRL);
+	writel(DDR_IOCTRL_VALUE, DDR_DATA1_IOCTRL);
 
-	__raw_writel(__raw_readl(DDR_IO_CTRL) & 0xefffffff, DDR_IO_CTRL);
-	__raw_writel(__raw_readl(DDR_CKE_CTRL) | 0x00000001, DDR_CKE_CTRL);
+	writel(readl(DDR_IO_CTRL) & 0xefffffff, DDR_IO_CTRL);
+	writel(readl(DDR_CKE_CTRL) | 0x00000001, DDR_CKE_CTRL);
 
 	config_emif_ddr2();
 }
@@ -292,23 +284,23 @@ static void config_am335x_ddr(void)
 static void init_timer(void)
 {
 	/* Reset the Timer */
-	__raw_writel(0x2, (DM_TIMER2_BASE + TSICR_REG));
+	writel(0x2, (DM_TIMER2_BASE + TSICR_REG));
 
 	/* Wait until the reset is done */
-	while (__raw_readl(DM_TIMER2_BASE + TIOCP_CFG_REG) & 1);
+	while (readl(DM_TIMER2_BASE + TIOCP_CFG_REG) & 1);
 
 	/* Start the Timer */
-	__raw_writel(0x1, (DM_TIMER2_BASE + TCLR_REG));
+	writel(0x1, (DM_TIMER2_BASE + TCLR_REG));
 }
 
 static void rtc32k_enable(void)
 {
 	/* Unlock the rtc's registers */
-	__raw_writel(0x83e70b13, (AM335X_RTC_BASE + RTC_KICK0_REG));
-	__raw_writel(0x95a4f1e0, (AM335X_RTC_BASE + RTC_KICK1_REG));
+	writel(0x83e70b13, (AM335X_RTC_BASE + RTC_KICK0_REG));
+	writel(0x95a4f1e0, (AM335X_RTC_BASE + RTC_KICK1_REG));
 
 	/* Enable the RTC 32K OSC */
-	__raw_writel(0x48, (AM335X_RTC_BASE + RTC_OSC_REG));
+	writel(0x48, (AM335X_RTC_BASE + RTC_OSC_REG));
 }
 #endif
 
@@ -580,10 +572,10 @@ void s_init(void)
 	/* WDT1 is already running when the bootloader gets control
 	 * Disable it to avoid "random" resets
 	 */
-	__raw_writel(0xAAAA, WDT_WSPR);
-	while(__raw_readl(WDT_WWPS) != 0x0);
-	__raw_writel(0x5555, WDT_WSPR);
-	while(__raw_readl(WDT_WWPS) != 0x0);
+	writel(0xAAAA, WDT_WSPR);
+	while(readl(WDT_WWPS) != 0x0);
+	writel(0x5555, WDT_WSPR);
+	while(readl(WDT_WWPS) != 0x0);
 
 #ifdef CONFIG_SPL_BUILD
 	/* Setup the PLLs and the clocks for the peripherals */
@@ -603,16 +595,16 @@ void s_init(void)
 		uart_base = UART3_BASE;
 	}
 
-	regVal = __raw_readl(uart_base + UART_SYSCFG_OFFSET);
+	regVal = readl(uart_base + UART_SYSCFG_OFFSET);
 	regVal |= UART_RESET;
-	__raw_writel(regVal, (uart_base + UART_SYSCFG_OFFSET) );
-	while ((__raw_readl(uart_base + UART_SYSSTS_OFFSET) &
+	writel(regVal, (uart_base + UART_SYSCFG_OFFSET) );
+	while ((readl(uart_base + UART_SYSSTS_OFFSET) &
 			UART_CLK_RUNNING_MASK) != UART_CLK_RUNNING_MASK);
 
 	/* Disable smart idle */
-	regVal = __raw_readl((uart_base + UART_SYSCFG_OFFSET));
+	regVal = readl((uart_base + UART_SYSCFG_OFFSET));
 	regVal |= UART_SMART_IDLE_EN;
-	__raw_writel(regVal, (uart_base + UART_SYSCFG_OFFSET));
+	writel(regVal, (uart_base + UART_SYSCFG_OFFSET));
 
 	/* Initialize the Timer */
 	init_timer();
@@ -992,8 +984,8 @@ int board_eth_init(bd_t *bis)
 	if (!eth_getenv_enetaddr("ethaddr", mac_addr)) {
 		debug("<ethaddr> not set. Reading from E-fuse\n");
 		/* try reading mac address from efuse */
-		mac_lo = __raw_readl(MAC_ID0_LO);
-		mac_hi = __raw_readl(MAC_ID0_HI);
+		mac_lo = readl(MAC_ID0_LO);
+		mac_hi = readl(MAC_ID0_HI);
 		mac_addr[0] = mac_hi & 0xFF;
 		mac_addr[1] = (mac_hi & 0xFF00) >> 8;
 		mac_addr[2] = (mac_hi & 0xFF0000) >> 16;
@@ -1021,9 +1013,9 @@ int board_eth_init(bd_t *bis)
 		/* For beaglebone > Rev A2 , enable MII mode, for others enable RMII */
 		if (!strncmp(header.version, "00A1", 4) ||
 		    !strncmp(header.version, "00A2", 4))
-			__raw_writel(RMII_MODE_ENABLE, MAC_MII_SEL);
+			writel(RMII_MODE_ENABLE, MAC_MII_SEL);
 		else
-			__raw_writel(MII_MODE_ENABLE, MAC_MII_SEL);
+			writel(MII_MODE_ENABLE, MAC_MII_SEL);
 		/* No gigabit */
 		cpsw_data.gigabit_en = 0;
 	} else if (board_id == IA_BOARD) {
@@ -1033,7 +1025,7 @@ int board_eth_init(bd_t *bis)
 		cpsw_data.gigabit_en = 0;
 	} else {
 		/* set mii mode to rgmii in in device configure register */
-		__raw_writel(RGMII_MODE_ENABLE, MAC_MII_SEL);
+		writel(RGMII_MODE_ENABLE, MAC_MII_SEL);
 	}
 
 	/* GP EVM 1.0 (A, B) does not have functional gigabit */

@@ -19,7 +19,7 @@
 #include <asm/arch/hardware.h>
 
 #define MUX_CFG(value, offset)	\
-	__raw_writel(value, (CTRL_BASE + offset));
+	writel(value, (CTRL_BASE + offset));
 
 /* PAD Control Fields */
 #define SLEWCTRL	(0x1 << 6)
