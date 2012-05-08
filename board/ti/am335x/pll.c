@@ -235,7 +235,7 @@ static void per_pll_config(void)
 	while(readl(CM_IDLEST_DPLL_PER) != 0x1);
 }
 
-static void ddr_pll_config(void)
+void ddr_pll_config(unsigned int ddrpll_M)
 {
 	u32 clkmode, clksel, div_m2;
 
@@ -250,7 +250,7 @@ static void ddr_pll_config(void)
 	while ((readl(CM_IDLEST_DPLL_DDR) & 0x00000100) != 0x00000100);
 
 	clksel = clksel & (~0x7ffff);
-	clksel = clksel | ((DDRPLL_M << 0x8) | DDRPLL_N);
+	clksel = clksel | ((ddrpll_M << 0x8) | DDRPLL_N);
 	writel(clksel, CM_CLKSEL_DPLL_DDR);
 
 	div_m2 = div_m2 & 0xFFFFFFE0;
@@ -286,7 +286,6 @@ void pll_init()
 	mpu_pll_config(MPUPLL_M_500);
 	core_pll_config();
 	per_pll_config();
-	ddr_pll_config();
 	/* Enable the required interconnect clocks */
 	interface_clocks_enable();
 	/* Enable power domain transition */

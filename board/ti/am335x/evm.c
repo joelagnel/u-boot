@@ -615,6 +615,7 @@ void s_init(void)
 		printf("read_eeprom() failure. continuing with ddr3\n");
 	}
 
+	ddr_pll_config(266);
 	config_am335x_ddr2();
 #endif
 }

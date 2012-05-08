@@ -35,6 +35,7 @@
 #define PROFILE_ALL	0xFF
 
 extern void pll_init(void);
+extern void ddr_pll_config(unsigned int ddrpll_M);
 extern void mpu_pll_config(int mpupll_M);
 extern void enable_ddr2_clocks(void);
 
