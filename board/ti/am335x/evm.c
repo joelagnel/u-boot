@@ -55,6 +55,12 @@ DECLARE_GLOBAL_DATA_PTR;
 /* DDR defines */
 #define MDDR_SEL_DDR2		0xefffffff		/* IOs set for DDR2-STL Mode */
 #define CKE_NORMAL_OP		0x00000001		/* Normal Op:CKE controlled by EMIF */
+#define GATELVL_INIT_MODE_SEL	0x1	/* Selects a starting ratio value based
+					on DATA0/1_REG_PHY_GATELVL_INIT_RATIO_0
+					value programmed by the user */
+#define WRLVL_INIT_MODE_SEL	0x1	/* Selects a starting ratio value based
+					on DATA0/1_REG_PHY_WRLVL_INIT_RATIO_0
+					value programmed by the user */
 
 /* CPLD registers */
 #define CFG_REG			0x10
@@ -155,39 +161,121 @@ void dram_init_banksize (void)
 #ifdef CONFIG_SPL_BUILD
 static void Data_Macro_Config_ddr2(int dataMacroNum)
 {
-	u32 BaseAddrOffset = 0x00;;
+        u32 BaseAddrOffset = 0x00;;
 
-	if (dataMacroNum == 1)
-		BaseAddrOffset = 0xA4;
+        if (dataMacroNum == 1)
+                BaseAddrOffset = 0xA4;
 
-	writel(((DDR2_RD_DQS<<30)|(DDR2_RD_DQS<<20)
-			|(DDR2_RD_DQS<<10)|(DDR2_RD_DQS<<0)),
-			(DATA0_RD_DQS_SLAVE_RATIO_0 + BaseAddrOffset));
-	writel(DDR2_RD_DQS>>2, (DATA0_RD_DQS_SLAVE_RATIO_1 + BaseAddrOffset));
-	writel(((DDR2_WR_DQS<<30)|(DDR2_WR_DQS<<20)
-			|(DDR2_WR_DQS<<10)|(DDR2_WR_DQS<<0)),
-			(DATA0_WR_DQS_SLAVE_RATIO_0 + BaseAddrOffset));
-	writel(DDR2_WR_DQS>>2, (DATA0_WR_DQS_SLAVE_RATIO_1 + BaseAddrOffset));
-	writel(((DDR2_PHY_WRLVL<<30)|(DDR2_PHY_WRLVL<<20)
-			|(DDR2_PHY_WRLVL<<10)|(DDR2_PHY_WRLVL<<0)),
-			(DATA0_WRLVL_INIT_RATIO_0 + BaseAddrOffset));
-	writel(DDR2_PHY_WRLVL>>2, (DATA0_WRLVL_INIT_RATIO_1 + BaseAddrOffset));
-	writel(((DDR2_PHY_GATELVL<<30)|(DDR2_PHY_GATELVL<<20)
-			|(DDR2_PHY_GATELVL<<10)|(DDR2_PHY_GATELVL<<0)),
-			(DATA0_GATELVL_INIT_RATIO_0 + BaseAddrOffset));
-	writel(DDR2_PHY_GATELVL>>2, (DATA0_GATELVL_INIT_RATIO_1 + BaseAddrOffset));
-	writel(((DDR2_PHY_FIFO_WE<<30)|(DDR2_PHY_FIFO_WE<<20)
-			|(DDR2_PHY_FIFO_WE<<10)|(DDR2_PHY_FIFO_WE<<0)),
-			(DATA0_FIFO_WE_SLAVE_RATIO_0 + BaseAddrOffset));
-	writel(DDR2_PHY_FIFO_WE>>2,
-			(DATA0_FIFO_WE_SLAVE_RATIO_1 + BaseAddrOffset));
-	writel(((DDR2_PHY_WR_DATA<<30)|(DDR2_PHY_WR_DATA<<20)
-			|(DDR2_PHY_WR_DATA<<10)|(DDR2_PHY_WR_DATA<<0)),
-			(DATA0_WR_DATA_SLAVE_RATIO_0 + BaseAddrOffset));
-	writel(DDR2_PHY_WR_DATA>>2,
-			(DATA0_WR_DATA_SLAVE_RATIO_1 + BaseAddrOffset));
-	writel(DDR2_PHY_DLL_LOCK_DIFF,
-			(DATA0_DLL_LOCK_DIFF_0 + BaseAddrOffset));
+        writel(((DDR2_RD_DQS<<30)|(DDR2_RD_DQS<<20)
+                        |(DDR2_RD_DQS<<10)|(DDR2_RD_DQS<<0)),
+                        (DATA0_RD_DQS_SLAVE_RATIO_0 + BaseAddrOffset));
+        writel(DDR2_RD_DQS>>2, (DATA0_RD_DQS_SLAVE_RATIO_1 + BaseAddrOffset));
+        writel(((DDR2_WR_DQS<<30)|(DDR2_WR_DQS<<20)
+                        |(DDR2_WR_DQS<<10)|(DDR2_WR_DQS<<0)),
+                        (DATA0_WR_DQS_SLAVE_RATIO_0 + BaseAddrOffset));
+        writel(DDR2_WR_DQS>>2, (DATA0_WR_DQS_SLAVE_RATIO_1 + BaseAddrOffset));
+        writel(((DDR2_PHY_WRLVL<<30)|(DDR2_PHY_WRLVL<<20)
+                        |(DDR2_PHY_WRLVL<<10)|(DDR2_PHY_WRLVL<<0)),
+                        (DATA0_WRLVL_INIT_RATIO_0 + BaseAddrOffset));
+        writel(DDR2_PHY_WRLVL>>2, (DATA0_WRLVL_INIT_RATIO_1 + BaseAddrOffset));
+        writel(((DDR2_PHY_GATELVL<<30)|(DDR2_PHY_GATELVL<<20)
+                        |(DDR2_PHY_GATELVL<<10)|(DDR2_PHY_GATELVL<<0)),
+                        (DATA0_GATELVL_INIT_RATIO_0 + BaseAddrOffset));
+        writel(DDR2_PHY_GATELVL>>2,
+                        (DATA0_GATELVL_INIT_RATIO_1 + BaseAddrOffset));
+        writel(((DDR2_PHY_FIFO_WE<<30)|(DDR2_PHY_FIFO_WE<<20)
+                        |(DDR2_PHY_FIFO_WE<<10)|(DDR2_PHY_FIFO_WE<<0)),
+                        (DATA0_FIFO_WE_SLAVE_RATIO_0 + BaseAddrOffset));
+        writel(DDR2_PHY_FIFO_WE>>2,
+                        (DATA0_FIFO_WE_SLAVE_RATIO_1 + BaseAddrOffset));
+        writel(((DDR2_PHY_WR_DATA<<30)|(DDR2_PHY_WR_DATA<<20)
+                        |(DDR2_PHY_WR_DATA<<10)|(DDR2_PHY_WR_DATA<<0)),
+                        (DATA0_WR_DATA_SLAVE_RATIO_0 + BaseAddrOffset));
+        writel(DDR2_PHY_WR_DATA>>2,
+                        (DATA0_WR_DATA_SLAVE_RATIO_1 + BaseAddrOffset));
+        writel(DDR2_PHY_DLL_LOCK_DIFF,
+                        (DATA0_DLL_LOCK_DIFF_0 + BaseAddrOffset));
+}
+
+static void config_vtp(void)
+{
+        writel(readl(VTP0_CTRL_REG) | VTP_CTRL_ENABLE, VTP0_CTRL_REG);
+        writel(readl(VTP0_CTRL_REG) & (~VTP_CTRL_START_EN), VTP0_CTRL_REG);
+        writel(readl(VTP0_CTRL_REG) | VTP_CTRL_START_EN, VTP0_CTRL_REG);
+
+        /* Poll for READY */
+        while ((readl(VTP0_CTRL_REG) & VTP_CTRL_READY) != VTP_CTRL_READY);
+}
+
+static void phy_config_cmd(void)
+{
+	writel(DDR3_RATIO, CMD0_CTRL_SLAVE_RATIO_0);
+	writel(DDR3_INVERT_CLKOUT, CMD0_INVERT_CLKOUT_0);
+	writel(DDR3_RATIO, CMD1_CTRL_SLAVE_RATIO_0);
+	writel(DDR3_INVERT_CLKOUT, CMD1_INVERT_CLKOUT_0);
+	writel(DDR3_RATIO, CMD2_CTRL_SLAVE_RATIO_0);
+	writel(DDR3_INVERT_CLKOUT, CMD2_INVERT_CLKOUT_0);
+}
+
+static void phy_config_data(void)
+{
+
+	writel(DDR3_RD_DQS, DATA0_RD_DQS_SLAVE_RATIO_0);
+	writel(DDR3_WR_DQS, DATA0_WR_DQS_SLAVE_RATIO_0);
+	writel(DDR3_PHY_FIFO_WE, DATA0_FIFO_WE_SLAVE_RATIO_0);
+	writel(DDR3_PHY_WR_DATA, DATA0_WR_DATA_SLAVE_RATIO_0);
+
+	writel(DDR3_RD_DQS, DATA1_RD_DQS_SLAVE_RATIO_0);
+	writel(DDR3_WR_DQS, DATA1_WR_DQS_SLAVE_RATIO_0);
+	writel(DDR3_PHY_FIFO_WE, DATA1_FIFO_WE_SLAVE_RATIO_0);
+	writel(DDR3_PHY_WR_DATA, DATA1_WR_DATA_SLAVE_RATIO_0);
+}
+
+static void config_emif_ddr3(void)
+{
+	/*Program EMIF0 CFG Registers*/
+	writel(DDR3_EMIF_READ_LATENCY, EMIF4_0_DDR_PHY_CTRL_1);
+	writel(DDR3_EMIF_READ_LATENCY, EMIF4_0_DDR_PHY_CTRL_1_SHADOW);
+	writel(DDR3_EMIF_READ_LATENCY, EMIF4_0_DDR_PHY_CTRL_2);
+	writel(DDR3_EMIF_TIM1, EMIF4_0_SDRAM_TIM_1);
+	writel(DDR3_EMIF_TIM1, EMIF4_0_SDRAM_TIM_1_SHADOW);
+	writel(DDR3_EMIF_TIM2, EMIF4_0_SDRAM_TIM_2);
+	writel(DDR3_EMIF_TIM2, EMIF4_0_SDRAM_TIM_2_SHADOW);
+	writel(DDR3_EMIF_TIM3, EMIF4_0_SDRAM_TIM_3);
+	writel(DDR3_EMIF_TIM3, EMIF4_0_SDRAM_TIM_3_SHADOW);
+
+
+	writel(DDR3_EMIF_SDREF, EMIF4_0_SDRAM_REF_CTRL);
+	writel(DDR3_EMIF_SDREF, EMIF4_0_SDRAM_REF_CTRL_SHADOW);
+	writel(DDR3_ZQ_CFG, EMIF0_0_ZQ_CONFIG);
+
+	writel(DDR3_EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG);
+
+}
+
+static void config_am335x_ddr3(void)
+{
+	enable_ddr3_clocks();
+
+	config_vtp();
+
+	phy_config_cmd();
+	phy_config_data();
+
+	/* set IO control registers */
+	writel(DDR3_IOCTRL_VALUE, DDR_CMD0_IOCTRL);
+	writel(DDR3_IOCTRL_VALUE, DDR_CMD1_IOCTRL);
+	writel(DDR3_IOCTRL_VALUE, DDR_CMD2_IOCTRL);
+	writel(DDR3_IOCTRL_VALUE, DDR_DATA0_IOCTRL);
+	writel(DDR3_IOCTRL_VALUE, DDR_DATA1_IOCTRL);
+
+	/* IOs set for DDR3 */
+	writel(readl(DDR_IO_CTRL) & MDDR_SEL_DDR2, DDR_IO_CTRL);
+	/* CKE controlled by EMIF/DDR_PHY */
+	writel(readl(DDR_CKE_CTRL) | CKE_NORMAL_OP, DDR_CKE_CTRL);
+
+	config_emif_ddr3();
+
 }
 
 static void Cmd_Macro_Config_ddr2(void)
@@ -209,16 +297,6 @@ static void Cmd_Macro_Config_ddr2(void)
 	writel(DDR2_CMD_DELAY, CMD2_CTRL_SLAVE_DELAY_0);
 	writel(DDR2_DLL_LOCK_DIFF, CMD2_DLL_LOCK_DIFF_0);
 	writel(DDR2_INVERT_CLKOUT, CMD2_INVERT_CLKOUT_0);
-}
-
-static void config_vtp(void)
-{
-	writel(readl(VTP0_CTRL_REG) | VTP_CTRL_ENABLE, VTP0_CTRL_REG);
-	writel(readl(VTP0_CTRL_REG) & (~VTP_CTRL_START_EN), VTP0_CTRL_REG);
-	writel(readl(VTP0_CTRL_REG) | VTP_CTRL_START_EN, VTP0_CTRL_REG);
-
-	/* Poll for READY */
-	while ((readl(VTP0_CTRL_REG) & VTP_CTRL_READY) != VTP_CTRL_READY);
 }
 
 static void config_emif_ddr2(void)
@@ -615,8 +693,20 @@ void s_init(void)
 		printf("read_eeprom() failure. continuing with ddr3\n");
 	}
 
-	ddr_pll_config(266);
-	config_am335x_ddr2();
+	u32 is_ddr3 = 0;
+	if (!strncmp("A335X_SK", header.name, 8)) {
+		is_ddr3 = 1;
+	}
+
+	if(is_ddr3 == 1){
+		ddr_pll_config(303);
+		config_am335x_ddr3();
+	}
+	else {
+		ddr_pll_config(266);
+		config_am335x_ddr2();
+	}
+
 #endif
 }
 

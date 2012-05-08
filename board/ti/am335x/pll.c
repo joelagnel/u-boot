@@ -278,6 +278,16 @@ void enable_ddr2_clocks(void)
 
 }
 
+void enable_ddr3_clocks(void)
+{
+	/* Enable the  EMIF_FW Functional clock */
+	writel(PRCM_MOD_EN, CM_PER_EMIF_FW_CLKCTRL);
+	/* Enable EMIF0 Clock */
+	writel(PRCM_MOD_EN, CM_PER_EMIF_CLKCTRL);
+	/* Poll if module is functional */
+	while ((readl(CM_PER_EMIF_CLKCTRL)) != PRCM_MOD_EN);
+}
+
 /*
  * Configure the PLL/PRCM for necessary peripherals
  */

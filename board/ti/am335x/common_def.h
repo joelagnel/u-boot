@@ -38,6 +38,7 @@ extern void pll_init(void);
 extern void ddr_pll_config(unsigned int ddrpll_M);
 extern void mpu_pll_config(int mpupll_M);
 extern void enable_ddr2_clocks(void);
+extern void enable_ddr3_clocks(void);
 
 extern void enable_i2c0_pin_mux(void);
 extern void enable_uart0_pin_mux(void);
