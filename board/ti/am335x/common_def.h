@@ -21,6 +21,7 @@
 #define IA_BOARD	2
 #define IPP_BOARD	3
 #define BASE_BOARD	4
+#define SK_BOARD	5
 
 /* Profiles */
 #define PROFILE_NONE	0x0

@@ -137,7 +137,7 @@ static struct am335x_baseboard_id __attribute__((section (".data"))) header;
 extern void cpsw_eth_set_mac_addr(const u_int8_t *addr);
 static
 unsigned char __attribute__((section (".data"))) daughter_board_connected = 1;
-static volatile int __attribute__((section (".data"))) board_id = BASE_BOARD;
+static volatile int __attribute__((section (".data"))) board_id = SK_BOARD;
 
 /*
  * dram_init:
@@ -789,6 +789,10 @@ int board_init(void)
 		board_id = IPP_BOARD;
 	} else if (!strncmp("A335BONE", header.name, 8)) {
 		board_id = BONE_BOARD;
+		profile = 1;	/* profile 0 is internally considered as 1 */
+		daughter_board_connected = 0;
+	} else if (!strncmp("A335X_SK", header.name, 8)) {
+		board_id = SK_BOARD;
 		profile = 1;	/* profile 0 is internally considered as 1 */
 		daughter_board_connected = 0;
 	} else {

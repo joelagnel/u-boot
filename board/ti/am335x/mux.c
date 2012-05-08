@@ -444,6 +444,17 @@ static struct module_pin_mux mmc0_pin_mux[] = {
 	{-1},
 };
 
+static struct module_pin_mux mmc0_sk_pin_mux[] = {
+	{OFFSET(mmc0_dat3), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT3 */
+	{OFFSET(mmc0_dat2), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT2 */
+	{OFFSET(mmc0_dat1), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT1 */
+	{OFFSET(mmc0_dat0), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT0 */
+	{OFFSET(mmc0_clk), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_CLK */
+	{OFFSET(mmc0_cmd), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_CMD */
+	{OFFSET(spi0_cs1), (MODE(5) | RXACTIVE | PULLUP_EN)},	/* MMC0_CD */
+	{-1},
+};
+
 static struct module_pin_mux mmc1_pin_mux[] = {
 	{OFFSET(gpmc_ad3), (MODE(1) | RXACTIVE)},	/* MMC1_DAT3 */
 	{OFFSET(gpmc_ad2), (MODE(1) | RXACTIVE)},	/* MMC1_DAT2 */
@@ -566,6 +577,15 @@ static struct evm_pin_mux low_cost_evm_pin_mux[] = {
 	{0},
 };
 
+static struct evm_pin_mux sk_evm_pin_mux[] = {
+	{uart0_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
+#ifdef CONFIG_MMC
+	{mmc0_sk_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
+#endif
+
+	{0},
+};
+
 static struct evm_pin_mux beaglebone_pin_mux[] = {
 	{uart0_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
 	{i2c1_pin_mux, PROFILE_ALL & ~PROFILE_2 & ~PROFILE_4, DEV_ON_BASEBOARD},
@@ -610,6 +630,7 @@ static struct evm_pin_mux *am335x_evm_pin_mux[] = {
 	ia_motor_control_evm_pin_mux,
 	ip_phone_evm_pin_mux,
 	low_cost_evm_pin_mux,
+	sk_evm_pin_mux,
 };
 
 /*
@@ -666,7 +687,7 @@ static void set_evm_pin_mux(struct evm_pin_mux *pin_mux,
 void configure_evm_pin_mux(unsigned char dghtr_brd_id, char version[4], unsigned short
 		profile, unsigned int daughter_board_flag)
 {
-	if (dghtr_brd_id > BASE_BOARD)
+	if (dghtr_brd_id > SK_BOARD)
 		return;
 
 	/* Setup correct evm pinmux for older bone boards (Rev < A2) */
