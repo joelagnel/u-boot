@@ -583,6 +583,10 @@ static struct evm_pin_mux sk_evm_pin_mux[] = {
 	{mmc0_sk_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
 #endif
 
+#ifndef CONFIG_NO_ETH
+       {rgmii1_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
+       {rgmii2_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
+#endif
 	{0},
 };
 
