@@ -327,17 +327,6 @@
 #define DDR2_RATIO		0x80	/* for mDDR */
 #define CMD_FORCE		0x00	/* common #def */
 #define CMD_DELAY		0x00
-#if	(CONFIG_AM335X_EVM_IS_13x13 == 1)
-#define EMIF_READ_LATENCY	0x05
-#define EMIF_TIM1		0x04446249
-#define EMIF_TIM2		0x101731C0
-#define EMIF_TIM3		0x137
-#define EMIF_SDCFG		0x20004EA3
-#define EMIF_SDREF		0x57c
-#define	DDR2_DLL_LOCK_DIFF	0x4
-#define DDR2_RD_DQS		0x40
-#define DDR2_PHY_FIFO_WE	0x56
-#else
 #define EMIF_READ_LATENCY	0x05
 #define EMIF_TIM1		0x0666B3D6
 #define EMIF_TIM2		0x143731DA
@@ -347,7 +336,6 @@
 #define DDR2_DLL_LOCK_DIFF	0x0
 #define DDR2_RD_DQS		0x12
 #define DDR2_PHY_FIFO_WE	0x80
-#endif
 #define	DDR2_INVERT_CLKOUT	0x00
 #define	DDR2_WR_DQS		0x00
 #define	DDR2_PHY_WRLVL		0x00
