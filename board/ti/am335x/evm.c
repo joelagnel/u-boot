@@ -52,6 +52,10 @@ DECLARE_GLOBAL_DATA_PTR;
 #define TIOCP_CFG_REG		0x10
 #define TCLR_REG		0x38
 
+/* DDR defines */
+#define MDDR_SEL_DDR2		0xefffffff		/* IOs set for DDR2-STL Mode */
+#define CKE_NORMAL_OP		0x00000001		/* Normal Op:CKE controlled by EMIF */
+
 /* CPLD registers */
 #define CFG_REG			0x10
 
@@ -149,7 +153,7 @@ void dram_init_banksize (void)
 }
 
 #ifdef CONFIG_SPL_BUILD
-static void Data_Macro_Config(int dataMacroNum)
+static void Data_Macro_Config_ddr2(int dataMacroNum)
 {
 	u32 BaseAddrOffset = 0x00;;
 
@@ -182,26 +186,27 @@ static void Data_Macro_Config(int dataMacroNum)
 			(DATA0_WR_DATA_SLAVE_RATIO_0 + BaseAddrOffset));
 	writel(DDR2_PHY_WR_DATA>>2,
 			(DATA0_WR_DATA_SLAVE_RATIO_1 + BaseAddrOffset));
-	writel(PHY_DLL_LOCK_DIFF, (DATA0_DLL_LOCK_DIFF_0 + BaseAddrOffset));
+	writel(DDR2_PHY_DLL_LOCK_DIFF,
+			(DATA0_DLL_LOCK_DIFF_0 + BaseAddrOffset));
 }
 
-static void Cmd_Macro_Config(void)
+static void Cmd_Macro_Config_ddr2(void)
 {
 	writel(DDR2_RATIO, CMD0_CTRL_SLAVE_RATIO_0);
-	writel(CMD_FORCE, CMD0_CTRL_SLAVE_FORCE_0);
-	writel(CMD_DELAY, CMD0_CTRL_SLAVE_DELAY_0);
+	writel(DDR2_CMD_FORCE, CMD0_CTRL_SLAVE_FORCE_0);
+	writel(DDR2_CMD_DELAY, CMD0_CTRL_SLAVE_DELAY_0);
 	writel(DDR2_DLL_LOCK_DIFF, CMD0_DLL_LOCK_DIFF_0);
 	writel(DDR2_INVERT_CLKOUT, CMD0_INVERT_CLKOUT_0);
 
 	writel(DDR2_RATIO, CMD1_CTRL_SLAVE_RATIO_0);
-	writel(CMD_FORCE, CMD1_CTRL_SLAVE_FORCE_0);
-	writel(CMD_DELAY, CMD1_CTRL_SLAVE_DELAY_0);
+	writel(DDR2_CMD_FORCE, CMD1_CTRL_SLAVE_FORCE_0);
+	writel(DDR2_CMD_DELAY, CMD1_CTRL_SLAVE_DELAY_0);
 	writel(DDR2_DLL_LOCK_DIFF, CMD1_DLL_LOCK_DIFF_0);
 	writel(DDR2_INVERT_CLKOUT, CMD1_INVERT_CLKOUT_0);
 
 	writel(DDR2_RATIO, CMD2_CTRL_SLAVE_RATIO_0);
-	writel(CMD_FORCE, CMD2_CTRL_SLAVE_FORCE_0);
-	writel(CMD_DELAY, CMD2_CTRL_SLAVE_DELAY_0);
+	writel(DDR2_CMD_FORCE, CMD2_CTRL_SLAVE_FORCE_0);
+	writel(DDR2_CMD_DELAY, CMD2_CTRL_SLAVE_DELAY_0);
 	writel(DDR2_DLL_LOCK_DIFF, CMD2_DLL_LOCK_DIFF_0);
 	writel(DDR2_INVERT_CLKOUT, CMD2_INVERT_CLKOUT_0);
 }
@@ -221,63 +226,63 @@ static void config_emif_ddr2(void)
 	u32 i;
 
 	/*Program EMIF0 CFG Registers*/
-	writel(EMIF_READ_LATENCY, EMIF4_0_DDR_PHY_CTRL_1);
-	writel(EMIF_READ_LATENCY, EMIF4_0_DDR_PHY_CTRL_1_SHADOW);
-	writel(EMIF_READ_LATENCY, EMIF4_0_DDR_PHY_CTRL_2);
-	writel(EMIF_TIM1, EMIF4_0_SDRAM_TIM_1);
-	writel(EMIF_TIM1, EMIF4_0_SDRAM_TIM_1_SHADOW);
-	writel(EMIF_TIM2, EMIF4_0_SDRAM_TIM_2);
-	writel(EMIF_TIM2, EMIF4_0_SDRAM_TIM_2_SHADOW);
-	writel(EMIF_TIM3, EMIF4_0_SDRAM_TIM_3);
-	writel(EMIF_TIM3, EMIF4_0_SDRAM_TIM_3_SHADOW);
+	writel(DDR2_EMIF_READ_LATENCY, EMIF4_0_DDR_PHY_CTRL_1);
+	writel(DDR2_EMIF_READ_LATENCY, EMIF4_0_DDR_PHY_CTRL_1_SHADOW);
+	writel(DDR2_EMIF_READ_LATENCY, EMIF4_0_DDR_PHY_CTRL_2);
+	writel(DDR2_EMIF_TIM1, EMIF4_0_SDRAM_TIM_1);
+	writel(DDR2_EMIF_TIM1, EMIF4_0_SDRAM_TIM_1_SHADOW);
+	writel(DDR2_EMIF_TIM2, EMIF4_0_SDRAM_TIM_2);
+	writel(DDR2_EMIF_TIM2, EMIF4_0_SDRAM_TIM_2_SHADOW);
+	writel(DDR2_EMIF_TIM3, EMIF4_0_SDRAM_TIM_3);
+	writel(DDR2_EMIF_TIM3, EMIF4_0_SDRAM_TIM_3_SHADOW);
 
-	writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG);
-	writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG2);
+	writel(DDR2_EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG);
+	writel(DDR2_EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG2);
 
-	/* writel(EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL);
-	writel(EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL_SHD); */
-	writel(0x00004650, EMIF4_0_SDRAM_REF_CTRL);
-	writel(0x00004650, EMIF4_0_SDRAM_REF_CTRL_SHADOW);
+	/* writel(DDR2_EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL);
+	writel(DDR2_EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL_SHD); */
+	writel(DDR2_EMIF_SDREF1, EMIF4_0_SDRAM_REF_CTRL);
+	writel(DDR2_EMIF_SDREF1, EMIF4_0_SDRAM_REF_CTRL_SHADOW);
 
 	for (i = 0; i < 5000; i++) {
 
 	}
 
-	/* writel(EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL);
-	writel(EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL_SHD); */
-	writel(EMIF_SDREF, EMIF4_0_SDRAM_REF_CTRL);
-	writel(EMIF_SDREF, EMIF4_0_SDRAM_REF_CTRL_SHADOW);
+	/* writel(DDR2_EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL);
+	writel(DDR2_EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL_SHD); */
+	writel(DDR2_EMIF_SDREF2, EMIF4_0_SDRAM_REF_CTRL);
+	writel(DDR2_EMIF_SDREF2, EMIF4_0_SDRAM_REF_CTRL_SHADOW);
 
-	writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG);
-	writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG2);
+	writel(DDR2_EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG);
+	writel(DDR2_EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG2);
 }
 
 /*  void DDR2_EMIF_Config(void); */
-static void config_am335x_ddr(void)
+static void config_am335x_ddr2(void)
 {
 	int data_macro_0 = 0;
 	int data_macro_1 = 1;
 
-	enable_ddr_clocks();
+	enable_ddr2_clocks();
 
 	config_vtp();
 
-	Cmd_Macro_Config();
+	Cmd_Macro_Config_ddr2();
 
-	Data_Macro_Config(data_macro_0);
-	Data_Macro_Config(data_macro_1);
+	Data_Macro_Config_ddr2(data_macro_0);
+	Data_Macro_Config_ddr2(data_macro_1);
 
-	writel(PHY_RANK0_DELAY, DATA0_RANK0_DELAYS_0);
-	writel(PHY_RANK0_DELAY, DATA1_RANK0_DELAYS_0);
+	writel(DDR2_PHY_RANK0_DELAY, DATA0_RANK0_DELAYS_0);
+	writel(DDR2_PHY_RANK0_DELAY, DATA1_RANK0_DELAYS_0);
 
-	writel(DDR_IOCTRL_VALUE, DDR_CMD0_IOCTRL);
-	writel(DDR_IOCTRL_VALUE, DDR_CMD1_IOCTRL);
-	writel(DDR_IOCTRL_VALUE, DDR_CMD2_IOCTRL);
-	writel(DDR_IOCTRL_VALUE, DDR_DATA0_IOCTRL);
-	writel(DDR_IOCTRL_VALUE, DDR_DATA1_IOCTRL);
+	writel(DDR2_IOCTRL_VALUE, DDR_CMD0_IOCTRL);
+	writel(DDR2_IOCTRL_VALUE, DDR_CMD1_IOCTRL);
+	writel(DDR2_IOCTRL_VALUE, DDR_CMD2_IOCTRL);
+	writel(DDR2_IOCTRL_VALUE, DDR_DATA0_IOCTRL);
+	writel(DDR2_IOCTRL_VALUE, DDR_DATA1_IOCTRL);
 
-	writel(readl(DDR_IO_CTRL) & 0xefffffff, DDR_IO_CTRL);
-	writel(readl(DDR_CKE_CTRL) | 0x00000001, DDR_CKE_CTRL);
+	writel(readl(DDR_IO_CTRL) & MDDR_SEL_DDR2, DDR_IO_CTRL);
+	writel(readl(DDR_CKE_CTRL) | CKE_NORMAL_OP, DDR_CKE_CTRL);
 
 	config_emif_ddr2();
 }
@@ -610,7 +615,7 @@ void s_init(void)
 		printf("read_eeprom() failure. continuing with ddr3\n");
 	}
 
-	config_am335x_ddr();
+	config_am335x_ddr2();
 #endif
 }
 

@@ -314,7 +314,7 @@
 
 /* AM335X EMIF Register values */
 #ifdef CONFIG_AM335X
-#define EMIF_SDMGT		0x80000000
+#define DDR2_EMIF_SDMGT		0x80000000
 #define EMIF_SDRAM		0x00004650
 #define EMIF_PHYCFG		0x2
 #define DDR_PHY_RESET		(0x1 << 10)
@@ -325,14 +325,15 @@
 #define VTP_CTRL_LOCK_EN	(0x1 << 4)
 #define VTP_CTRL_START_EN	(0x1)
 #define DDR2_RATIO		0x80	/* for mDDR */
-#define CMD_FORCE		0x00	/* common #def */
-#define CMD_DELAY		0x00
-#define EMIF_READ_LATENCY	0x05
-#define EMIF_TIM1		0x0666B3D6
-#define EMIF_TIM2		0x143731DA
-#define	EMIF_TIM3		0x00000347
-#define EMIF_SDCFG		0x43805332
-#define EMIF_SDREF		0x0000081a
+#define DDR2_CMD_FORCE		0x00	/* common #def */
+#define DDR2_CMD_DELAY		0x00
+#define DDR2_EMIF_READ_LATENCY	0x05
+#define DDR2_EMIF_TIM1		0x0666B3D6
+#define DDR2_EMIF_TIM2		0x143731DA
+#define	DDR2_EMIF_TIM3		0x00000347
+#define DDR2_EMIF_SDCFG		0x43805332
+#define DDR2_EMIF_SDREF1	0x00004650
+#define DDR2_EMIF_SDREF2	0x0000081a
 #define DDR2_DLL_LOCK_DIFF	0x0
 #define DDR2_RD_DQS		0x12
 #define DDR2_PHY_FIFO_WE	0x80
@@ -341,9 +342,9 @@
 #define	DDR2_PHY_WRLVL		0x00
 #define	DDR2_PHY_GATELVL	0x00
 #define	DDR2_PHY_WR_DATA	0x40
-#define	PHY_RANK0_DELAY		0x01
-#define PHY_DLL_LOCK_DIFF	0x0
-#define DDR_IOCTRL_VALUE	0x18B
+#define	DDR2_PHY_RANK0_DELAY	0x01
+#define DDR2_PHY_DLL_LOCK_DIFF	0x0
+#define DDR2_IOCTRL_VALUE	0x18B
 #endif
 
 #endif  /* _DDR_DEFS_H */

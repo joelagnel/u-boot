@@ -263,7 +263,7 @@ static void ddr_pll_config(void)
 	while ((readl(CM_IDLEST_DPLL_DDR) & 0x00000001) != 0x1);
 }
 
-void enable_ddr_clocks(void)
+void enable_ddr2_clocks(void)
 {
 	/* Enable the  EMIF_FW Functional clock */
 	writel(PRCM_MOD_EN, CM_PER_EMIF_FW_CLKCTRL);
