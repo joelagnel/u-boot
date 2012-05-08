@@ -123,10 +123,11 @@ struct am335x_baseboard_id {
 	char mac_addr[NO_OF_MAC_ADDR][ETH_ALEN];
 };
 
-static struct am335x_baseboard_id header;
+static struct am335x_baseboard_id __attribute__((section (".data"))) header;
 extern void cpsw_eth_set_mac_addr(const u_int8_t *addr);
-static unsigned char daughter_board_connected;
-static volatile int board_id = BASE_BOARD;
+static
+unsigned char __attribute__((section (".data"))) daughter_board_connected = 1;
+static volatile int __attribute__((section (".data"))) board_id = BASE_BOARD;
 
 /*
  * dram_init:
@@ -483,16 +484,6 @@ void spl_board_init(void)
 {
 	uchar pmic_status_reg;
 
-	/* Configure the i2c0 pin mux */
-	enable_i2c0_pin_mux();
-
-	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
-
-	if (read_eeprom()) {
-		printf("read_eeprom() failure\n");
-		return;
-	}
-
 	if (!strncmp("A335BONE", header.name, 8)) {
 		/* BeagleBone PMIC Code */
 		if (i2c_probe(TPS65217_CHIP_PM))
@@ -610,6 +601,14 @@ void s_init(void)
 	init_timer();
 
 	preloader_console_init();
+
+	enable_i2c0_pin_mux();
+
+	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
+
+	if (read_eeprom()) {
+		printf("read_eeprom() failure. continuing with ddr3\n");
+	}
 
 	config_am335x_ddr();
 #endif
