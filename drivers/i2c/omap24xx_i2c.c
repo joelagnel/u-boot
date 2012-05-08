@@ -49,10 +49,12 @@ DECLARE_GLOBAL_DATA_PTR;
 static u32 wait_for_bb (void);
 static u32 wait_for_status_mask(u16 mask);
 static void flush_fifo(void);
-static u32 i2c_base = (u32)I2C_DEFAULT_BASE;
+static u32 __attribute__((section (".data"))) i2c_base = (u32)I2C_DEFAULT_BASE;
 
-static unsigned int bus_initialized[I2C_BUS_MAX];
-static unsigned int current_bus;
+static
+unsigned int __attribute__((section (".data"))) bus_initialized[I2C_BUS_MAX] =
+						{ [0 ... (I2C_BUS_MAX-1)] = 0 };
+static unsigned int __attribute__((section (".data"))) current_bus = 0;
 
 void i2c_init(int speed, int slaveadd)
 {
