@@ -577,6 +577,9 @@ void spl_board_init(void)
 {
 	uchar pmic_status_reg;
 
+	/* init board_id, configure muxes */
+	board_init();
+
 	if (!strncmp("A335BONE", header.name, 8)) {
 		/* BeagleBone PMIC Code */
 		if (i2c_probe(TPS65217_CHIP_PM))
