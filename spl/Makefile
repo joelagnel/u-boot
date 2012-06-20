@@ -48,6 +48,9 @@ LIBS-$(CONFIG_SPL_FAT_SUPPORT) += fs/fat/libfat.o
 LIBS-$(CONFIG_SPL_LIBGENERIC_SUPPORT) += lib/libgeneric.o
 LIBS-$(CONFIG_SPL_POWER_SUPPORT) += drivers/power/libpower.o
 LIBS-$(CONFIG_SPL_NAND_SUPPORT) += drivers/mtd/nand/libnand.o
+LIBS-$(CONFIG_SPL_NET_SUPPORT) += net/libnet.o
+LIBS-$(CONFIG_SPL_ETH_SUPPORT) += drivers/net/libnet.o
+LIBS-$(CONFIG_SPL_ETH_SUPPORT) += drivers/net/phy/libphy.o
 
 ifeq ($(SOC),ti81xx)
 LIBS-y += $(CPUDIR)/omap-common/libomap-common.o
