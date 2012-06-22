@@ -518,6 +518,28 @@ struct gptimer {
 #define GPMC_CONFIG6			(0x14)
 #define GPMC_CONFIG7			(0x18)
 
+/* AM335X GPIO registers. Use the OMAP_ label to maintain compatibility
+   with OMAP2/3 gpio calls.
+*/
+#define OMAP_GPIO_REVISION		0x0000
+#define OMAP_GPIO_SYSCONFIG		0x0010
+#define OMAP_GPIO_SYSSTATUS		0x0114
+#define OMAP_GPIO_IRQSTATUS1		0x002C
+#define OMAP_GPIO_IRQSTATUS2		0x0030
+#define OMAP_GPIO_CTRL			0x0130
+#define OMAP_GPIO_OE			0x0134
+#define OMAP_GPIO_DATAIN		0x0138
+#define OMAP_GPIO_DATAOUT		0x013C
+#define OMAP_GPIO_LEVELDETECT0		0x0140
+#define OMAP_GPIO_LEVELDETECT1		0x0144
+#define OMAP_GPIO_RISINGDETECT		0x0148
+#define OMAP_GPIO_FALLINGDETECT		0x014C
+#define OMAP_GPIO_DEBOUNCE_EN		0x0150
+#define OMAP_GPIO_DEBOUNCE_VAL		0x0154
+#define OMAP_GPIO_CLEARDATAOUT		0x0190
+#define OMAP_GPIO_SETDATAOUT		0x0194
+
+
 /* PAD configuration register offsets and values for gpmc address
  * lines a12 - a26
  */

@@ -490,6 +490,11 @@ static struct module_pin_mux spi1_pin_mux[] = {
 };
 #endif
 
+static struct module_pin_mux gpio0_7_pin_mux[] = {
+	{OFFSET(ecap0_in_pwm0_out), (MODE(7) | PULLUDEN)},	/* GPIO0_7 */
+	{-1},
+};
+
 /*
  * Update the structure with the modules present in the general purpose
  * board and the profiles in which the modules are present.
@@ -711,4 +716,9 @@ void enable_i2c0_pin_mux(void)
 void enable_uart0_pin_mux(void)
 {
 	configure_module_pin_mux(uart0_pin_mux);
+}
+
+void enable_gpio0_7_pin_mux(void)
+{
+	configure_module_pin_mux(gpio0_7_pin_mux);
 }

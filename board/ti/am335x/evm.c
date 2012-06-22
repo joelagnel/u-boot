@@ -25,6 +25,7 @@
 #include <asm/arch/mem.h>
 #include <asm/arch/nand.h>
 #include <asm/arch/clock.h>
+#include <asm/arch/gpio.h>
 #include <linux/mtd/nand.h>
 #include <nand.h>
 #include <net.h>
@@ -138,6 +139,15 @@ extern void cpsw_eth_set_mac_addr(const u_int8_t *addr);
 static
 unsigned char __attribute__((section (".data"))) daughter_board_connected = 1;
 static volatile int __attribute__((section (".data"))) board_id = SK_BOARD;
+
+/* GPIO base address table */
+static const struct gpio_bank gpio_bank_am335x[4] = {
+	{ (void *)AM335X_GPIO0_BASE, METHOD_GPIO_24XX },
+	{ (void *)AM335X_GPIO1_BASE, METHOD_GPIO_24XX },
+	{ (void *)AM335X_GPIO2_BASE, METHOD_GPIO_24XX },
+	{ (void *)AM335X_GPIO3_BASE, METHOD_GPIO_24XX },
+};
+const struct gpio_bank *const omap_gpio_bank = gpio_bank_am335x;
 
 /*
  * dram_init:
@@ -635,6 +645,7 @@ void spl_board_init(void)
 }
 #endif
 
+#define GPIO_DDR_VTT_EN		7
 /*
  * early system init of muxing and clocks.
  */
@@ -696,6 +707,13 @@ void s_init(void)
 	u32 is_ddr3 = 0;
 	if (!strncmp("A335X_SK", header.name, 8)) {
 		is_ddr3 = 1;
+
+		/* EVM SK 1.2A uses gpio0_7 to enable DDR3 */
+		if (!strncmp("1.2A", header.version, 4)) {
+			enable_gpio0_7_pin_mux();
+			gpio_request(GPIO_DDR_VTT_EN, "ddr_vtt_en");
+			gpio_direction_output(GPIO_DDR_VTT_EN, 1);
+		}
 	}
 
 	if(is_ddr3 == 1){
