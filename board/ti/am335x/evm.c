@@ -17,6 +17,7 @@
 #include <asm/cache.h>
 #include <asm/omap_common.h>
 #include <asm/io.h>
+#include <asm/gpio.h>
 #include <asm/arch/cpu.h>
 #include <asm/arch/ddr_defs.h>
 #include <asm/arch/hardware.h>
