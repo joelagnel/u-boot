@@ -1349,7 +1349,7 @@ int run_command (const char *cmd, int flag)
 			continue;
 		}
 
-#if defined(CONFIG_CMD_BOOTD)
+#if defined(CONFIG_CMD_BOOTD) && !defined(CONFIG_SPL_BUILD)
 		/* avoid "bootd" recursion */
 		if (cmdtp->cmd == do_bootd) {
 #ifdef DEBUG_PARSER
@@ -1397,7 +1397,7 @@ int do_run (cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
 			printf ("## Error: \"%s\" not defined\n", argv[i]);
 			return 1;
 		}
-#ifndef CONFIG_SYS_HUSH_PARSER
+#if !defined(CONFIG_SYS_HUSH_PARSER) || defined(CONFIG_SPL_BUILD)
 		if (run_command (arg, flag) == -1)
 			return 1;
 #else
