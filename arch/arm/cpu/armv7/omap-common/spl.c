@@ -140,6 +140,11 @@ void board_init_r(gd_t *id, ulong dummy)
 #ifdef CONFIG_SPL_SPI_SUPPORT
 	case BOOT_DEVICE_SPI:
 		spi_boot();
+	break;
+#endif
+#ifdef CONFIG_SPL_ETH_SUPPORT
+	case BOOT_DEVICE_CPGMAC:
+		spl_eth_load_image();
 		break;
 #endif
 	default:

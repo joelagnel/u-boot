@@ -721,7 +721,7 @@ void panic(const char *fmt, ...)
 	vprintf(fmt, args);
 	putc('\n');
 	va_end(args);
-#if defined (CONFIG_PANIC_HANG)
+#if defined (CONFIG_PANIC_HANG) || defined(CONFIG_SPL_BUILD)
 	hang();
 #else
 	udelay (100000);	/* allow messages to go out */

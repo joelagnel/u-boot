@@ -60,6 +60,7 @@ void preloader_console_init(void);
 #define BOOT_DEVICE_MMC2	9 /* eMMC or daughter card */
 #define BOOT_DEVICE_SPI		11
 #define BOOT_DEVICE_UART	65
+#define BOOT_DEVICE_CPGMAC	70
 #endif
 
 /* Boot type */
@@ -95,5 +96,8 @@ void spl_mmc_load_image(void);
 
 /* YMODEM SPL functions */
 void spl_ymodem_load_image(void);
+
+/* Ethernet SPL functions */
+void spl_eth_load_image(void);
 
 #endif /* _OMAP_COMMON_H_ */

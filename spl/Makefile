@@ -48,6 +48,9 @@ LIBS-$(CONFIG_SPL_FAT_SUPPORT) += fs/fat/libfat.o
 LIBS-$(CONFIG_SPL_LIBGENERIC_SUPPORT) += lib/libgeneric.o
 LIBS-$(CONFIG_SPL_POWER_SUPPORT) += drivers/power/libpower.o
 LIBS-$(CONFIG_SPL_NAND_SUPPORT) += drivers/mtd/nand/libnand.o
+LIBS-$(CONFIG_SPL_NET_SUPPORT) += net/libnet.o
+LIBS-$(CONFIG_SPL_ETH_SUPPORT) += drivers/net/libnet.o
+LIBS-$(CONFIG_SPL_ETH_SUPPORT) += drivers/net/phy/libphy.o
 
 ifeq ($(SOC),ti81xx)
 LIBS-y += $(CPUDIR)/omap-common/libomap-common.o
@@ -123,9 +126,7 @@ $(obj)u-boot-spl.bin:	$(obj)u-boot-spl
 	$(OBJCOPY) $(OBJCFLAGS) -O binary $< $@
 
 GEN_UBOOT = \
-	UNDEF_SYM=`$(OBJDUMP) -x $(LIBS) | \
-	sed  -n -e 's/.*\($(SYM_PREFIX)__u_boot_cmd_.*\)/-u\1/p'|sort|uniq`;\
-	cd $(obj) && $(LD) $(LDFLAGS) $(LDFLAGS_$(@F)) $$UNDEF_SYM $(__START) \
+	cd $(obj) && $(LD) $(LDFLAGS) $(LDFLAGS_$(@F)) $(__START) \
 		--start-group $(__LIBS) --end-group $(PLATFORM_LIBS) \
 		-Map u-boot-spl.map -o u-boot-spl
 

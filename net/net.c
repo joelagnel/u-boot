@@ -75,6 +75,9 @@
 
 
 #include <common.h>
+#ifdef CONFIG_SPL_BUILD
+#undef CONFIG_CMD_DHCP
+#endif
 #include <watchdog.h>
 #include <command.h>
 #include <net.h>

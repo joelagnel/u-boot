@@ -9,6 +9,9 @@
  */
 
 #include <common.h>
+#ifdef CONFIG_SPL_BUILD
+#undef CONFIG_CMD_DHCP
+#endif
 #include <command.h>
 #include <net.h>
 #include "bootp.h"
@@ -565,6 +568,19 @@ static int BootpExtended (u8 * e)
 	e   += 4;
 #endif
 
+#if defined(CONFIG_BOOTP_VCI) || \
+	(defined(CONFIG_SPL_BUILD) && defined(CONFIG_SPL_NET_VCI_STRING))
+	*e++ = 60;
+#ifdef CONFIG_SPL_BUILD
+#define BOOTP_VCI	CONFIG_SPL_NET_VCI_STRING
+#else
+#define BOOTP_VCI	CONFIG_BOOTP_VCI_STRING
+#endif
+	*e++ = sizeof(BOOTP_VCI);
+	strcpy(e, BOOTP_VCI);
+	e += sizeof(BOOTP_VCI);
+#undef BOOTP_VCI
+#endif
 	*e++ = 255;		/* End of the list */
 
 	return e - start;

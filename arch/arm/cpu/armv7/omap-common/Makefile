@@ -44,6 +44,9 @@ endif
 ifdef CONFIG_SPL_YMODEM_SUPPORT
 COBJS	+= spl_ymodem.o
 endif
+ifdef CONFIG_SPL_ETH_SUPPORT
+COBJS	+= spl_eth.o
+endif
 endif
 
 ifneq ($(CONFIG_TI81XX)$(CONFIG_OMAP44XX)$(CONFIG_OMAP54XX),)
