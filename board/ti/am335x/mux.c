@@ -606,7 +606,7 @@ static struct evm_pin_mux beaglebone_pin_mux[] = {
 #endif
 #ifdef CONFIG_MMC
 	{mmc0_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
-	{mmc1_pin_mux, PROFILE_2, DEV_ON_DGHTR_BRD},
+	{mmc1_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
 #endif
 #ifdef CONFIG_SPI
 	{spi0_pin_mux, PROFILE_2, DEV_ON_DGHTR_BRD},
