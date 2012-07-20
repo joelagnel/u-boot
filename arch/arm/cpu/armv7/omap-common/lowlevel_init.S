@@ -61,7 +61,7 @@ save_boot_params:
 	/* boot mode is passed only for devices that can raw/fat mode */
 	cmp	r2, #2
 	blt	2f
-	cmp	r2, #7
+	cmp	r2, #9
 	bgt	2f
 	/* Store the boot mode (raw/FAT) in omap_boot_mode */
 	ldr	r2, [r0, #DEV_DESC_PTR_OFFSET]	@ get the device descriptor ptr
