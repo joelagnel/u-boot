@@ -75,6 +75,7 @@
 	"importbootenv=echo Importing environment from mmc ...; " \
 		"env import -t $loadaddr $filesize\0" \
 	"mmc_load_uimage=fatload mmc ${mmc_dev} ${kloadaddr} ${bootfile}\0" \
+	"emmc_load_uimage=mmc dev 1;ext2load mmc 1:2 ${kloadaddr} ${bootfile}\0" \
 	"optargs=\0" \
 	"bootargs_defaults=setenv bootargs " \
 		"console=${console} " \
@@ -82,6 +83,10 @@
 	"mmc_args=run bootargs_defaults;" \
 		"setenv bootargs ${bootargs} " \
 		"root=${mmc_root} " \
+		"rootfstype=${mmc_root_fs_type} ip=${ip_method}\0" \
+	"emmc_args=run bootargs_defaults;" \
+		"setenv bootargs ${bootargs} " \
+		"root=/dev/mmcblk1p2 " \
 		"rootfstype=${mmc_root_fs_type} ip=${ip_method}\0" \
 	"nand_args=run bootargs_defaults;" \
 		"setenv bootargs ${bootargs} " \
@@ -102,6 +107,9 @@
 		"ip=dhcp\0" \
 	"mmc_boot=run mmc_args; " \
 		"run mmc_load_uimage; " \
+		"bootm ${kloadaddr}\0" \
+	"emmc_boot=run emmc_args; " \
+		"run emmc_load_uimage; " \
 		"bootm ${kloadaddr}\0" \
 	"nand_boot=echo Booting from nand ...; " \
 		"run nand_args; " \
